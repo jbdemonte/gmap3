@@ -1,7 +1,7 @@
 /*
  *  GMAP3 Plugin for JQuery 
- *  Version   : 3.3
- *  Date      : June 02, 2011
+ *  Version   : 
+ *  Date      : 
  *  Licence   : GPL v3 : http://www.gnu.org/licenses/gpl.html  
  *  Author    : DEMONTE Jean-Baptiste
  *  Contact   : jbdemonte@gmail.com
@@ -172,7 +172,7 @@
     }
     
     this.add = function(latLng, marker){
-      markers.push([latLng.lat(), latLng.lng(), marker]);
+      markers.push({latLng:latLng, marker:marker});
     }
     
     this.get = function(i){
@@ -194,42 +194,38 @@
           clusters=[],
           cluster,
           chk,
-          lat, lng, keys,
+          lat, lng, keys, cnt,
           bounds = map.getBounds();
-      keys = [];
+      
+      cnt = 0;
+      keys = {};
       for(i in markers){
-        if (!bounds.contains(new google.maps.LatLng(markers[i][0], markers[i][1]))){
+        if (!bounds.contains(markers[i].latLng)){
           continue;
         }
-        p = proj.fromLatLngToPoint( new google.maps.LatLng(markers[i][0], markers[i][1]) );
+        p = proj.fromLatLngToPoint(markers[i].latLng);
         pos[i] = [
           Math.floor((p.x - nwP.x) * Math.pow(2, z)),
           Math.floor((p.y - nwP.y) * Math.pow(2, z))
         ];
-        keys.push(i);
+        keys[i] = true;
+        cnt++;
       }
-      // check if visible markers changed 
+      // check if visible markers have changed 
       if (!force){
-        if (latest.length == keys.length){
-          chk = false;
-          for(k in latest){
-            chk = true;
-            for(k2 in keys){
-              if (latest[k] == keys[k2]){
-                chk = false;
-                break;
-              }
-  	        }
-  	        if (chk){
-              break
-            }
-          }
-          if (!chk){
-            return false; // no change
+        for(k in latest){
+          if( k in keys ){
+            cnt--;
+          } else {
+            break;
           }
         }
+        if (!cnt){
+          return false; // no change
+        }
       }
-      // save current keys to check later if it need to me rechecked
+      
+      // save current keys to check later if an update has been done 
       latest = keys;
       
       keys = [];
@@ -271,8 +267,8 @@
             j = keys[k2];
             if ( Math.pow(lat - pos[j][0], 2) + Math.pow(lng-pos[j][1], 2) <= radius ){
               for(j2 in unik[j]){
-                cluster.lat += markers[j2][0];
-                cluster.lng += markers[j2][1];
+                cluster.lat += markers[j2].latLng.lat();
+                cluster.lng += markers[j2].latLng.lng();
                 cluster.idx.push(j2);
               }
             }
@@ -308,7 +304,7 @@
     this.getBounds = function(){
       var i, bounds = new google.maps.LatLngBounds();
       for(i in markers){
-        bounds.extend(new google.maps.LatLng(markers[i][0], markers[i][1]));
+        bounds.extend(markers[i].latLng);
       }
       return bounds;
     }
@@ -1228,14 +1224,14 @@
       }
     },
     _addmarkers: function(id, todo){
-      var o, k, latLng, marker, markers = [], 
+      var o, k, latLng, marker, markers = [], options = {}, tmp,
           n = 'marker',
           markers = this._ival(todo, 'markers');
       this._subcall(id, todo);
       if ( !markers || (typeof(markers) !== 'object') ) {
         return this._end(id);
       }
-      o = this._object(n, todo, ['to']);
+      o = this._object(n, todo, ['to', 'markers']);
       
       if (o.to){
         to = this._getStoredId(id, o.to);
@@ -1252,10 +1248,18 @@
         }
         this._manageEnd(id, mk, o);
       } else {
-        o.options.map = this._getMap(id);
+        $.extend(true, options, o.options);
+        options.map = this._getMap(id);
         for(k in markers){
           latLng = this._latLng(markers[k]);
           if (!latLng) continue;
+          if (markers[k].options){
+            tmp = {};
+            $.extend(true, tmp, options, markers[k].options);
+            o.options = tmp;
+          } else {
+            o.options = options;
+          }
           o.options.position = latLng;
           marker = new google.maps.Marker(o.options);
           markers.push(marker);
@@ -1264,6 +1268,7 @@
           this._store(id, n, marker, o);
           this._manageEnd(id, marker, o, true);
         }
+        o.options = options; // restore previous for futur use
         this._callback(id, markers, todo);
         this._end(id);
       }
@@ -1365,12 +1370,11 @@
       );
       
       clusterer.redraw();
-      
       return this._store(id, 'cluster', clusterer, todo);
     },
     
     _displayClusters: function(id, todo, clusterer, clusters, styles){
-      var c, k, i, m, done, obj, cl,
+      var c, k, i, m, done, obj, cl, options = {}, tmp,
       ctodo = this._ival(todo, 'cluster') || {},
       mtodo = this._ival(todo, 'marker') || todo;
       for(c in clusters){
@@ -1404,16 +1408,24 @@
         }
         if (!done){
           cl.dom = [];
+          $.extend(true, options, mtodo.options);
           for(i in cl.idx){
             m = clusterer.get(cl.idx[i]);
-            mtodo['latLng'] = this._latLng(m);
-            mtodo['data'] = m[2].data;
-            if (mtodo['latLng']){
-              obj = this._addMarker(id, mtodo, mtodo['latLng'], true);
-              this._attachEvents(id, obj, mtodo);
-              clusterer.store(obj);
+            mtodo.latLng = m.latLng;
+            mtodo.data = m.marker.data;
+            mtodo.tag = m.marker.tag;
+            if (m.marker.options){
+              tmp = {};
+              $.extend(true, tmp, options, m.marker.options);
+              mtodo.options = tmp;
+            } else {
+              mtodo.options = options;
             }
+            obj = this._addMarker(id, mtodo, mtodo.latLng, true);
+            this._attachEvents(id, obj, mtodo);
+            clusterer.store(obj);
           }
+          mtodo.options = options; // restore previous for futur use
         }
       }
     },
