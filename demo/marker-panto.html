@@ -1,0 +1,71 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #panTo{
+        text-align:center;
+      }
+    </style>
+
+    <script type="text/javascript">
+      $(function(){
+      
+        $('#test1').gmap3(
+          { action: 'init',
+            center:[44.797916,-93.278046],
+            onces: {
+              bounds_changed: function(){
+                $(this).gmap3({
+                  action:'getBounds', 
+                  callback: function (bounds){
+                    if (!bounds) return;
+                  	var southWest = bounds.getSouthWest();
+                  	var northEast = bounds.getNorthEast();
+                  	var lngSpan = northEast.lng() - southWest.lng();
+                  	var latSpan = northEast.lat() - southWest.lat();
+                  	for (var i = 0; i < 10; i++) {
+                  	 add($(this), i, southWest.lat() + latSpan * Math.random(), southWest.lng() + lngSpan * Math.random());
+                    }
+                  }
+                });
+              }
+            }
+          }
+        );
+        
+        function add($this, i, lat, lng){
+          $this.gmap3({
+            action : 'addMarker',
+            lat: lat,
+            lng: lng,
+            callback: function(marker){
+              var $button = $('<span> [ '+i+' ] </span>');
+              $button
+                .click(function(){
+                  $this.gmap3({
+                    action:'panTo', 
+                    args:[marker.position]
+                  });
+                })
+                .css('cursor','pointer');
+              $('#panTo').append($button);
+            }
+          });
+        }
+        
+      });         
+    </script>
+  </head>
+  <body>
+    <div id="panTo"></div>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

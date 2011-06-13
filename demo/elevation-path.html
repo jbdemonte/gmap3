@@ -1,0 +1,79 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      #container{
+        overflow: auto;
+        margin: 0 auto;
+        width: 1200px;
+      }
+      #test1{
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 400px;
+        float: left;
+      }
+      #chart{
+        float: left;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      var chart;
+      var path = [
+        [36.012196, -112.100348],
+        [36.221866, -112.098975]
+      ];
+      
+      google.load("visualization", "1", {packages: ["columnchart"]});
+      
+      $(function(){
+        chart = new google.visualization.ColumnChart(document.getElementById('chart'));
+      
+        $('#test1').gmap3(
+          { action: 'init',
+              center: [36.112196, -112.100348],
+              zoom:10,
+              mapTypeId: google.maps.MapTypeId.SATELLITE
+          },
+          { action: 'addMarker',
+            latLng: path[0]
+          },
+          { action: 'addMarker',
+            latLng: path[1]
+          },
+          { action: 'getElevation',
+            path: path,
+            samples: 500,
+            callback: function (results) {
+              var data = new google.visualization.DataTable();
+              data.addColumn('string', 'Sample');
+              data.addColumn('number', 'Elevation');
+              for (var i = 0; i < results.length; i++) {
+                data.addRow(['', results[i].elevation]);
+              }
+              chart.draw(data, {
+                width: 500,
+                height: 300,
+                legend: 'none',
+                titleY: 'Elevation (m)',
+                focusBorderColor: '#00ff00'
+              });
+            }
+          }
+        );
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="container">
+      <div id="test1" class="gmap3"></div>
+      <div id="chart"></div>
+    </div>
+  </body>
+</html>

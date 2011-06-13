@@ -1,0 +1,116 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 750px;
+        height: 500px;
+      }
+    </style>
+  <body>
+    <div id="test1" class="gmap3"></div>
+    
+    <script type="text/javascript">
+    
+    // http://blog.mridey.com/2010/11/how-to-embed-streetview-in-infowindow.html
+    
+    var panorama = {
+      p: null,
+      marker: null,
+      infowindow: null,
+      map: null,
+      
+      unset: function(){
+        if (this.p){
+          this.p.unbind("position");
+          this.p.setVisible(false);
+        }
+        this.p = null;
+        this.marker = null;
+      },
+      setMap: function(map){
+        this.map = map;
+      },
+      setMarker: function(marker){
+        this.marker = marker;
+      },
+      setInfowindow: function(infowindow){
+        this.infowindow = infowindow;
+      },
+      open: function(){
+        this.infowindow.open(this.map, this.marker);
+      },
+      run: function(id){
+        if (!this.marker) return;
+        this.p = new google.maps.StreetViewPanorama(document.getElementById(id), {
+          navigationControl: true,
+          navigationControlOptions: {style: google.maps.NavigationControlStyle.ANDROID},
+          enableCloseButton: false,
+          addressControl: false,
+          linksControl: false
+        });
+        this.p.bindTo("position", this.marker);
+        this.p.setVisible(true);
+      }
+    };
+    
+    
+      $(function(){
+        
+        var center = [-33.866943,151.195512];
+        
+        $('#test1').gmap3(
+          { action:'init',
+            options:{
+              zoom: 12,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              streetViewControl: false,
+              center: center
+            },
+            callback: function(map){
+              panorama.setMap(map);
+            }
+          },
+          { action: 'addMarker',
+            latLng: center,
+            marker:{
+              options:{
+                title: 'Click me !',
+                draggable: true
+              },
+              callback: function(marker){
+                panorama.setMarker(marker);
+              },
+              events:{
+                click: function(){
+                  panorama.open();
+                }
+              }
+            },
+            infowindow:{
+              options:{
+                content: '<div id="content" style="width:300px;height:250px;"></div>'
+              },
+              callback: function(infowindow){
+                panorama.setInfowindow(infowindow);
+              },
+              events:{
+                domready: function(){
+                  panorama.run('content');
+                },
+                closeclick: function(){
+                  panorama.unset();
+                }
+              }
+            }
+          }
+        );
+          
+      });
+    </script>
+  </body>
+</html>

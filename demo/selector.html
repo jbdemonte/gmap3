@@ -1,0 +1,63 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      $(function(){
+      
+        $('.gmap3').gmap3(
+          {action: 'init',
+            options:{
+              center:[22.49156846196823, 89.75802349999992],
+              zoom:2,
+              mapTypeId: google.maps.MapTypeId.SATELLITE,
+              mapTypeControl: true,
+              mapTypeControlOptions: {
+                style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+              },
+              navigationControl: true,
+              scrollwheel: true,
+              streetViewControl: true
+            },
+            events:{
+              rightclick:function(map, event){
+                $(this).gmap3({
+                  action: 'addMarker',
+                  latLng: event.latLng 
+                });
+              }
+            }
+          }
+        );
+        
+        $('#test2').gmap3({
+          action:'addMarker',
+          latLng:[29.132318972825445,81.32052349999992]
+        });
+        
+        $('.gmap3.top').gmap3({
+          action:'addMarker',
+          latLng:[29.132318972825445,81.32052349999992]
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="test1" class="gmap3 top"></div>
+    <div id="test2" class="gmap3 middle"></div>
+    <div id="test3" class="gmap3 bottom"></div>
+  </body>
+</html>

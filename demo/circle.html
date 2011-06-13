@@ -1,0 +1,98 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #container{
+        overflow: auto;
+        text-align:center;
+        width: 100px;
+        margin: 20 auto;
+      }
+      .box{
+        float: left;
+        width: 20px;
+        height: 20px;
+        margin-left: 20px;
+        background-color:#FFF;
+        border:1px solid #000;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      function clk(circle, event, data){
+        var $e = $('#over'+data.i);
+        if ($e.hasClass('clicked')) {
+          $e.removeClass('clicked').css('backgroundColor', '#FFFFFF');
+        } else {
+          $e.addClass('clicked').css('backgroundColor', data.color);
+        }
+      }
+      
+      $(function(){
+      
+        $('#test1').gmap3(
+          {action: 'addCircle',
+            circle:{
+              options:{
+                center: [37.772323, -122.214897],
+                radius : 750,
+                fillColor : "#FFAF9F",
+                strokeColor : "#FF512F"	
+              },
+              events:{
+                click:clk
+              },
+              data:{
+                i:1,
+                color:'#FF512F'
+              }
+            },
+            map:{
+              center: true,
+              zoom:13
+            }
+          },
+          {action: 'addCircle',
+            options:{
+              center: [37.772323, -122.214897],
+              radius : 500,
+              fillColor : "#F4AFFF",
+              strokeColor : "#CB53DF"	
+            },
+            events:{
+              click:clk
+            },
+            data: {
+                i:2,
+                color:'#CB53DF'
+            }
+          },
+          {action: 'addCircle',
+            center: [37.772323, -122.214897],
+            radius : 250,
+            fillColor : "#008BB2",
+            strokeColor : "#005BB7"
+          }
+        );
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="container">
+      <div id="over1" class="box"></div>
+      <div id="over2" class="box"></div>
+    </div>  
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

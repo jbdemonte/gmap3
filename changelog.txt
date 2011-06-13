@@ -1,0 +1,84 @@
+changelog
+---------
+
+3.3 - 2011-06-02
+  added : autofit
+  fixed : get using tags
+  added : tag managed in addMarkers
+  updated : list renamed as name in clear function
+
+3.2 - 2011-05-10
+  clustering function rewrited to be faster and cleaner
+  clustering renderer now use marker options for alone markers
+  add a tag parameter to identify objects using get or clear functions
+  getaddress now can take GeocoderRequest or string in address parameter (allow to create autocomplete address field)
+  callback position moved to global object (backward compatibility)
+  deprecated functions removed (removedirectionsrenderer, removetrafficlayer, removebicyclinglayer)
+  addtrafficlayer and addbicyclinglayer fixed (callback usable...)
+  clear fixed for internal use
+
+3.1 - 2011-04-16
+  integration to jquery updated (all css accessors usable now)
+  callback function called even if address resolution fails
+  getMaxZoom function added
+  
+
+3.0 - 2011-03-29
+  integration to jquery updated ($.gmap3 no longer available)
+  way to differentiate functions called updated => ":" removed => if no target specified => frm function 
+  region added in geolocation
+  event and callback use $(this) as context, $(this) is no longer the first parameter
+  no parameters actions can be call by simply string : .gmap3("destroy") or .gmap3("get")   
+  number type validated fixed : no need to parseFloat json result now
+  latlng fixed : address starting with number (48 st...) were evaluated as number
+  setdefault fixed for non object (verbose, retro)
+  verbose default value changed to false
+  add getscale, distance, earthradius functions 
+  add a data parameter sent with each event (to differentiate markers, ...)
+  out property removed => was a big mistake
+  position of setstreetview converted in LatLng if not 
+  service results now return status as 2nd parameters (getroute, getelevation, getaddress) 
+
+2.1 - 2011-02-12
+  fixed: default values {} for optional properties removed (cause pb in getElementById)
+  fixed: jQuery used instead of $ (some were missing)
+  fixed: auto-init problem in ie  
+  added: get, clear, addmarkers
+  deprecated: removedirectionsrenderer, removebicyclinglayer, removetrafficlayer : use clear
+
+2.0 - 2011-01-07
+  updated: jQuery used instead of $ 
+  updated: callback function return jquery object instead of it's id
+  updated: events return jquery object instead of it's id
+  updated: infoWindow simplier in :addMarker
+  updated: latLng standardised and can now be [lat:number, lng:number]
+  updated: callback can be an array of function
+  updated: setbicyclinglayer renamed addBicyclingLayer
+  updated: setGroundOverlay renamed addGroundOverlay
+  updated: setkmllayer renamed addkmllayer
+  updated: setTrafficLayer renamed addTrafficLayer
+  added: manage callback in :init
+  added: onces : addListenerOnce managed
+  added: :addOverlay :addFixPanel :addCircle :addRectangle :getElevation :removeBicyclingLayer :removeTrafficLayer
+  fixed: :init run by _subcall doesn't acknoledge stack  
+  fixed: :addDirectionRenderer twice no longer remove newt action
+  fixed: :addPolygon and :addPolyline now return the elements
+  fixed: :addMarker run apply (deprecated methods removed)
+  fixed: :removeDirectionsRenderer remove now the directions 
+  fixed: some bugs when wrong parameters (locks)
+  fixed: private function manage auto init like public one ( _getLatLng => :getLatLng )  
+ 
+1.2 - 2010-12-03
+  fixed : map modification in frm functions (addmarker...) now works
+  fixed : asynchronous actions (ie: address resolution) were bypassed by synchronous
+          ie: addMarker[string address], enableScrollWheelZoom => before address is resolved, enableScrollWheelZoom starts
+          => added a stack manager which push all actions and start next one once previous is finished.
+          thanks to james for bug report 
+  added : addStyledMap, setStyledMap      
+       
+1.1 - 2010-11-10
+  fixed : implicit init doesn't use map parameters
+  added : getRoute, addDirectionsRenderer, setDirectionsPanel, setDirections
+
+1.0 - 2010-11-01
+ 

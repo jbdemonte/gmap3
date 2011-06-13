@@ -1,0 +1,67 @@
+<html>    
+  <head> 
+    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script> 
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+        
+      $(function(){
+      
+        $('#test1')
+          .gmap3(
+          { action:'init',
+            options:{
+              center:[46.578498,2.457275],
+              zoom: 5
+            }
+          },
+          { action: 'addMarkers',
+            markers:[
+              {lat:48.8620722, lng:2.352047, data:'Paris !'},
+              {lat:46.59433,lng:0.342236, data:'Poitiers : great city !'},
+              {lat:42.704931, lng:2.894697, data:'Perpignan ! <br> GO USAP !'}
+            ],
+            marker:{
+              options:{
+                draggable: false
+              },
+              events:{
+                mouseover: function(marker, event, data){
+                  var map = $(this).gmap3('get'),
+                      infowindow = $(this).gmap3({action:'get', name:'infowindow'});
+                  if (infowindow){
+                    infowindow.open(map, marker);
+                    infowindow.setContent(data);
+                  } else {
+                    $(this).gmap3({action:'addinfowindow', anchor:marker, options:{content: data}});
+                  }
+                },
+                mouseout: function(){
+                  var infowindow = $(this).gmap3({action:'get', name:'infowindow'});
+                  if (infowindow){
+                    infowindow.close();
+                  }
+                }
+              }
+            }
+          }
+        );
+      });
+    </script>
+  <body>
+    <div id="test1" class="gmap3"></div>
+    when mouse is over a marker, an unique infowindow appear (it is create at the first time, and then is recycled) 
+  </body>
+</html>
