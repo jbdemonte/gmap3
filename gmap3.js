@@ -1703,10 +1703,13 @@
      * @desc add a kml layer to a map
      **/
     addkmllayer: function(id, todo){
-      var kml, o = this._object('kmllayer', todo, ['url']);
+      var n = 'kmllayer',
+          o = this._object(n, todo, ['url']),
+          kml;
       o.options.map = this._getMap(id);
       kml = new google.maps.KmlLayer(o.url, o.options);
-      this._manageEnd(id, kml, todo);
+      this._store(id, n, kml, o);
+      this._manageEnd(id, kml, o);
     },
     
     /**
