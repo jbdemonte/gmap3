@@ -2006,9 +2006,8 @@
     }
     if (!todo.length) todo.push({});
     $.each(this, function() {
-      var id;
-        $this = $(this),
-        id = $this.data('id');
+      var $this = $(this),
+          id = $this.data('id');
       empty = false;
       if (!id){
         id = ++globalId;
@@ -2018,12 +2017,7 @@
         if (gmap3._isDirect(id, todo[0])){
           results.push(gmap3._direct(id, todo[0]));
         } else {
-          res = gmap3._plan($this, id, todo);
-          if (res){ // value returned in [] by _proceed => return current
-            for(i in res){
-              results.push(res[i]);
-            }
-          }
+          gmap3._plan($this, id, todo);
         }
       } else {
         gmap3._plan($this, id, todo);
