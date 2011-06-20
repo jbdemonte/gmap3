@@ -49,12 +49,12 @@
       }
     }
     this.empty = function (id){
-      var k;
+      var i;
       if (!st[id]) {
         return true;
       }    
-      for(k in st[id]){
-        if (st[id][k]){
+      for(i = 0; i < st[id].length; i++){
+        if (st[id][i]){
           return false
         }
       }
@@ -65,35 +65,40 @@
       st[id].push(v);
     }
     this.addNext = function (id, v){
-      var t=[], i=0, k;
+      var t=[], i, k = 0;
       this.init(id);
-      for(k in st[id]){
-        if (i == 1) {
+      for(i = 0; i < st[id].length; i++){
+        if (!st[id][i]){
+          continue;
+        }
+        if (k == 1) {
           t.push(v);
         }
-        t.push(st[id][k]);
-        i++;
+        t.push(st[id][i]);
+        k++;
       }
-      if (i < 2) {
+      if (k < 2) {
         t.push(v);
       }
       st[id] = t;
     }
     this.get = function (id){
-      var k;
+      var i;
       if (st[id]){
-        for(k in st[id]){
-          if (st[id][k]) return st[id][k];
+        for(i = 0; i < st[id].length; i++){
+          if (st[id][i]) {
+            return st[id][i];
+          }
         }
       }
       return false;
     }
     this.ack = function (id){
-      var k;
+      var i;
       if (st[id]) {
-        for(k in st[id]){                     
-          if (st[id][k]) {
-            delete st[id][k];
+        for(i = 0; i < st[id].length; i++){                     
+          if (st[id][i]) {
+            delete st[id][i];
             break;
           }
         }
@@ -154,8 +159,8 @@
     }
     
     this.free = function(){
-      for(var k in events){
-        google.maps.event.removeListener(events[k]);
+      for(var i = 0; i < events.length; i++){
+        google.maps.event.removeListener(events[i]);
       }
       events=[];
       this.freeDom();
@@ -163,9 +168,13 @@
     
     this.freeDom = function(){
       var i, j;
-      for(i in dom){
-        if (typeof(dom[i].setMap) === 'function') dom[i].setMap(null);
-        if (typeof(dom[i].remove) === 'function') dom[i].remove();
+      for(i = 0; i < dom.length; i++){
+        if (typeof(dom[i].setMap) === 'function') {
+          dom[i].setMap(null);
+        }
+        if (typeof(dom[i].remove) === 'function') {
+          dom[i].remove();
+        }
         delete dom[i];
       }
       dom = [];
@@ -187,11 +196,12 @@
                 map.getBounds().getSouthWest().lng()
             )
           ),
-          i, j, j2, p, x, y, k, k2, z = map.getZoom(),
+          i, j, j2, p, x, y, k, k2, 
+          z = map.getZoom(),
           pos = {}, 
           saved = {},
           unik = {},
-          clusters=[],
+          clusters = [],
           cluster,
           chk,
           lat, lng, keys, cnt,
@@ -199,7 +209,7 @@
       
       cnt = 0;
       keys = {};
-      for(i in markers){
+      for(i = 0; i < markers.length; i++){
         if (!bounds.contains(markers[i].latLng)){
           continue;
         }
@@ -213,7 +223,7 @@
       }
       // check if visible markers have changed 
       if (!force){
-        for(k in latest){
+        for(k = 0; k < latest.length; k++){
           if( k in keys ){
             cnt--;
           } else {
@@ -291,7 +301,7 @@
           }
          } while(chk);
          
-         for(k2 in saved.idx){
+         for(k2 = 0; k2 < saved.idx.length; k2++){
           if (saved.idx[k2] in unik){
             delete(unik[saved.idx[k2]]);
           }
@@ -303,7 +313,7 @@
     
     this.getBounds = function(){
       var i, bounds = new google.maps.LatLngBounds();
-      for(i in markers){
+      for(i = 0; i < markers.length; i++){
         bounds.extend(markers[i].latLng);
       }
       return bounds;
@@ -349,7 +359,9 @@
     _plan: function($this, id, list){
       var k;
       this._init($this, id);
-      for(k in list) this._stack.add(id, list[k] );
+      for(k = 0; k < list.length; k++) {
+        this._stack.add(id, list[k] );
+      }
       this._run(id);
     },
     /**
@@ -566,8 +578,9 @@
       var k, n, i;
       if (!list || !list.length){
         list = [];
-        for(k in this._ids[id].stored) 
+        for(k in this._ids[id].stored){ 
           list.push(k);
+        }
       } else {
         list = this._array(list);
       }
@@ -590,8 +603,7 @@
      * @desc return true if "init" action must be run
      **/
     _autoInit: function(name){
-      var k,
-          fl = name.substr(0,1),
+      var i,
           names = [
             'init', 
             'geolatlng', 
@@ -602,9 +614,13 @@
             'setdefault', 
             'destroy'
           ];
-      if ( !name ) return true;
-      for(k in names){
-        if (names[k] == name) return false;
+      if ( !name ) {
+        return true;
+      }
+      for(i = 0; i < names.length; i++){
+        if (names[i] === name) {
+          return false;
+        }
       }
       return true;
     },
@@ -667,8 +683,9 @@
      *  ... (depending on function called)
      **/
     _call: function(/* id, fncName [, ...] */){
-      if (arguments.length < 2) return;
-      if (!this._exist(arguments[0])) return ;
+      if ( (arguments.length < 2) || (!this._exist(arguments[0])) ){
+        return ;
+      }
       var i, id = arguments[0],
           fname = arguments[1],
           map = this._getMap(id),
@@ -689,7 +706,9 @@
       var k, a = [];
       if (mixed !== undefined){
         if (typeof(mixed) === 'object'){
-          for(k in mixed) a.push(mixed[k]);
+          for(k in mixed) {
+            a.push(mixed[k]);
+          }
         } else{ 
           a.push(mixed);
         }
@@ -701,7 +720,7 @@
      * @desc create a new Array without some entries
      **/
      _rmFromArray: function(a, key){
-      var k, r = new Array();
+      var k, r = [];
       for(k in a){
         if (k != key){
           r.push(a[k]);
@@ -959,7 +978,7 @@
       } else {
         r.options= {};
         for(k in todo){
-          if (k == 'action') continue;
+          if (k === 'action') continue;
           r.options[k] = todo[k];
         }
         return r;
