@@ -1968,7 +1968,7 @@
       if (id in this._ids){
         for(n in this._ids[id].stored){
           stored = this._ids[id].stored[n];
-          for(k in stored){
+          for(k=0;k<stored.length;k++){
             obj = stored[k].obj;
             if (obj.getPosition){
               bounds.extend(obj.getPosition());
