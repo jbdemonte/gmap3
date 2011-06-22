@@ -514,8 +514,9 @@
      **/
     _store: function(id, name, obj, todo){
       name = name.toLowerCase();
-      if (!this._ids[id].stored[name])
-          this._ids[id].stored[name] = new Array();
+      if (!this._ids[id].stored[name]){
+        this._ids[id].stored[name] = [];
+      }
       this._ids[id].stored[name].push({obj:obj, tag:this._ival(todo, 'tag')});
       return name + '-' + (this._ids[id].stored[name].length-1);
     },
@@ -1327,7 +1328,7 @@
       return scale;
     },
     _addclusteredmarkers:function(id, todo){
-      var clusterer, k, latLng, clusters, storeId,
+      var clusterer, i, latLng, clusters, storeId,
           that = this,
           radius = this._ival(todo, 'radius'),
           markers = this._ival(todo, 'markers'),
@@ -1347,9 +1348,9 @@
       
       if (typeof(radius) === 'number'){
         clusterer = new Clusterer();
-        for (k in markers){
-          latLng = this._latLng(markers[k]);
-          clusterer.add(latLng, markers[k]);
+        for (i = 0 ; i < markers.length; i++){
+          latLng = this._latLng(markers[i]);
+          clusterer.add(latLng, markers[i]);
         }
         storeId = this._initClusters(id, todo, clusterer, radius, styles);
       }
@@ -1393,43 +1394,43 @@
     },
     
     _displayClusters: function(id, todo, clusterer, clusters, styles){
-      var c, k, i, m, done, obj, cl, options = {}, tmp,
+      var k, i, ii, m, done, obj, cluster, options = {}, tmp,
       ctodo = this._ival(todo, 'cluster') || {},
       mtodo = this._ival(todo, 'marker') || todo;
-      for(c in clusters){
-        cl = clusters[c];
+      for(i = 0; i < clusters.length; i++){
+        cluster = clusters[i];
         done = false;
-        if (cl.idx.length > 1){
+        if (cluster.idx.length > 1){
           m = 0;
           for(k in styles){
-            if ( (k > m) && (k <= cl.idx.length) ){
+            if ( (k > m) && (k <= cluster.idx.length) ){
               m = k;
             }
           }
           if (styles[m]){
             ctodo = {
               options:{
-                content:styles[m].content.replace('CLUSTER_COUNT', cl.idx.length),
+                content:styles[m].content.replace('CLUSTER_COUNT', cluster.idx.length),
                 offset:{
                   x: -this._ival(styles[m], 'width')/2,
                   y: -this._ival(styles[m], 'height')/2
                 }
               },
               data:{
-                latLng: this._latLng(cl)
+                latLng: this._latLng(cluster)
               }
             };
-            obj = this._addOverlay(id, ctodo, this._latLng(cl), true);
+            obj = this._addOverlay(id, ctodo, this._latLng(cluster), true);
             this._attachEvents(id, obj, ctodo);
             clusterer.store(obj);
             done = true;
           }
         }
         if (!done){
-          cl.dom = [];
+          cluster.dom = [];
           $.extend(true, options, mtodo.options);
-          for(i in cl.idx){
-            m = clusterer.get(cl.idx[i]);
+          for(ii = 0; ii <cluster.idx.length; ii++){
+            m = clusterer.get(cluster.idx[ii]);
             mtodo.latLng = m.latLng;
             mtodo.data = m.marker.data;
             mtodo.tag = m.marker.tag;
@@ -1486,12 +1487,16 @@
       this._addPoly(id, todo, 'Polygon', 'paths');
     },
     _addPoly: function(id, todo, poly, path){
-      var k, i, obj, o = this._object(poly.toLowerCase(), todo, [path]);
+      var i, 
+          obj, latLng, 
+          o = this._object(poly.toLowerCase(), todo, [path]);
       if (o[path]){
         o.options[path] = [];
-        i = 0; 
-        for(k in o[path]){
-          o.options[path][i++] = this._latLng(o[path][k]);
+        for(i = 0; i < o[path].length; i++){
+          latLng = this._latLng(o[path][i]);
+          if (latLng){
+            o.options[path].push(this._latLng(o[path][i]));
+          }
         }
       }
       obj = new google.maps[poly](o.options);
@@ -1867,7 +1872,7 @@
           first= this._ival(todo, 'first'),
           all  = this._ival(todo, 'all'),
           tag = this._ival(todo, 'tag'),
-          r, idx, t;
+          r, i, t;
       name = name.toLowerCase();
       if (tag !== undefined){
         tag = this._array(tag);
@@ -1881,16 +1886,16 @@
         r = new Array();
         t = this._ids[id].stored[name];
         if (t){
-          for(idx in t){
-            if (!t[idx]){
+          for(i = 0; i < t.length; i++){
+            if (!t[i]){
               continue;
             }
             if (tag !== undefined) {
-              if ( (t[idx].tag === undefined) || ($.inArray(t[idx].tag, tag) < 0) ){
+              if ( (t[i].tag === undefined) || ($.inArray(t[i].tag, tag) < 0) ){
                 continue;
               }
             }
-            r.push(t[idx].obj);
+            r.push(t[i].obj);
           }
         }
         return r;
@@ -1964,12 +1969,12 @@
      * @desc : autofit a map using its overlays (markers, rectangles ...)
      **/
     autofit: function(id, todo, internal){
-      var n, k, stored, obj, empty = true, bounds = new google.maps.LatLngBounds();
+      var n, i, stored, obj, empty = true, bounds = new google.maps.LatLngBounds();
       if (id in this._ids){
         for(n in this._ids[id].stored){
           stored = this._ids[id].stored[n];
-          for(k in stored){
-            obj = stored[k].obj;
+          for(i = 0; i < stored.length; i++){
+            obj = stored[i].obj;
             if (obj.getPosition){
               bounds.extend(obj.getPosition());
               empty = false;
