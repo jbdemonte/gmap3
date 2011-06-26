@@ -1188,7 +1188,7 @@
     },
     
     _addMarker: function(id, todo, latLng, internal){
-      var obj, oi, to,
+      var result, oi, to,
           n = 'marker', niw = 'infowindow',
           o = this._object(n, todo, ['to']);
       if (!internal){
@@ -1202,35 +1202,35 @@
       }
       if (o.to){
         to = this._getStoredId(id, o.to);
-        obj = to && (typeof(to.add) === 'function');
-        if (obj){
+        result = to && (typeof(to.add) === 'function');
+        if (result){
           to.add(latLng, todo);
           if (typeof(to.redraw) === 'function'){
             to.redraw();
           }
         }
         if (!internal){
-          this._manageEnd(id, obj, o);
+          this._manageEnd(id, result, o);
         }
       } else {
         o.options.position = latLng;
         o.options.map = this._getMap(id);
-        obj = new google.maps.Marker(o.options);
+        result = new google.maps.Marker(o.options);
         if ( todo[niw] ){
           oi = this._object(niw, todo[niw], ['open']);
           if ( (oi['open'] === undefined) || oi['open'] ) {
             oi.apply = this._array(oi.apply);
-            oi.apply.unshift({action:'open', args:[this._getMap(id), obj]});
+            oi.apply.unshift({action:'open', args:[this._getMap(id), result]});
           }
           oi.action = 'add'+niw;
           this._planNext(id, oi); 
         }
         if (!internal){
-          this._store(id, n, obj, o);
-          this._manageEnd(id, obj, o);
+          this._store(id, n, result, o);
+          this._manageEnd(id, result, o);
         }
       }
-      return obj;
+      return result;
     },
     
     /**
@@ -1244,7 +1244,7 @@
       }
     },
     _addmarkers: function(id, todo){
-      var o, k, latLng, marker, markers = [], options = {}, tmp,
+      var result, o, k, latLng, marker, options = {}, tmp, to,
           n = 'marker',
           markers = this._ival(todo, 'markers');
       this._subcall(id, todo);
@@ -1255,8 +1255,8 @@
       
       if (o.to){
         to = this._getStoredId(id, o.to);
-        mk = to && (typeof(to.add) === 'function');
-        if (mk){
+        result = to && (typeof(to.add) === 'function');
+        if (result){
           for(k in markers){
             latLng = this._latLng(markers[k]);
             if (!latLng) continue;
@@ -1266,10 +1266,11 @@
             to.redraw();
           }
         }
-        this._manageEnd(id, mk, o);
+        this._manageEnd(id, result, o);
       } else {
         $.extend(true, options, o.options);
         options.map = this._getMap(id);
+        result = [];
         for(k in markers){
           latLng = this._latLng(markers[k]);
           if (!latLng) continue;
@@ -1282,14 +1283,14 @@
           }
           o.options.position = latLng;
           marker = new google.maps.Marker(o.options);
-          markers.push(marker);
+          result.push(marker);
           o.data = markers[k].data;
           o.tag = markers[k].tag;
           this._store(id, n, marker, o);
           this._manageEnd(id, marker, o, true);
         }
         o.options = options; // restore previous for futur use
-        this._callback(id, markers, todo);
+        this._callback(id, result, todo);
         this._end(id);
       }
     },
