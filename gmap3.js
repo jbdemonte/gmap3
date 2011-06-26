@@ -113,7 +113,7 @@
   /***************************************************************************/
 
   function Clusterer(){
-    var markers = [], events=[], dom=[], latest=[], redrawing = false, redraw;
+    var markers = [], events=[], stored=[], latest=[], redrawing = false, redraw;
     
     this.events = function(){
       for(var i=0; i<arguments.length; i++){
@@ -154,8 +154,8 @@
       redraw  = fnc;
     }
     
-    this.store = function(obj){
-      dom.push(obj);
+    this.store = function(data, obj){
+      stored.push({data:data, obj:obj});
     }
     
     this.free = function(){
@@ -163,21 +163,48 @@
         google.maps.event.removeListener(events[i]);
       }
       events=[];
-      this.freeDom();
+      this.freeAll();
     }
     
-    this.freeDom = function(){
-      var i, j;
-      for(i = 0; i < dom.length; i++){
-        if (typeof(dom[i].setMap) === 'function') {
-          dom[i].setMap(null);
-        }
-        if (typeof(dom[i].remove) === 'function') {
-          dom[i].remove();
-        }
-        delete dom[i];
+    this.freeIndex = function(i){
+      if (typeof(stored[i].obj.setMap) === 'function') {
+        stored[i].obj.setMap(null);
       }
-      dom = [];
+      if (typeof(stored[i].obj.remove) === 'function') {
+        stored[i].obj.remove();
+      }
+      delete stored[i].obj;
+      delete stored[i].data;
+      delete stored[i];
+    }
+    
+    this.freeAll = function(){
+      var i;
+      for(i = 0; i < stored.length; i++){
+        if (stored[i]) {
+          this.freeIndex(i);
+        }
+      }
+      stored = [];
+    }
+    
+    this.freeDiff = function(clusters){
+      var i, j, same = {}, idx = [];
+      for(i=0; i<clusters.length; i++){
+        idx.push( clusters[i].idx.join('-') );
+      }
+      for(i = 0; i < stored.length; i++){
+        if (!stored[i]) {
+          continue;
+        }
+        j = $.inArray(stored[i].data.idx.join('-'), idx);
+        if (j >= 0){
+          same[j] = true;
+        } else {
+          this.freeIndex(i);
+        }
+      }
+      return same;
     }
     
     this.add = function(latLng, marker){
@@ -1329,7 +1356,7 @@
       return scale;
     },
     _addclusteredmarkers:function(id, todo){
-      var clusterer, i, latLng, clusters, storeId,
+      var clusterer, i, latLng, storeId,
           that = this,
           radius = this._ival(todo, 'radius'),
           markers = this._ival(todo, 'markers'),
@@ -1365,11 +1392,10 @@
           map = this._getMap(id);
           
       clusterer.setRedraw(function(force){
-        var ret = clusterer.clusters(map, radius, force);
-        if (ret){
-          clusters = ret;
-          clusterer.freeDom();
-          that._displayClusters(id, todo, clusterer, clusters, styles);
+        var same, clusters = clusterer.clusters(map, radius, force);
+        if (clusters){
+          same = clusterer.freeDiff(clusters);
+          that._displayClusters(id, todo, clusterer, clusters, same, styles);
         }
       });
       
@@ -1394,11 +1420,15 @@
       return this._store(id, 'cluster', clusterer, todo);
     },
     
-    _displayClusters: function(id, todo, clusterer, clusters, styles){
+    _displayClusters: function(id, todo, clusterer, clusters, same, styles){
       var k, i, ii, m, done, obj, cluster, options = {}, tmp,
-      ctodo = this._ival(todo, 'cluster') || {},
-      mtodo = this._ival(todo, 'marker') || todo;
+          atodo,
+          ctodo = this._ival(todo, 'cluster') || {},
+          mtodo = this._ival(todo, 'marker') || todo;
       for(i = 0; i < clusters.length; i++){
+        if (i in same){
+          continue;
+        }
         cluster = clusters[i];
         done = false;
         if (cluster.idx.length > 1){
@@ -1409,7 +1439,7 @@
             }
           }
           if (styles[m]){
-            ctodo = {
+            atodo = {
               options:{
                 content:styles[m].content.replace('CLUSTER_COUNT', cluster.idx.length),
                 offset:{
@@ -1421,14 +1451,13 @@
                 latLng: this._latLng(cluster)
               }
             };
-            obj = this._addOverlay(id, ctodo, this._latLng(cluster), true);
+            obj = this._addOverlay(id, atodo, this._latLng(cluster), true);
             this._attachEvents(id, obj, ctodo);
-            clusterer.store(obj);
+            clusterer.store(cluster, obj);
             done = true;
           }
         }
         if (!done){
-          cluster.dom = [];
           $.extend(true, options, mtodo.options);
           for(ii = 0; ii <cluster.idx.length; ii++){
             m = clusterer.get(cluster.idx[ii]);
@@ -1444,7 +1473,7 @@
             }
             obj = this._addMarker(id, mtodo, mtodo.latLng, true);
             this._attachEvents(id, obj, mtodo);
-            clusterer.store(obj);
+            clusterer.store(cluster, obj);
           }
           mtodo.options = options; // restore previous for futur use
         }
