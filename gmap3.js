@@ -384,7 +384,7 @@
       if (action.substr(0,1) == ':'){
         action = action.substr(1);
       }
-      return this[action](id, $.extend({}, this._default[action], todo.args ? todo.args : todo));
+      return this[action](id, $.extend({}, action in this._default ? this._default[action] : {}, todo.args ? todo.args : todo));
     }, 
     /**
      * @desc store one action to do in a stack manager after the first
@@ -576,7 +576,7 @@
      * @desc manage remove objects
      **/
     _clear: function(id, list, last, first, tag){
-      var k, n, i;
+      var n, i;
       if (!list || !list.length){
         list = [];
         for(k in this._ids[id].stored){ 
@@ -585,9 +585,9 @@
       } else {
         list = this._array(list);
       }
-      for(k in list){
-        if (list[k].toLowerCase){ // some libraries add properties in Array
-          n = list[k].toLowerCase();
+      for(i = 0; i < list.length; i++){
+        if (list[i]){
+          n = list[i].toLowerCase();
           if (!this._ids[id].stored[n]) continue;
           if (last){
             this._unstore(id, n, tag, true);
@@ -655,9 +655,9 @@
       if ( !this._exist(id) && this._autoInit(iaction) ){
         this.init(id, $.extend({}, this._default.init, todo.args && todo.args.map ? todo.args.map : todo.map ? todo.map : {}), true);
       }
-      if (!target && !args && (typeof(this[iaction]) === 'function')){
+      if (!target && !args && (iaction in this) && (typeof(this[iaction]) === 'function')){
         // framework functions
-        this[iaction](id, $.extend({}, this._default[iaction], todo.args ? todo.args : todo)); // call fnc and extends defaults data
+        this[iaction](id, $.extend({}, iaction in this._default ? this._default[iaction] : {}, todo.args ? todo.args : todo)); // call fnc and extends defaults data
       } else {
         if (target && (typeof(target) === 'object')){
           if (typeof(target[action]) === 'function'){
