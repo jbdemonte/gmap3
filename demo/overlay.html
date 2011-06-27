@@ -49,10 +49,9 @@
       });
       
       function add($this, i, lat, lng){
-        $this.gmap3({
-          action: 'addMarker',
-          lat: lat,
-          lng: lng,
+        $this.gmap3(
+        { action: 'addMarker',
+          latLng: [lat, lng],
           callback: function(marker){
             var $button = $('<span id="button-'+i+'"> ['+i+'] </span>');
             $button
@@ -64,15 +63,24 @@
               })
               .css('cursor','pointer');
             $('#panTo').append($button);
-            $this.gmap3({
-              action:'addOverlay',
-              content: '<div style="border:1px solid #FF0000; background-color: #00FF00; width:50px; height: 20px; text-align:center">'+i+'</div>',
-              latLng: marker.getPosition(),
-              offset:{
-                y:-32,
-                x:12
-              }
-            });
+          }
+        },
+        { action:'addOverlay',
+          latLng: [lat, lng],
+          options:{
+            content: '<div id="overlay-'+i+'" style="border:1px solid #FF0000; background-color: #00FF00; width:50px; height: 20px; text-align:center">'+i+'</div>',
+            offset:{
+              y:-32,
+              x:12
+            }
+          },
+          events:{
+            mouseover: function(){
+              $("#overlay-"+i).css('backgroundColor', '#0000FF');
+            },
+            mouseout: function(){
+              $("#overlay-"+i).css('backgroundColor', '#00FF00');
+            }
           }
         });
       }
