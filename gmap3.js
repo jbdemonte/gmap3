@@ -1581,6 +1581,7 @@
     _addOverlay: function(id, todo, latLng, internal){
       var ov,  
           o = this._object('overlay', todo),
+          map = this._getMap(id),
           opts =  $.extend({
                     pane: 'floatPane',
                     content: '',
@@ -1588,48 +1589,61 @@
                       x:0,y:0
                     }
                   },
-                  o.options);
-      f.prototype = new google.maps.OverlayView();
-      function f(opts, latLng, map) {
-        this.opts_ = opts;
-        this.$div_ = null;
-        this.latLng_ = latLng;
-        this.map_ = map;
-        this.setMap(map);
-      }
-      f.prototype.onAdd = function() {
-        var panes,
-            $div = $('<div></div>');
-        $div
+                  o.options),
+          $div = $('<div></div>'),
+          listeners = [];
+       
+       $div
           .css('border', 'none')
           .css('borderWidth', '0px')
           .css('position', 'absolute');
-        $div.append($(this.opts_.content));
-        this.$div_ = $div;
-        panes = this.getPanes();
-        if (panes[this.opts_.pane]) $(panes[this.opts_.pane]).append(this.$div_);
+        $div.append($(opts.content));
+      
+      function f() {
+       google.maps.OverlayView.call(this);
+        this.setMap(map);
+      }            
+      
+      f.prototype = new google.maps.OverlayView();
+      
+      f.prototype.onAdd = function() {
+        var panes = this.getPanes();
+        if (opts.pane in panes) {
+          $(panes[opts.pane]).append($div);
+        }
       }
       f.prototype.draw = function() {
-        if (!this.$div_) return;
-        var ps, overlayProjection = this.getProjection();
-        ps = overlayProjection.fromLatLngToDivPixel(this.latLng_);
-        this.$div_
-          .css('left', (ps.x+this.opts_.offset.x) + 'px')
-          .css('top' , (ps.y+this.opts_.offset.y) + 'px');
+        var overlayProjection = this.getProjection(),
+            ps = overlayProjection.fromLatLngToDivPixel(latLng),
+            that = this;
+            
+        $div
+          .css('left', (ps.x+opts.offset.x) + 'px')
+          .css('top' , (ps.y+opts.offset.y) + 'px');
+        
+        $.each( ("rightclick dblclick click mouseover mousemove mouseout mouseup mousedown").split(" "), function( i, name ) {
+          listeners.push(
+            google.maps.event.addDomListener($div[0], name, function(e) {
+              google.maps.event.trigger(that, name);
+            })
+          );
+        });
       }
       f.prototype.onRemove = function() {
-        this.$div_.remove();
-        this.$div_ = null;
+        for (var i = 0; i < listeners.length; i++) {
+          google.maps.event.removeListener(listeners[i]);
+        }
+        $div.remove();
       }
       f.prototype.hide = function() {
-        if (this.$div_) this.$div_.hide();
+        $div.hide();
       }
       f.prototype.show = function() {
-        if (this.$div_) this.$div_.show();
+        $div.show();
       }
       f.prototype.toggle = function() {
-        if (this.$div_) {
-          if (this.$div_.is(':visible')){
+        if ($div_) {
+          if ($div.is(':visible')){
             this.show();
           } else {
             this.hide();
@@ -1637,14 +1651,13 @@
         }
       }
       f.prototype.toggleDOM = function() {
-        if (!this.$div_) return;
         if (this.getMap()) {
           this.setMap(null);
         } else {
-          this.setMap(this.map_);
+          this.setMap(map);
         }
       }
-      ov = new f(opts, latLng, this._getMap(id));
+      ov = new f();
       if (!internal){
         this._store(id, 'overlay', ov, o);
         this._manageEnd(id, ov, o);
