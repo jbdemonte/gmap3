@@ -1440,18 +1440,23 @@
           }
           if (styles[m]){
             atodo = {
-              options:{
-                content:styles[m].content.replace('CLUSTER_COUNT', cluster.idx.length),
-                offset:{
-                  x: -this._ival(styles[m], 'width')/2,
-                  y: -this._ival(styles[m], 'height')/2
-                }
-              },
-              data:{
-                latLng: this._latLng(cluster)
+              content:styles[m].content.replace('CLUSTER_COUNT', cluster.idx.length),
+              offset:{
+                x: -this._ival(styles[m], 'width')/2,
+                y: -this._ival(styles[m], 'height')/2
               }
             };
             obj = this._addOverlay(id, atodo, this._latLng(cluster), true);
+            
+            ctodo.data = {
+              latLng: this._latLng(cluster),
+              markers:[]
+            };
+            for(ii=0; ii<cluster.idx.length; ii++){
+              ctodo.data.markers.push(
+                clusterer.get(cluster.idx[ii]).marker
+              );
+            }
             this._attachEvents(id, obj, ctodo);
             clusterer.store(cluster, obj);
             done = true;
@@ -1642,7 +1647,7 @@
         $div.show();
       }
       f.prototype.toggle = function() {
-        if ($div_) {
+        if ($div) {
           if ($div.is(':visible')){
             this.show();
           } else {
@@ -1656,6 +1661,9 @@
         } else {
           this.setMap(map);
         }
+      }
+      f.prototype.getDOMElement = function() {
+        return $div[0];
       }
       ov = new f();
       if (!internal){

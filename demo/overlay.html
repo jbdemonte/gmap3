@@ -68,18 +68,18 @@
         { action:'addOverlay',
           latLng: [lat, lng],
           options:{
-            content: '<div id="overlay-'+i+'" style="border:1px solid #FF0000; background-color: #00FF00; width:50px; height: 20px; text-align:center">'+i+'</div>',
+            content: '<div style="border:1px solid #FF0000; background-color: #00FF00; width:50px; height: 20px; text-align:center">'+i+'</div>',
             offset:{
               y:-32,
               x:12
             }
           },
           events:{
-            mouseover: function(){
-              $("#overlay-"+i).css('backgroundColor', '#0000FF');
+            mouseover: function(overlay){
+              $(overlay.getDOMElement()).children().css('backgroundColor', '#0000FF');
             },
-            mouseout: function(){
-              $("#overlay-"+i).css('backgroundColor', '#00FF00');
+            mouseout: function(overlay){
+              $(overlay.getDOMElement()).children().css('backgroundColor', '#00FF00');
             }
           }
         });
