@@ -1626,13 +1626,18 @@
           .css('left', (ps.x+opts.offset.x) + 'px')
           .css('top' , (ps.y+opts.offset.y) + 'px');
         
-        $.each( ("rightclick dblclick click mouseover mousemove mouseout mouseup mousedown").split(" "), function( i, name ) {
+        $.each( ("dblclick click mouseover mousemove mouseout mouseup mousedown").split(" "), function( i, name ) {
           listeners.push(
             google.maps.event.addDomListener($div[0], name, function(e) {
               google.maps.event.trigger(that, name);
             })
           );
         });
+        listeners.push(
+          google.maps.event.addDomListener($div[0], "contextmenu", function(e) {
+            google.maps.event.trigger(that, "rightclick");
+          })
+        );
       }
       f.prototype.onRemove = function() {
         for (var i = 0; i < listeners.length; i++) {
