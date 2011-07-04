@@ -1,7 +1,7 @@
 /*
  *  GMAP3 Plugin for JQuery 
- *  Version   : 
- *  Date      : 
+ *  Version   : 3.4
+ *  Date      : July 04, 2011
  *  Licence   : GPL v3 : http://www.gnu.org/licenses/gpl.html  
  *  Author    : DEMONTE Jean-Baptiste
  *  Contact   : jbdemonte@gmail.com
@@ -1584,9 +1584,8 @@
       this._resolveLatLng(id, todo, '_addOverlay');
     },
     _addOverlay: function(id, todo, latLng, internal){
-      var ov,  
+      var ov, map,
           o = this._object('overlay', todo),
-          map = this._getMap(id),
           opts =  $.extend({
                     pane: 'floatPane',
                     content: '',
@@ -1597,12 +1596,15 @@
                   o.options),
           $div = $('<div></div>'),
           listeners = [];
+      
+      this._subcall(id, todo, latLng);
+      map = this._getMap(id);
        
-       $div
-          .css('border', 'none')
-          .css('borderWidth', '0px')
-          .css('position', 'absolute');
-        $div.append($(opts.content));
+      $div
+        .css('border', 'none')
+        .css('borderWidth', '0px')
+        .css('position', 'absolute');
+      $div.append($(opts.content));
       
       function f() {
        google.maps.OverlayView.call(this);
