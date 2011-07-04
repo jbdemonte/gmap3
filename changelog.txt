@@ -1,6 +1,15 @@
 changelog
 ---------
 
+3.4 - 2011-07-04
+  updated : compatibility with other libraries (prototype...)
+  updated : clustering function optimized
+  updated : addOverlay manage events (rightclick,dblclick,click,mouseover,mousemove,mouseout,mouseup,mousedown) (notice clusters are overlays)
+  added : getDOMElement function in addOverlays
+  added : addMarkers accept custom data for each marker
+  fixed : addKMLLayer now stored (usable through get/clear)
+  fixed : addOverlay now initialize the map 
+  
 3.3 - 2011-06-02
   added : autofit
   fixed : get using tags
