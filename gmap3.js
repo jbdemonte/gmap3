@@ -731,11 +731,11 @@
      * @desc convert data to array
      **/
     _array: function(mixed){
-      var k, a = [];
+      var i, a = [];
       if (mixed !== undefined){
         if (typeof(mixed) === 'object'){
-          for(k in mixed) {
-            a.push(mixed[k]);
+          for(i=0; i <mixed.length; i++) {
+            a.push(mixed[i]);
           }
         } else{ 
           a.push(mixed);
