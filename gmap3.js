@@ -1242,7 +1242,13 @@
       } else {
         o.options.position = latLng;
         o.options.map = this._getMap(id);
-        result = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
+
+        if(typeof(MarkerWithLabel) === 'function') {
+           result = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
+        } else {
+           result = new google.maps.Marker(o.options);
+        }
+
         if ( todo[niw] ){
           oi = this._object(niw, todo[niw], ['open']);
           if ( (oi['open'] === undefined) || oi['open'] ) {
@@ -1309,7 +1315,13 @@
             o.options = options;
           }
           o.options.position = latLng;
-          marker = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
+
+          if(typeof(MarkerWithLabel) === 'function') {
+            marker = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
+          } else {
+            marker = new google.maps.Marker(o.options);
+          }
+
           result.push(marker);
           o.data = markers[k].data;
           o.tag = markers[k].tag;
