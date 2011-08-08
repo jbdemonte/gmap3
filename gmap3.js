@@ -1242,7 +1242,7 @@
       } else {
         o.options.position = latLng;
         o.options.map = this._getMap(id);
-        result = new google.maps.Marker(o.options);
+        result = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
         if ( todo[niw] ){
           oi = this._object(niw, todo[niw], ['open']);
           if ( (oi['open'] === undefined) || oi['open'] ) {
@@ -1309,7 +1309,7 @@
             o.options = options;
           }
           o.options.position = latLng;
-          marker = new google.maps.Marker(o.options);
+          marker = new MarkerWithLabel(o.options); //using MarkerWithLabel official Google extsn of google.maps.Marker
           result.push(marker);
           o.data = markers[k].data;
           o.tag = markers[k].tag;
