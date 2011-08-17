@@ -532,9 +532,9 @@
       }
     },
     _properties = ['events','onces','options','apply', 'callback', 'data', 'tag'],
-    _noInit = ['init', 'geolatlng', 'getlatlng', 'getroute', 'getelevation', 'addstyledmap', 'setdefault', 'destroy'],
+    _noInit = ['init', 'geolatlng', 'getlatlng', 'getroute', 'getelevation', 'getdistance', 'addstyledmap', 'setdefault', 'destroy'],
     _directs = ['get'],
-    geocoder = directionsService = elevationService = maxZoomService = null;
+    geocoder = directionsService = elevationService = maxZoomService = distanceMatrixService = null;
     
   function setDefault(values){
     for(var k in values){
@@ -715,6 +715,13 @@
       maxZoomService = new google.maps.MaxZoomService();
     }
     return maxZoomService;
+  }
+  
+  function getDistanceMatrixService(){
+    if (!distanceMatrixService) {
+      distanceMatrixService = new google.maps.DistanceMatrixService();
+    }
+    return distanceMatrixService;
   }
     
   //-----------------------------------------------------------------------//
@@ -1227,6 +1234,32 @@
         }
       }
       this._end();
+    }
+    
+    /**
+     * return the distance between an origin and a destination
+     *      
+     **/
+    this.getdistance = function(todo){
+      var i, callback = ival(todo, 'callback');
+      if ( (typeof(callback) === 'function') && todo.options && todo.options.origins && todo.options.destinations ) {
+        // origins and destinations are array containing one or more address strings and/or google.maps.LatLng objects
+        todo.options.origins = array(todo.options.origins);
+        for(i=0; i<todo.options.origins.length; i++){
+          todo.options.origins[i] = toLatLng(todo.options.origins[i], true);
+        }
+        todo.options.destinations = array(todo.options.destinations);
+        for(i=0; i<todo.options.destinations.length; i++){
+          todo.options.destinations[i] = toLatLng(todo.options.destinations[i], true);
+        }
+        getDistanceMatrixService().getDistanceMatrix(
+          todo.options,
+          function(results, status) {
+            var out = status == google.maps.DistanceMatrixStatus.OK ? results : false;
+            callback.apply($this, [out, status]);
+          }
+        );
+      }
     }
     
     /**
