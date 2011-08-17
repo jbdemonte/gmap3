@@ -533,7 +533,7 @@
     },
     _properties = ['events','onces','options','apply', 'callback', 'data', 'tag'],
     _noInit = ['init', 'geolatlng', 'getlatlng', 'getroute', 'getelevation', 'addstyledmap', 'setdefault', 'destroy'],
-    _directs = ['distance', 'earthradius', 'get'],
+    _directs = ['get'],
     geocoder = directionsService = elevationService = maxZoomService = null;
     
   function setDefault(values){
