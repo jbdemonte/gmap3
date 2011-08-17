@@ -1466,7 +1466,6 @@
                 clusterer.get(cluster.idx[ii]).marker
               );
             }
-            ctodo.data = {};
             this._attachEvents(shadow, ctodo);
             clusterer.store(cluster, obj, shadow);
             done = true;
