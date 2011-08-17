@@ -529,6 +529,20 @@
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         center:[46.578498,2.457275],
         zoom: 2
+      },
+      classes:{
+        Map               : google.maps.Map,
+        Marker            : google.maps.Marker,
+        InfoWindow        : google.maps.InfoWindow,
+        Circle            : google.maps.Circle,
+        Rectangle         : google.maps.Rectangle,
+        OverlayView       : google.maps.OverlayView,
+        StreetViewPanorama: google.maps.StreetViewPanorama,
+        KmlLayer          : google.maps.KmlLayer,
+        TrafficLayer      : google.maps.TrafficLayer,
+        BicyclingLayer    : google.maps.BicyclingLayer,
+        GroundOverlay     : google.maps.GroundOverlay,
+        StyledMapType     : google.maps.StyledMapType
       }
     },
     _properties = ['events','onces','options','apply', 'callback', 'data', 'tag'],
@@ -1131,7 +1145,7 @@
         opts.center = [_default.init.center.lat, _default.init.center.lng];
       }
       opts.center = toLatLng(opts.center);
-      map = new google.maps.Map($this.get(0), opts);
+      map = new _default.classes.Map($this.get(0), opts);
       
       // add previous added styles
       for(k in styles) {
@@ -1297,7 +1311,7 @@
       } else {
         o.options.position = latLng;
         o.options.map = map;
-        result = new google.maps.Marker(o.options);
+        result = new _default.classes.Marker(o.options);
         if (hasKey(todo, 'infowindow')){
           oi = getObject('infowindow', todo['infowindow'], 'open');
           // if "open" is not defined, add it in first position
@@ -1364,7 +1378,7 @@
               o.options = options;
             }
             o.options.position = latLng;
-            marker = new google.maps.Marker(o.options);
+            marker = new _default.classes.Marker(o.options);
             result.push(marker);
             o.data = markers[i].data;
             o.tag = markers[i].tag;
@@ -1543,7 +1557,7 @@
       if (latLng) {
         o.options.position = latLng;
       }
-      infowindow = new google.maps.InfoWindow(o.options);
+      infowindow = new _default.classes.InfoWindow(o.options);
       if ( (o.open === undefined) || o.open ){
         o.apply = array(o.apply);
         args.push(map);
@@ -1604,7 +1618,7 @@
       this._subcall(todo, latLng);
       o.options.center = latLng;
       o.options.map = map;
-      c = new google.maps.Circle(o.options);
+      c = new _default.classes.Circle(o.options);
       store.add('circle', c, o);
       this._manageEnd(c, o);
     }
@@ -1624,7 +1638,7 @@
       }
       this._subcall(todo, o.options.bounds.getCenter());
       o.options.map = map;
-      r = new google.maps.Rectangle(o.options);
+      r = new _default.classes.Rectangle(o.options);
       store.add('rectangle', r, o);
       this._manageEnd(r, o);
     }    
@@ -1657,11 +1671,11 @@
         $div.append(opts.content);
       
       function f() {
-       google.maps.OverlayView.call(this);
+       _default.classes.OverlayView.call(this);
         this.setMap(map);
       }            
       
-      f.prototype = new google.maps.OverlayView();
+      f.prototype = new _default.classes.OverlayView();
       
       f.prototype.onAdd = function() {
         var panes = this.getPanes();
@@ -1826,7 +1840,7 @@
       if (o.options.position){
         o.options.position = toLatLng(o.options.position);
       }
-      panorama = new google.maps.StreetViewPanorama(document.getElementById(o.id),o.options);
+      panorama = new _default.classes.StreetViewPanorama(document.getElementById(o.id),o.options);
       if (panorama){
         map.setStreetView(panorama);
       }
@@ -1841,7 +1855,7 @@
           o = getObject('kmllayer', todo, 'url');
       o.options.map = map;
       if (typeof(o.url) === 'string'){
-        kml = new google.maps.KmlLayer(o.url, o.options);
+        kml = new _default.classes.KmlLayer(o.url, o.options);
       }
       store.add('kmllayer', kml, o);
       this._manageEnd(kml, o);
@@ -1854,7 +1868,7 @@
       var o = getObject('trafficlayer', todo),
           tl = store.get('trafficlayer');
       if (!tl){
-        tl = new google.maps.TrafficLayer();
+        tl = new _default.classes.TrafficLayer();
         tl.setMap(map);
         store.add('trafficlayer', tl, o);
       }
@@ -1868,7 +1882,7 @@
       var o = getObject('bicyclinglayer', todo),
           bl = store.get('bicyclinglayer');
       if (!bl){
-        bl = new google.maps.BicyclingLayer();
+        bl = new _default.classes.BicyclingLayer();
         bl.setMap(map);
         store.add('bicyclinglayer', bl, o);
       }
@@ -1883,7 +1897,7 @@
           o = getObject('groundoverlay', todo, ['bounds', 'url']);
       o.bounds = toLatLngBounds(o.bounds);
       if (o.bounds && (typeof(o.url) === 'string')){
-        ov = new google.maps.GroundOverlay(o.url, o.bounds);
+        ov = new _default.classes.GroundOverlay(o.url, o.bounds);
         ov.setMap(map);
         store.add('groundoverlay', ov, o);
       }
@@ -1931,7 +1945,7 @@
     this.addstyledmap = function(todo, internal){
       var o = getObject('styledmap', todo, ['id', 'style']);
       if  (o.style && o.id && !styles[o.id]) {
-        styles[o.id] = new google.maps.StyledMapType(o.style, o.options);
+        styles[o.id] = new _default.classes.StyledMapType(o.style, o.options);
         if (map) {
           map.mapTypes.set(o.id, styles[o.id]);
         }
