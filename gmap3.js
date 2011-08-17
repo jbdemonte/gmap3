@@ -1986,7 +1986,7 @@
      * modify default values
      **/
     this.setdefault = function(todo){
-      setdefault(todo);
+      setDefault(todo);
       this._end();
     }
     
