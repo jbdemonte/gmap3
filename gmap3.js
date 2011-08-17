@@ -735,7 +735,7 @@
     var k, a = [];
     if (mixed !== undefined){
       if (typeof(mixed) === 'object'){
-        if (typeof(mixed.length) === 'function') {
+        if (typeof(mixed.length) === 'number') {
           a = mixed;
         } else {
           for(k in mixed) {
