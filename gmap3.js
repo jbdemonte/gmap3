@@ -524,6 +524,11 @@
   
   var _default = {
       verbose:false,
+      queryLimit:{
+        attempt:5,
+        delay:250, // setTimeout(..., delay + random);
+        random:250
+      },
       init:{
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         center:[46.578498,2.457275],
@@ -945,11 +950,14 @@
     /**
      * returns the geographical coordinates from an address and call internal method
      **/
-     this._resolveLatLng = function(todo, method, all){
+     this._resolveLatLng = function(todo, method, all, attempt){
       var address = ival(todo, 'address'),
           params,
           that = this;
       if ( address ){
+        if (!attempt){ // convert undefined to int
+          attempt = 0;
+        }
         if (typeof(address) === 'object'){
           params = address;
         } else {
@@ -960,6 +968,12 @@
           function(results, status) {
           if (status === google.maps.GeocoderStatus.OK){
             that[method](todo, all ? results : results[0].geometry.location);
+          } else if ( (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) && (attempt < _default.queryLimit.attempt) ){
+            setTimeout(function(){
+                that._resolveLatLng(todo, method, all, attempt+1);
+              },
+              _default.queryLimit.delay + Math.floor(Math.random() * _default.queryLimit.random)
+            );
           } else {
             if (_default.verbose){
               alert('Geocode error : ' + status);
