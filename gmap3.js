@@ -524,7 +524,6 @@
   
   var _default = {
       verbose:false,
-      unit: 'mi',
       init:{
         mapTypeId : google.maps.MapTypeId.ROADMAP,
         center:[46.578498,2.457275],
@@ -948,20 +947,13 @@
      **/
      this._resolveLatLng = function(todo, method, all){
       var address = ival(todo, 'address'),
-          /*region, */params,
+          params,
           that = this;
       if ( address ){
         if (typeof(address) === 'object'){
           params = address;
         } else {
           params = {'address': address};
-          /*
-          //todo : retro compatibilite a virer pour suync avec getAddress
-          region = ival(todo, 'region');
-          if (region){
-            params.region = region;
-          }
-          */
         }
         getGeocoder().geocode(
           params, 
@@ -1174,7 +1166,7 @@
     this.getaddress = function(todo){
       var latLng = toLatLng(todo, false, true),
           address = ival(todo, 'address'),
-          params = latLng ?  {latLng:latLng} : ( address ? (typeof(address) === 'string' ? {address:address} : address) : null), //todo : pas de region ici
+          params = latLng ?  {latLng:latLng} : ( address ? (typeof(address) === 'string' ? {address:address} : address) : null),
           callback = ival(todo, 'callback');
       if (params && typeof(callback) === 'function') {
         getGeocoder().geocode(
