@@ -1,6 +1,14 @@
 changelog
 ---------
 
+4.0 - 2011-08-23
+  code rewritten
+  updated : clusters : options can now be defined (allow to change pane, ...)
+  updated : clustering function now adds 2 overlays : the image and the shadow - it allows to get the mouse events even if the pane is changed
+  new : add getDistance (use DistanceMatrixService)
+  new : add classes into default setting in order to allow to redefine the used classes into gmap3
+  new : add a repost on OVER_QUERY_LIMIT on address resolution
+
 3.4 - 2011-07-04
   updated : compatibility with other libraries (prototype...)
   updated : clustering function optimized
