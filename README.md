@@ -23,7 +23,7 @@ Why using gmap3 ?
  - Google Maps services are usable without any code (address resolution, elevation ...) ([example of silent address resolution](http://gmap3.net/api/add-marker.html))
 
 4. Tags & custom data
- - All objects added (markers, overlays ...) can be tagged in order to get it later through a "get" function filtered by one or more tags ([example of tags](http://gmap3.net/api/add-kml-layer.htmll))
+ - All objects added (markers, overlays ...) can be tagged in order to get it later through a "get" function filtered by one or more tags ([example of tags](http://gmap3.net/api/add-kml-layer.html))
  - All objects can embed custom data which are sent on events ([example of custom data](http://gmap3.net/api/add-markers.html))
 
 5. Lot of examples 
