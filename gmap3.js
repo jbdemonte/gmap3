@@ -1217,7 +1217,7 @@
      * return the elevation of a location
      **/
     this.getelevation = function(todo){
-      var fnc, latLng, path, samples, i,
+      var fnc, path, samples, i,
           locations = [],
           callback = ival(todo, 'callback'),
           latLng = ival(todo, 'latlng');
