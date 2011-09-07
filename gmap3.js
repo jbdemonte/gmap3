@@ -946,14 +946,14 @@
       }
     }
     
-  
     /**
-     * returns the geographical coordinates from an address and call internal method
+     * returns the geographical coordinates from an address and call internal or given method
      **/
      this._resolveLatLng = function(todo, method, all, attempt){
       var address = ival(todo, 'address'),
           params,
-          that = this;
+          that = this,
+          fnc = typeof(method) === 'function' ? method : that[method];
       if ( address ){
         if (!attempt){ // convert undefined to int
           attempt = 0;
@@ -967,7 +967,7 @@
           params, 
           function(results, status) {
           if (status === google.maps.GeocoderStatus.OK){
-            that[method](todo, all ? results : results[0].geometry.location);
+            fnc.apply(that, [todo, all ? results : results[0].geometry.location]);
           } else if ( (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) && (attempt < _default.queryLimit.attempt) ){
             setTimeout(function(){
                 that._resolveLatLng(todo, method, all, attempt+1);
@@ -978,13 +978,40 @@
             if (_default.verbose){
               alert('Geocode error : ' + status);
             }
-            that[method](todo, false);
+            fnc.apply(that, [todo, false]);;
           }
         }
       );
       } else {
-        that[method](todo, toLatLng(todo, false, true));
+        fnc.apply(that, [todo, toLatLng(todo, false, true)]);
       }
+    }
+    
+    /**
+     * returns the geographical coordinates from an array of object using "address" and call internal method
+     **/
+    this._resolveAllLatLng = function(todo, property, method){
+      var that = this,
+          i = -1,
+          solveNext = function(){
+            do{
+              i++;
+            }while( (i < todo[property].length) && !('address' in todo[property][i]) );
+            if (i < todo[property].length){
+              (function(todo){
+                that._resolveLatLng(
+                  todo,
+                  function(todo, latLng){
+                    todo.latLng = latLng;
+                    solveNext.apply(that, []); // solve next or execute exit method
+                  }
+                );
+              })(todo[property][i]);
+            } else {
+              that[method](todo);
+            }
+          };
+      solveNext();
     }
     
     /**
@@ -1369,9 +1396,9 @@
      **/
     this.addmarkers = function(todo){
       if (ival(todo, 'clusters')){
-        this._addclusteredmarkers(todo);
+        this._resolveAllLatLng(todo, 'markers', '_addclusteredmarkers');
       } else {
-        this._addmarkers(todo);
+        this._resolveAllLatLng(todo, 'markers', '_addmarkers');
       }
     }
     
