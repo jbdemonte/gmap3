@@ -985,7 +985,7 @@
       } else {
         that[method](todo, toLatLng(todo, false, true));
       }
-    },
+    }
     
     /**
      * call a function of framework or google map object of the instance
