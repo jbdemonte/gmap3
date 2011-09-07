@@ -1177,28 +1177,46 @@
     /**
      * returns address from latlng        
      **/
-    this.getaddress = function(todo){
+    this.getaddress = function(todo, attempt){
       var latLng = toLatLng(todo, false, true),
           address = ival(todo, 'address'),
           params = latLng ?  {latLng:latLng} : ( address ? (typeof(address) === 'string' ? {address:address} : address) : null),
-          callback = ival(todo, 'callback');
+          callback = ival(todo, 'callback'),
+          that = this;
+      if (!attempt){ // convert undefined to int
+        attempt = 0;
+      }
       if (params && typeof(callback) === 'function') {
         getGeocoder().geocode(
           params, 
           function(results, status) {
-            var out = status === google.maps.GeocoderStatus.OK ? results : false;
-            callback.apply($this, [out, status]);
-          }
+            if ( (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) && (attempt < _default.queryLimit.attempt) ){
+              setTimeout(function(){
+                  that.getaddress(todo, attempt+1);
+                },
+                _default.queryLimit.delay + Math.floor(Math.random() * _default.queryLimit.random)
+              );
+            } else {
+              var out = status === google.maps.GeocoderStatus.OK ? results : false;
+              callback.apply($this, [out, status]);
+              if (!out && _default.verbose){
+                alert('Geocode error : ' + status);
+              }
+              that._end();
+            }
+          } 
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
      * return a route
      **/
     this.getroute = function(todo){
-      var callback = ival(todo, 'callback');
+      var callback = ival(todo, 'callback'),
+          that = this;
       if ( (typeof(callback) === 'function') && todo.options ) {
         todo.options.origin = toLatLng(todo.options.origin, true);
         todo.options.destination = toLatLng(todo.options.destination, true);
@@ -1207,10 +1225,12 @@
           function(results, status) {
             var out = status == google.maps.DirectionsStatus.OK ? results : false;
             callback.apply($this, [out, status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
@@ -1220,12 +1240,14 @@
       var fnc, path, samples, i,
           locations = [],
           callback = ival(todo, 'callback'),
-          latLng = ival(todo, 'latlng');
+          latLng = ival(todo, 'latlng'),
+          that = this;
           
       if (typeof(callback) === 'function'){
         fnc = function(results, status){
           var out = status === google.maps.ElevationStatus.OK ? results : false;
           callback.apply($this, [out, status]);
+          that._end();
         };
         if (latLng){
           locations.push(toLatLng(latLng));
@@ -1252,8 +1274,9 @@
             }
           }
         }
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
@@ -1261,7 +1284,9 @@
      *      
      **/
     this.getdistance = function(todo){
-      var i, callback = ival(todo, 'callback');
+      var i, 
+          callback = ival(todo, 'callback'),
+          that = this;
       if ( (typeof(callback) === 'function') && todo.options && todo.options.origins && todo.options.destinations ) {
         // origins and destinations are array containing one or more address strings and/or google.maps.LatLng objects
         todo.options.origins = array(todo.options.origins);
@@ -1277,10 +1302,12 @@
           function(results, status) {
             var out = status == google.maps.DistanceMatrixStatus.OK ? results : false;
             callback.apply($this, [out, status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
@@ -2022,17 +2049,20 @@
     }
     
     this._getMaxZoom = function(todo, latLng){
-      var callback = ival(todo, 'callback');
+      var callback = ival(todo, 'callback'),
+          that = this;
       if (callback && typeof(callback) === 'function') {
         getMaxZoomService().getMaxZoomAtLatLng(
           latLng, 
           function(result) {
             var zoom = result.status === google.maps.MaxZoomStatus.OK ? result.zoom : false;
             callback.apply($this, [zoom, result.status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
