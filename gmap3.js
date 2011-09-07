@@ -1850,7 +1850,6 @@
      **/
     this.adddirectionsrenderer = function(todo, internal){
       var dr, o = getObject('directionrenderer', todo, 'panelId');
-      store.rm('directionrenderer');
       o.options.map = map;
       dr = new google.maps.DirectionsRenderer(o.options);
       if (o.panelId) {
