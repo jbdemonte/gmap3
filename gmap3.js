@@ -2046,6 +2046,7 @@
      * autofit a map using its overlays (markers, rectangles ...)
      **/
     this.autofit = function(todo, internal){
+      var maxZoom = ival(todo, 'maxZoom',99);
       var names, list, obj, i, j,
           empty = true, 
           bounds = new google.maps.LatLngBounds();
@@ -2082,6 +2083,16 @@
       }
       if (!empty){
         map.fitBounds(bounds);
+        
+        // fitBouds Callback event => detect zoom level and check maxZoom
+        zoomChangeBoundsListener = 
+ 		     google.maps.event.addListener(map, 'bounds_changed', function(event) {
+				        if (this.getZoom()>maxZoom){
+					           this.setZoom(maxZoom);
+				        }
+			        google.maps.event.removeListener(zoomChangeBoundsListener);
+		      });
+        
       }
       if (!internal){
         this._manageEnd(empty ? false : bounds, todo, internal);
