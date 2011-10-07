@@ -2048,7 +2048,8 @@
     this.autofit = function(todo, internal){
       var names, list, obj, i, j,
           empty = true, 
-          bounds = new google.maps.LatLngBounds();
+          bounds = new google.maps.LatLngBounds(),
+          maxZoom = ival(todo, 'maxZoom', null);
 
       names = store.names();
       for(i=0; i<names.length; i++){
@@ -2080,7 +2081,20 @@
           }
         }
       }
-      if (!empty){
+
+      if (!empty && !map.getBounds() || !map.getBounds().equals(bounds)){
+        if (maxZoom !== null){
+          // fitBouds Callback event => detect zoom level and check maxZoom
+          google.maps.event.addListenerOnce(
+            map, 
+            'bounds_changed', 
+            function() {
+                    if (this.getZoom() > maxZoom){
+                this.setZoom(maxZoom);
+                    }
+              }
+          );
+        }
         map.fitBounds(bounds);
       }
       if (!internal){
