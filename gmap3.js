@@ -2082,7 +2082,7 @@
         }
       }
 
-      if (!empty && !map.getBounds() || !map.getBounds().equals(bounds)){
+      if (!empty && !map.getBounds() && !map.getBounds().equals(bounds)){
         if (maxZoom !== null){
           // fitBouds Callback event => detect zoom level and check maxZoom
           google.maps.event.addListenerOnce(
