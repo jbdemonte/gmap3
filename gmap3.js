@@ -1156,7 +1156,7 @@
       if (map){
         delete map;
       }
-      this._callback($this, null, todo);
+      this._callback(null, todo);
       this._end();
     }
     
