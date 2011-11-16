@@ -1164,7 +1164,7 @@
      * Initialize google.maps.Map object
      **/
     this.init = function(todo, internal){
-      var o, k;
+      var o, k, opts;
       if (map) { // already initialized
         return this._end();
       }
