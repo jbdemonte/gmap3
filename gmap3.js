@@ -386,7 +386,7 @@
       return markers[i];
     }
     
-    this.clusters = function(map, radius, force){
+    this.clusters = function(map, radius, maxZoom, force){
       var proj = map.getProjection(),
           nwP = proj.fromLatLngToPoint(
             new google.maps.LatLng(
@@ -403,12 +403,14 @@
           cluster,
           chk,
           lat, lng, keys, cnt,
-          bounds = map.getBounds();
+          bounds = map.getBounds(),
+          noClusters = maxZoom && (maxZoom <= map.getZoom()),
+          chkContain = map.getZoom() > 2;
       
       cnt = 0;
       keys = {};
       for(i = 0; i < markers.length; i++){
-        if (!bounds.contains(markers[i].latLng)){
+        if (chkContain && !bounds.contains(markers[i].latLng)){
           continue;
         }
         p = proj.fromLatLngToPoint(markers[i].latLng);
@@ -420,7 +422,7 @@
         cnt++;
       }
       // check if visible markers have changed 
-      if (!force){
+      if (!force && !noClusters){
         for(k = 0; k < latest.length; k++){
           if( k in keys ){
             cnt--;
@@ -466,44 +468,49 @@
         lng = pos[i][1];
         saved = null;
         
-        do{
-          cluster = {lat:0, lng:0, idx:[]};
-          for(k2 = k; k2<keys.length; k2++){
-            if (!(keys[k2] in unik)){
-              continue;
-            }
-            j = keys[k2];
-            if ( Math.pow(lat - pos[j][0], 2) + Math.pow(lng-pos[j][1], 2) <= radius ){
-              for(j2 in unik[j]){
-                cluster.lat += markers[j2].latLng.lat();
-                cluster.lng += markers[j2].latLng.lng();
-                cluster.idx.push(j2);
+        
+        if (noClusters){
+          saved = {lat:lat, lng:lng, idx:[i]};
+        } else {
+          do{
+            cluster = {lat:0, lng:0, idx:[]};
+            for(k2 = k; k2<keys.length; k2++){
+              if (!(keys[k2] in unik)){
+                continue;
+              }
+              j = keys[k2];
+              if ( Math.pow(lat - pos[j][0], 2) + Math.pow(lng-pos[j][1], 2) <= radius ){
+                for(j2 in unik[j]){
+                  cluster.lat += markers[j2].latLng.lat();
+                  cluster.lng += markers[j2].latLng.lng();
+                  cluster.idx.push(j2);
+                }
               }
             }
-          }
-          cluster.lat /= cluster.idx.length;
-          cluster.lng /= cluster.idx.length;
-          if (!saved){
-            chk = cluster.idx.length > 1;
-            saved = cluster;
-          } else {
-            chk = cluster.idx.length > saved.idx.length;
-            if (chk){
+            cluster.lat /= cluster.idx.length;
+            cluster.lng /= cluster.idx.length;
+            if (!saved){
+              chk = cluster.idx.length > 1;
               saved = cluster;
+            } else {
+              chk = cluster.idx.length > saved.idx.length;
+              if (chk){
+                saved = cluster;
+              }
             }
-          }
-          if (chk){
-            p = proj.fromLatLngToPoint( new google.maps.LatLng(saved.lat, saved.lng) );
-            lat = Math.floor((p.x - nwP.x) * Math.pow(2, z));
-            lng = Math.floor((p.y - nwP.y) * Math.pow(2, z));
-          }
-         } while(chk);
+            if (chk){
+              p = proj.fromLatLngToPoint( new google.maps.LatLng(saved.lat, saved.lng) );
+              lat = Math.floor((p.x - nwP.x) * Math.pow(2, z));
+              lng = Math.floor((p.y - nwP.y) * Math.pow(2, z));
+            }
+          } while(chk);
+        }
          
-         for(k2 = 0; k2 < saved.idx.length; k2++){
+        for(k2 = 0; k2 < saved.idx.length; k2++){
           if (saved.idx[k2] in unik){
             delete(unik[saved.idx[k2]]);
           }
-         }
+        }
         clusters.push(saved);
       }
       return clusters;
@@ -1457,6 +1464,7 @@
       var clusterer, i, latLng, storeId,
           that = this,
           radius = ival(todo, 'radius'),
+          maxZoom = ival(todo, 'maxZoom'),
           markers = ival(todo, 'markers'),
           styles = ival(todo, 'clusters');
       
@@ -1478,7 +1486,7 @@
           latLng = toLatLng(markers[i]);
           clusterer.add(latLng, markers[i]);
         }
-        storeId = this._initClusters(todo, clusterer, radius, styles);
+        storeId = this._initClusters(todo, clusterer, radius, maxZoom, styles);
       }
       
       this._callback(storeId, todo);
@@ -1486,11 +1494,11 @@
     }
     
     
-    this._initClusters = function(todo, clusterer, radius, styles){
+    this._initClusters = function(todo, clusterer, radius, maxZoom, styles){
       var that = this;
       
       clusterer.setRedraw(function(force){
-        var same, clusters = clusterer.clusters(map, radius, force);
+        var same, clusters = clusterer.clusters(map, radius, maxZoom, force);
         if (clusters){
           same = clusterer.freeDiff(clusters);
           that._displayClusters(todo, clusterer, clusters, same, styles);
