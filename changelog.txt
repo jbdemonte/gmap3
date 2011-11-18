@@ -1,6 +1,13 @@
 changelog
 ---------
 
+4.1 - 2011-11-18
+  fixed : getDistance, autoFit, destroy, clustering on zoom < 2
+  added : maxZoom added in autofit and in the clustering function
+  added : repeat getAddress on OVER_QUERY_LIMIT
+  updated : addMarkers can now use address resolution
+  updated : multi DirectionRenderer allowed
+  
 4.0 - 2011-08-23
   code rewritten
   updated : clusters : options can now be defined (allow to change pane, ...)
