@@ -386,7 +386,7 @@
       return markers[i];
     }
     
-    this.clusters = function(map, radius, force){
+    this.clusters = function(map, radius, maxZoom, force){
       var proj = map.getProjection(),
           nwP = proj.fromLatLngToPoint(
             new google.maps.LatLng(
@@ -403,12 +403,14 @@
           cluster,
           chk,
           lat, lng, keys, cnt,
-          bounds = map.getBounds();
+          bounds = map.getBounds(),
+          noClusters = maxZoom && (maxZoom <= map.getZoom()),
+          chkContain = map.getZoom() > 2;
       
       cnt = 0;
       keys = {};
       for(i = 0; i < markers.length; i++){
-        if (!bounds.contains(markers[i].latLng)){
+        if (chkContain && !bounds.contains(markers[i].latLng)){
           continue;
         }
         p = proj.fromLatLngToPoint(markers[i].latLng);
@@ -420,7 +422,7 @@
         cnt++;
       }
       // check if visible markers have changed 
-      if (!force){
+      if (!force && !noClusters){
         for(k = 0; k < latest.length; k++){
           if( k in keys ){
             cnt--;
@@ -466,44 +468,49 @@
         lng = pos[i][1];
         saved = null;
         
-        do{
-          cluster = {lat:0, lng:0, idx:[]};
-          for(k2 = k; k2<keys.length; k2++){
-            if (!(keys[k2] in unik)){
-              continue;
-            }
-            j = keys[k2];
-            if ( Math.pow(lat - pos[j][0], 2) + Math.pow(lng-pos[j][1], 2) <= radius ){
-              for(j2 in unik[j]){
-                cluster.lat += markers[j2].latLng.lat();
-                cluster.lng += markers[j2].latLng.lng();
-                cluster.idx.push(j2);
+        
+        if (noClusters){
+          saved = {lat:lat, lng:lng, idx:[i]};
+        } else {
+          do{
+            cluster = {lat:0, lng:0, idx:[]};
+            for(k2 = k; k2<keys.length; k2++){
+              if (!(keys[k2] in unik)){
+                continue;
+              }
+              j = keys[k2];
+              if ( Math.pow(lat - pos[j][0], 2) + Math.pow(lng-pos[j][1], 2) <= radius ){
+                for(j2 in unik[j]){
+                  cluster.lat += markers[j2].latLng.lat();
+                  cluster.lng += markers[j2].latLng.lng();
+                  cluster.idx.push(j2);
+                }
               }
             }
-          }
-          cluster.lat /= cluster.idx.length;
-          cluster.lng /= cluster.idx.length;
-          if (!saved){
-            chk = cluster.idx.length > 1;
-            saved = cluster;
-          } else {
-            chk = cluster.idx.length > saved.idx.length;
-            if (chk){
+            cluster.lat /= cluster.idx.length;
+            cluster.lng /= cluster.idx.length;
+            if (!saved){
+              chk = cluster.idx.length > 1;
               saved = cluster;
+            } else {
+              chk = cluster.idx.length > saved.idx.length;
+              if (chk){
+                saved = cluster;
+              }
             }
-          }
-          if (chk){
-            p = proj.fromLatLngToPoint( new google.maps.LatLng(saved.lat, saved.lng) );
-            lat = Math.floor((p.x - nwP.x) * Math.pow(2, z));
-            lng = Math.floor((p.y - nwP.y) * Math.pow(2, z));
-          }
-         } while(chk);
+            if (chk){
+              p = proj.fromLatLngToPoint( new google.maps.LatLng(saved.lat, saved.lng) );
+              lat = Math.floor((p.x - nwP.x) * Math.pow(2, z));
+              lng = Math.floor((p.y - nwP.y) * Math.pow(2, z));
+            }
+          } while(chk);
+        }
          
-         for(k2 = 0; k2 < saved.idx.length; k2++){
+        for(k2 = 0; k2 < saved.idx.length; k2++){
           if (saved.idx[k2] in unik){
             delete(unik[saved.idx[k2]]);
           }
-         }
+        }
         clusters.push(saved);
       }
       return clusters;
@@ -946,14 +953,14 @@
       }
     }
     
-  
     /**
-     * returns the geographical coordinates from an address and call internal method
+     * returns the geographical coordinates from an address and call internal or given method
      **/
      this._resolveLatLng = function(todo, method, all, attempt){
       var address = ival(todo, 'address'),
           params,
-          that = this;
+          that = this,
+          fnc = typeof(method) === 'function' ? method : that[method];
       if ( address ){
         if (!attempt){ // convert undefined to int
           attempt = 0;
@@ -967,7 +974,7 @@
           params, 
           function(results, status) {
           if (status === google.maps.GeocoderStatus.OK){
-            that[method](todo, all ? results : results[0].geometry.location);
+            fnc.apply(that, [todo, all ? results : results[0].geometry.location]);
           } else if ( (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) && (attempt < _default.queryLimit.attempt) ){
             setTimeout(function(){
                 that._resolveLatLng(todo, method, all, attempt+1);
@@ -978,14 +985,41 @@
             if (_default.verbose){
               alert('Geocode error : ' + status);
             }
-            that[method](todo, false);
+            fnc.apply(that, [todo, false]);;
           }
         }
       );
       } else {
-        that[method](todo, toLatLng(todo, false, true));
+        fnc.apply(that, [todo, toLatLng(todo, false, true)]);
       }
-    },
+    }
+    
+    /**
+     * returns the geographical coordinates from an array of object using "address" and call internal method
+     **/
+    this._resolveAllLatLng = function(todo, property, method){
+      var that = this,
+          i = -1,
+          solveNext = function(){
+            do{
+              i++;
+            }while( (i < todo[property].length) && !('address' in todo[property][i]) );
+            if (i < todo[property].length){
+              (function(todo){
+                that._resolveLatLng(
+                  todo,
+                  function(todo, latLng){
+                    todo.latLng = latLng;
+                    solveNext.apply(that, []); // solve next or execute exit method
+                  }
+                );
+              })(todo[property][i]);
+            } else {
+              that[method](todo);
+            }
+          };
+      solveNext();
+    }
     
     /**
      * call a function of framework or google map object of the instance
@@ -1129,7 +1163,7 @@
       if (map){
         delete map;
       }
-      this._callback($this, null, todo);
+      this._callback(null, todo);
       this._end();
     }
     
@@ -1137,7 +1171,7 @@
      * Initialize google.maps.Map object
      **/
     this.init = function(todo, internal){
-      var o, k;
+      var o, k, opts;
       if (map) { // already initialized
         return this._end();
       }
@@ -1177,28 +1211,46 @@
     /**
      * returns address from latlng        
      **/
-    this.getaddress = function(todo){
+    this.getaddress = function(todo, attempt){
       var latLng = toLatLng(todo, false, true),
           address = ival(todo, 'address'),
           params = latLng ?  {latLng:latLng} : ( address ? (typeof(address) === 'string' ? {address:address} : address) : null),
-          callback = ival(todo, 'callback');
+          callback = ival(todo, 'callback'),
+          that = this;
+      if (!attempt){ // convert undefined to int
+        attempt = 0;
+      }
       if (params && typeof(callback) === 'function') {
         getGeocoder().geocode(
           params, 
           function(results, status) {
-            var out = status === google.maps.GeocoderStatus.OK ? results : false;
-            callback.apply($this, [out, status]);
-          }
+            if ( (status === google.maps.GeocoderStatus.OVER_QUERY_LIMIT) && (attempt < _default.queryLimit.attempt) ){
+              setTimeout(function(){
+                  that.getaddress(todo, attempt+1);
+                },
+                _default.queryLimit.delay + Math.floor(Math.random() * _default.queryLimit.random)
+              );
+            } else {
+              var out = status === google.maps.GeocoderStatus.OK ? results : false;
+              callback.apply($this, [out, status]);
+              if (!out && _default.verbose){
+                alert('Geocode error : ' + status);
+              }
+              that._end();
+            }
+          } 
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
      * return a route
      **/
     this.getroute = function(todo){
-      var callback = ival(todo, 'callback');
+      var callback = ival(todo, 'callback'),
+          that = this;
       if ( (typeof(callback) === 'function') && todo.options ) {
         todo.options.origin = toLatLng(todo.options.origin, true);
         todo.options.destination = toLatLng(todo.options.destination, true);
@@ -1207,25 +1259,29 @@
           function(results, status) {
             var out = status == google.maps.DirectionsStatus.OK ? results : false;
             callback.apply($this, [out, status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
      * return the elevation of a location
      **/
     this.getelevation = function(todo){
-      var fnc, latLng, path, samples, i,
+      var fnc, path, samples, i,
           locations = [],
           callback = ival(todo, 'callback'),
-          latLng = ival(todo, 'latlng');
+          latLng = ival(todo, 'latlng'),
+          that = this;
           
       if (typeof(callback) === 'function'){
         fnc = function(results, status){
           var out = status === google.maps.ElevationStatus.OK ? results : false;
           callback.apply($this, [out, status]);
+          that._end();
         };
         if (latLng){
           locations.push(toLatLng(latLng));
@@ -1252,8 +1308,9 @@
             }
           }
         }
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
@@ -1261,7 +1318,9 @@
      *      
      **/
     this.getdistance = function(todo){
-      var i, callback = ival(todo, 'callback');
+      var i, 
+          callback = ival(todo, 'callback'),
+          that = this;
       if ( (typeof(callback) === 'function') && todo.options && todo.options.origins && todo.options.destinations ) {
         // origins and destinations are array containing one or more address strings and/or google.maps.LatLng objects
         todo.options.origins = array(todo.options.origins);
@@ -1277,8 +1336,11 @@
           function(results, status) {
             var out = status == google.maps.DistanceMatrixStatus.OK ? results : false;
             callback.apply($this, [out, status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
     }
     
@@ -1341,9 +1403,9 @@
      **/
     this.addmarkers = function(todo){
       if (ival(todo, 'clusters')){
-        this._addclusteredmarkers(todo);
+        this._resolveAllLatLng(todo, 'markers', '_addclusteredmarkers');
       } else {
-        this._addmarkers(todo);
+        this._resolveAllLatLng(todo, 'markers', '_addmarkers');
       }
     }
     
@@ -1402,6 +1464,7 @@
       var clusterer, i, latLng, storeId,
           that = this,
           radius = ival(todo, 'radius'),
+          maxZoom = ival(todo, 'maxZoom'),
           markers = ival(todo, 'markers'),
           styles = ival(todo, 'clusters');
       
@@ -1423,7 +1486,7 @@
           latLng = toLatLng(markers[i]);
           clusterer.add(latLng, markers[i]);
         }
-        storeId = this._initClusters(todo, clusterer, radius, styles);
+        storeId = this._initClusters(todo, clusterer, radius, maxZoom, styles);
       }
       
       this._callback(storeId, todo);
@@ -1431,11 +1494,11 @@
     }
     
     
-    this._initClusters = function(todo, clusterer, radius, styles){
+    this._initClusters = function(todo, clusterer, radius, maxZoom, styles){
       var that = this;
       
       clusterer.setRedraw(function(force){
-        var same, clusters = clusterer.clusters(map, radius, force);
+        var same, clusters = clusterer.clusters(map, radius, maxZoom, force);
         if (clusters){
           same = clusterer.freeDiff(clusters);
           that._displayClusters(todo, clusterer, clusters, same, styles);
@@ -1795,7 +1858,6 @@
      **/
     this.adddirectionsrenderer = function(todo, internal){
       var dr, o = getObject('directionrenderer', todo, 'panelId');
-      store.rm('directionrenderer');
       o.options.map = map;
       dr = new google.maps.DirectionsRenderer(o.options);
       if (o.panelId) {
@@ -2021,17 +2083,20 @@
     }
     
     this._getMaxZoom = function(todo, latLng){
-      var callback = ival(todo, 'callback');
+      var callback = ival(todo, 'callback'),
+          that = this;
       if (callback && typeof(callback) === 'function') {
         getMaxZoomService().getMaxZoomAtLatLng(
           latLng, 
           function(result) {
             var zoom = result.status === google.maps.MaxZoomStatus.OK ? result.zoom : false;
             callback.apply($this, [zoom, result.status]);
+            that._end();
           }
         );
+      } else {
+        this._end();
       }
-      this._end();
     }
     
     /**
