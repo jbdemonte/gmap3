@@ -2147,17 +2147,17 @@
         }
       }
 
-      if (!empty && !map.getBounds() && !map.getBounds().equals(bounds)){
+      if (!empty && (!map.getBounds() || !map.getBounds().equals(bounds))){
         if (maxZoom !== null){
           // fitBouds Callback event => detect zoom level and check maxZoom
           google.maps.event.addListenerOnce(
             map, 
             'bounds_changed', 
             function() {
-                    if (this.getZoom() > maxZoom){
+              if (this.getZoom() > maxZoom){
                 this.setZoom(maxZoom);
-                    }
               }
+            }
           );
         }
         map.fitBounds(bounds);
