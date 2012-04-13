@@ -529,33 +529,7 @@
   /*                           GMAP3 GLOBALS                                 */
   /***************************************************************************/
   
-  var _default = {
-      verbose:false,
-      queryLimit:{
-        attempt:5,
-        delay:250, // setTimeout(..., delay + random);
-        random:250
-      },
-      init:{
-        mapTypeId : google.maps.MapTypeId.ROADMAP,
-        center:[46.578498,2.457275],
-        zoom: 2
-      },
-      classes:{
-        Map               : google.maps.Map,
-        Marker            : google.maps.Marker,
-        InfoWindow        : google.maps.InfoWindow,
-        Circle            : google.maps.Circle,
-        Rectangle         : google.maps.Rectangle,
-        OverlayView       : google.maps.OverlayView,
-        StreetViewPanorama: google.maps.StreetViewPanorama,
-        KmlLayer          : google.maps.KmlLayer,
-        TrafficLayer      : google.maps.TrafficLayer,
-        BicyclingLayer    : google.maps.BicyclingLayer,
-        GroundOverlay     : google.maps.GroundOverlay,
-        StyledMapType     : google.maps.StyledMapType
-      }
-    },
+  var _default = {},
     _properties = ['events','onces','options','apply', 'callback', 'data', 'tag'],
     _noInit = ['init', 'geolatlng', 'getlatlng', 'getroute', 'getelevation', 'getdistance', 'addstyledmap', 'setdefault', 'destroy'],
     _directs = ['get'],
@@ -2175,6 +2149,37 @@
     
   $.fn.gmap3 = function(){
     var i, args, list = [], empty = true, results = [];
+
+    if ($.isEmptyObject(_default)) {
+      _default = {
+        verbose: false,
+        queryLimit: {
+          attempt: 5,
+          delay: 250,
+          random: 250
+        },
+        init: {
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          center: [46.578498, 2.457275],
+          zoom: 2
+        },
+        classes: {
+          Map: google.maps.Map,
+          Marker: google.maps.Marker,
+          InfoWindow: google.maps.InfoWindow,
+          Circle: google.maps.Circle,
+          Rectangle: google.maps.Rectangle,
+          OverlayView: google.maps.OverlayView,
+          StreetViewPanorama: google.maps.StreetViewPanorama,
+          KmlLayer: google.maps.KmlLayer,
+          TrafficLayer: google.maps.TrafficLayer,
+          BicyclingLayer: google.maps.BicyclingLayer,
+          GroundOverlay: google.maps.GroundOverlay,
+          StyledMapType: google.maps.StyledMapType
+        }
+      };
+    }
+
     // store all arguments in a todo list 
     for(i=0; i<arguments.length; i++){
       args = arguments[i] || {};
