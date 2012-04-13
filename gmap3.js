@@ -1528,7 +1528,7 @@
     
     this._displayClusters = function(todo, clusterer, clusters, same, styles){
       var k, i, ii, m, done, obj, shadow, cluster, options, tmp, w, h,
-          atodo,
+          atodo, offset,
           ctodo = hasKey(todo, 'cluster') ? getObject('', ival(todo, 'cluster')) : {},
           mtodo = hasKey(todo, 'marker') ? getObject('', ival(todo, 'marker')) : {};
       for(i=0; i<clusters.length; i++){
@@ -1548,6 +1548,7 @@
           if (styles[m]){ // cluster defined for the current markers count
             w = ival(styles[m], 'width');
             h = ival(styles[m], 'height');
+            offset = ival(styles[m], 'offset') || [-w/2, -h/2];
             
             // create a custom _addOverlay command
             atodo = {};
@@ -1559,8 +1560,8 @@
                   pane: 'overlayLayer',
                   content:styles[m].content.replace('CLUSTER_COUNT', cluster.idx.length),
                   offset:{
-                    x: -w/2,
-                    y: -h/2
+                    x: offset[0],
+                    y: offset[1]
                   }
                 }
               }
