@@ -2225,4 +2225,4 @@
     return this;
   }
 
-}(jQuery));
+})(jQuery);
