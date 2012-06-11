@@ -1511,7 +1511,7 @@
         }
         cluster = clusters[i];
         done = false;
-        if (cluster.idx.length > 1){
+        if (cluster.idx.length > 0){
           // look for the cluster design to use
           m = 0;
           for(k in styles){
@@ -1562,7 +1562,7 @@
             done = true;
           }
         }
-        if (!done){ // cluster not defined (< min count) or = 1 so display all markers of the current cluster
+        if (!done){ // cluster not defined (< min count) so display all markers of the current cluster
           // save the defaults options for the markers
           options = {};
           $.extend(true, options, mtodo.options);
