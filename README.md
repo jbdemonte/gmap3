@@ -8,6 +8,9 @@ gmap3 is a plugin for jQuery which allows you to use the Google maps API easily.
 It provides some powerful functions (clustering...) and some simple which avoid you to write lot of repetitive code.
 However, it allows to use all the Google Maps API.
 
+Licence
+-------
+[GPL v3](http://www.gnu.org/licenses/gpl.html)
 
 Why using gmap3 ?
 -----------------
