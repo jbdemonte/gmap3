@@ -1,0 +1,158 @@
+html, body {
+	height: 100%;
+}
+body {
+	margin: 0px;
+	padding: 0px;
+	color: #362721;
+	font-family: Tahoma;
+	font-size: 13px;
+	background-color: #fff;
+}
+.anaharita {
+	width: 900px;
+	height: 600px;
+}
+#haritaMain {
+	width:775px;
+	border:1px solid #b8b8b8;
+	background:#eeeeee;
+	display:table;
+	margin-top:10px;
+}
+
+#harita {
+	width:780px;
+	border:1px solid #b8b8b8;
+	background:#eeeeee;
+	margin-bottom:10px;
+	display:table;
+}
+
+#haritaPopUp {
+	width: 395px;
+	padding-left:27px;
+	position: absolute;
+	z-index:9999;
+	display:none;
+}
+#haritaPopUp .haritaWrapper {
+	width: 398px;
+	position:absolute;
+	z-index:9;
+	display:table;
+}
+#haritaPopUp .arrow {
+	position:absolute;
+	background:url(images/infowindow_arrow.png) no-repeat;
+	width:27px;
+	height:40px;
+	margin-top:10px;
+	margin-left:-14px;
+	z-index:10;
+}
+#haritaPopUp .haritaWrapper .top {
+	background:url(images/infowindow_top.png) no-repeat;
+	width: 398px;
+	height: 20px;
+}
+#haritaPopUp .haritaWrapper .content {
+	background:url(images/infowindow_content.png) no-repeat left bottom;
+	;
+	width: 398px;
+	z-index: 9999;
+	color: #666;
+	padding-left:18px;
+	padding-bottom:20px;
+}
+#haritaPopUp .haritaWrapper .content .container {
+	width: 355px;
+	min-height:120px;
+	max-height:350px;
+	overflow:auto;
+}
+#haritaPopUp .haritaWrapper .content .container .left {
+	width: 225px;
+	float: left;
+	border-right: 1px dotted #999;
+	display:table;
+	min-height:160px;
+}
+#haritaPopUp .haritaWrapper .content .container .left .magazaadi {
+	width: 225px;
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom: 10px;
+}
+#haritaPopUp .haritaWrapper .content .container .left .magazaadres {
+	width: 225px;
+}
+#haritaPopUp .haritaWrapper .content .container .left .magazabilgi {
+	width: 225px;
+	margin-top: 10px;
+}
+#haritaPopUp .haritaWrapper .content .container .right {
+	width: 100px;
+	float: left;
+	padding-left: 10px;
+	font: 16px;
+	font-weight: bold;
+}
+#haritaPopUp .haritaWrapper .content .container .right .urunlogo {
+	margin-top: 5px;
+	cursor:pointer;
+}
+.accordionButton {
+	font-weight:bold;
+	width: 320px;
+	margin-right:20px;
+	float: left;
+	_float: none;  
+	border-bottom: 1px dotted #333;
+	cursor: pointer;
+	height:20px;
+	padding-bottom:5px;
+	padding-top:5px;
+}
+.accordionContent {
+	clear:both;
+	padding-top:10px;
+}
+.on {
+	font-weight:bold;
+	cursor:pointer;
+	color:#900;
+}
+.over {
+	font-weight:bold;
+}
+.mapCluster {
+	cursor:pointer !important;
+}
+
+.cluster {
+	color:#333;
+	text-align:center;
+	font-family: 'Tahoma';
+	font-size:11px;
+	font-weight:bold;
+	cursor:pointer !important;
+}
+.cluster-1 {
+	background-image:url(images/c_red.png);
+	line-height:30px;
+	width: 50px;
+	height: 50px;
+}
+.cluster-2 {
+	background-image:url(images/c_green.png);
+	line-height:45px;
+	width: 70px;
+	height: 70px;
+}
+.cluster-3 {
+	background-image:url(images/c_blue.png);
+	line-height:65px;
+	width: 90px;
+	height: 90px;
+}

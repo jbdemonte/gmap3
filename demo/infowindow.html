@@ -1,7 +1,8 @@
 <html>    
   <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
-    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script type="text/javascript" src="../gmap3.js"></script> 
     <style>
       .gmap3{
@@ -15,16 +16,20 @@
     <script type="text/javascript">
     
       $(function(){
-  
+        var address = "place de l'étoile, paris";
+        
         $('#test1').gmap3(
-          {
-            action: 'addInfoWindow',
-            address: "place de l'étoile, paris",
-            map:{
-              center: true,
-              zoom: 14
+          { map:{
+              address:address,
+              options:{
+                zoom: 14,
+                opts:{
+                  scrollwheel:true
+                }
+              }
             },
             infowindow:{
+              address:address,
               options:{
                 size: new google.maps.Size(50,50),
                 content: 'Hello World !'
@@ -33,13 +38,9 @@
                 closeclick: function(infowindow){
                   alert('closing : ' + $(this).attr('id') + ' : ' + infowindow.getContent());
                 }
-              },
-              apply:[
-                {action:'setContent', args:['Here is a new content !']}
-              ]
+              }
             }
-          },
-          {action: 'setOptions', args:[{scrollwheel:true}]}
+          }
         );
           
       });

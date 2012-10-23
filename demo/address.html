@@ -1,7 +1,8 @@
 <html>    
   <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
-    <script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script type="text/javascript" src="../gmap3.js"></script> 
     <style>
       body{
@@ -18,44 +19,49 @@
     <script type="text/javascript">
       $(function(){
       
-        $('#test1').gmap3(
-          { action: 'addMarker',
+        $("#test").gmap3({
+          marker:{
             latLng: [46.578498,2.457275],
-            map:{
-              center: true,
-              zoom: 5,
-              mapTypeId: google.maps.MapTypeId.TERRAIN
+            options:{
+              draggable:true
             },
-            marker:{
-              options:{
-                draggable:true
-              },
-              events:{
-                dragend: function(marker){
-                  $(this).gmap3({
-                    action:'getAddress',
+            events:{
+              dragend: function(marker){
+                $(this).gmap3({
+                  getaddress:{
                     latLng:marker.getPosition(),
                     callback:function(results){
-                      var map = $(this).gmap3('get'),
-                          infowindow = $(this).gmap3({action:'get', name:'infowindow'}),
-                          content = results && results[1] ? results && results[1].formatted_address : 'no address';
+                      var map = $(this).gmap3("get"),
+                        infowindow = $(this).gmap3({get:"infowindow"}),
+                        content = results && results[1] ? results && results[1].formatted_address : "no address";
                       if (infowindow){
                         infowindow.open(map, marker);
                         infowindow.setContent(content);
                       } else {
-                        $(this).gmap3({action:'addinfowindow', anchor:marker, options:{content: content}});
+                        $(this).gmap3({
+                          infowindow:{
+                            anchor:marker, 
+                            options:{content: content}
+                          }
+                        });
                       }
                     }
-                  });
-                }
+                  }
+                });
               }
             }
+          },
+          map:{
+            options:{
+              zoom: 5
+            }
           }
-          );
+        });
+        
       });
     </script>
   <body>
-    <div id="test1" class="gmap3"></div>
+    <div id="test" class="gmap3"></div>
     drag & drop the marker to see the address
   </body>
 </html>
