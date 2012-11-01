@@ -1,6 +1,27 @@
 changelog
 ---------
 
+5.0 - 2012-11-01
+  code rewritten
+  updated: API case sensitive
+  updated: tag manage array and callback
+  updated: map initialisation manage heading mapTypeId tilt zoom center
+  updated: streetviewpanorama stored
+  updated: clustering rewrited from scratch : filter, enable/disable, calculator
+  updated: cluster events : sender is not an object which include main overlay and its shadow
+  updated: avoid $.extend deeper to get a faster execution
+  updated: the 3rd parameter in events is now an object which includes id, tag and data
+  updated: kmllayer : remove the options.options level 
+  updated: array of path managed in polygon
+  removed: setDirection, setDirectionsPanel, setstyledmap
+  removed: direct call of google methods to simplify the API
+  added: imagemaptype
+  added: function now manage multiple items : circle, rectangle
+  added: unique id managed (get, clear, exec ...)
+  added: overlayView / clusters : append getPosition function
+  fixed: fix browser bug on geolocalisation (is_echo), defaults values, gears deprecated
+  fixed: reference lost when removing objects
+
 4.1 - 2011-11-18
   fixed : getDistance, autoFit, destroy, clustering on zoom < 2
   added : maxZoom added in autofit and in the clustering function
