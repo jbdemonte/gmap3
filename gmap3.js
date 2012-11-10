@@ -1278,7 +1278,8 @@
   function resolveLatLng(ctx, method, runLatLng, args, attempt){
     var latLng = runLatLng ? toLatLng(args.todo, false, true) : false,
       conf = latLng ?  {latLng:latLng} : (args.todo.address ? (typeof(args.todo.address) === "string" ? {address:args.todo.address} : args.todo.address) : false),
-      cache = conf ? geocoderCache.get(conf) : false;
+      cache = conf ? geocoderCache.get(conf) : false,
+      that = this;
     if (conf){
       attempt = attempt || 0; // convert undefined to int
       if (cache){
