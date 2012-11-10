@@ -29,5 +29,8 @@ Why using gmap3 ?
  - All objects added (markers, overlays ...) can have a unique id and / or have tag(s) in order to access / remove it later ([example of id and tags](http://gmap3.net/en/catalog/16-misc/clear-59))
  - All objects can embed custom data which are sent on events ([example of custom data](http://gmap3.net/en/catalog/10-overlays/marker-41))
 
+### A complete documentation
+ [Read the documentation](http://gmap3.net/en/catalog/)
+
 ### Lot of examples 
  - All the features are visible in a single standalone file in the package
