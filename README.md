@@ -15,19 +15,19 @@ Licence
 Why using gmap3 ?
 -----------------
 
-1. Full jQuery : 
+### Full jQuery : 
  - the same map can be accessed by all css selectors
  - jQuery call can be chained
 
-2. Full Google Maps API
+### Full Google Maps API
  - even if gmap3 provides simplified type, Google Maps formats and objects are still usable
 
-3. Silent use of Google Maps services
+### Silent use of Google Maps services
  - Google Maps services are usable without any code (address resolution, elevation ...) ([example of silent address resolution](http://gmap3.net/en/catalog/10-overlays/marker-41))
 
-4. Unique Id, tags & custom data
+### Unique Id, tags & custom data
  - All objects added (markers, overlays ...) can have a unique id and / or have tag(s) in order to access / remove it later ([example of id and tags](http://gmap3.net/en/catalog/16-misc/clear-59))
  - All objects can embed custom data which are sent on events ([example of custom data](http://gmap3.net/en/catalog/10-overlays/marker-41))
 
-5. Lot of examples 
+### Lot of examples 
  - All the features are visible in a single standalone file in the package
