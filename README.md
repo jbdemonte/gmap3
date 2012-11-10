@@ -15,12 +15,12 @@ Licence
 Why using gmap3 ?
 -----------------
 
-### Full jQuery : 
- - the same map can be accessed by all css selectors
- - jQuery call can be chained
+### Full jQuery
+ - The same map can be accessed by all css selectors
+ - Chainable
 
 ### Full Google Maps API
- - even if gmap3 provides simplified type, Google Maps formats and objects are still usable
+ - Even if gmap3 provides simplified types, Google Maps types and objects are still usable
 
 ### Silent use of Google Maps services
  - Google Maps services are usable without any code (address resolution, elevation ...) ([example of silent address resolution](http://gmap3.net/en/catalog/10-overlays/marker-41))
