@@ -1,7 +1,7 @@
 /*!
  *  GMAP3 Plugin for JQuery 
- *  Version   : 5.0
- *  Date      : 2012-11-01
+ *  Version   : 5.0a
+ *  Date      : 2012-11-10
  *  Licence   : GPL v3 : http://www.gnu.org/licenses/gpl.html  
  *  Author    : DEMONTE Jean-Baptiste
  *  Contact   : jbdemonte@gmail.com
@@ -1469,14 +1469,7 @@
       args = args || {};
       if (map) {
         if (args.todo && args.todo.options){
-          $.each("heading mapTypeId tilt zoom".split(" "), function(i, name){
-            if (name in args.todo.options){
-              map["set" + name.charAt(0).toUpperCase() + name.substr(1)](args.todo.options[name]);
-            }
-          });
-          if (args.todo.options.center){
-            map.setCenter(toLatLng(args.todo.options.center));
-          }
+          map.setOptions(args.todo.options);
         }
       } else {
         var opts = args.opts || $.extend(true, {}, defaults.map, args.todo && args.todo.options ? args.todo.options : {});
