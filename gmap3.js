@@ -92,7 +92,7 @@
   }
 
   function globalId(id, simulate){
-    return id !== undef ? id : "gmap3_" + (simulate ? gId+1 : gId++);
+    return id !== undef ? id : "gmap3_" + (simulate ? gId + 1 : ++gId);
   }
 
   /**
