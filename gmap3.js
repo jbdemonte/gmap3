@@ -1920,7 +1920,8 @@
         // look for the style to use
         if (cnt > 1){
           for(k in styles){
-            if (1 * k > n && k <= cnt){
+            k = 1 * k; // cast to int
+            if (k > n && k <= cnt){
               n = k;
             }
           }
