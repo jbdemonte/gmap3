@@ -1168,11 +1168,11 @@
   function error(){
     if (defaults.verbose){
       var i, err = [];
-      if (window.console && (typeof console.log === "function") ){
+      if (window.console && (typeof console.error === "function") ){
         for(i=0; i<arguments.length; i++){
           err.push(arguments[i]);
         }
-        console.log.apply(console, err);
+        console.error.apply(console, err);
       } else {
         err = "";
         for(i=0; i<arguments.length; i++){
