@@ -1,7 +1,7 @@
 /*!
  *  GMAP3 Plugin for JQuery 
- *  Version   : 5.0a
- *  Date      : 2012-11-10
+ *  Version   : 5.0b
+ *  Date      : 2012-11-17
  *  Licence   : GPL v3 : http://www.gnu.org/licenses/gpl.html  
  *  Author    : DEMONTE Jean-Baptiste
  *  Contact   : jbdemonte@gmail.com
@@ -1920,7 +1920,7 @@
         // look for the style to use
         if (cnt > 1){
           for(k in styles){
-            if (k > n && k <= cnt){
+            if (1 * k > n && k <= cnt){
               n = k;
             }
           }
