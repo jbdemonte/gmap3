@@ -314,33 +314,36 @@
     this.setMap(map);
     
     this.onAdd = function() {
-      var panes = this.getPanes();
-      if (opts.pane in panes) {
-        $(panes[opts.pane]).append($div);
-      }
+        var panes = this.getPanes();
+        if (opts.pane in panes) {
+            $(panes[opts.pane]).append($div);
+        }
+        $.each("dblclick click mouseover mousemove mouseout mouseup mousedown".split(" "), function(i, name){
+            listeners.push(
+                google.maps.event.addDomListener($div[0], name, function(e) {
+                    $.Event(e).stopPropagation();
+                    google.maps.event.trigger(that, name, [e]);
+                })
+            );
+        });
+        listeners.push(
+            google.maps.event.addDomListener($div[0], "contextmenu", function(e) {
+                $.Event(e).stopPropagation();
+                google.maps.event.trigger(that, "rightclick", [e]);
+            })
+        );
+        this.draw();
     };
     this.getPosition = function(){
       return latLng;
     };
     this.draw = function() {
-      var ps = this.getProjection().fromLatLngToDivPixel(latLng);
-      $div
-        .css("left", (ps.x+opts.offset.x) + "px")
-        .css("top" , (ps.y+opts.offset.y) + "px");
-      $.each("dblclick click mouseover mousemove mouseout mouseup mousedown".split(" "), function(i, name){
-        listeners.push(
-          google.maps.event.addDomListener($div[0], name, function(e) {
-            $.Event(e).stopPropagation();
-            google.maps.event.trigger(that, name, [e]);
-          })
-        );
-      });
-      listeners.push(
-        google.maps.event.addDomListener($div[0], "contextmenu", function(e) {
-          $.Event(e).stopPropagation();
-          google.maps.event.trigger(that, "rightclick", [e]);
-        })
-      );
+        this.draw = function() {
+            var ps = this.getProjection().fromLatLngToDivPixel(latLng);
+            $div
+                .css("left", (ps.x+opts.offset.x) + "px")
+                .css("top" , (ps.y+opts.offset.y) + "px");
+        }
     };
     this.onRemove = function() {
       for (var i = 0; i < listeners.length; i++) {
