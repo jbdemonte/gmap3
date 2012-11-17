@@ -1,0 +1,81 @@
+<html>    
+  <head>
+    <script type="text/javascript" src="jquery-1.8.3.min.js"></script>        
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="gmap3.min.js"></script> 
+    <script type="text/javascript" src="jquery-autocomplete.js"></script>
+    <link rel="stylesheet" type="text/css" href="jquery-autocomplete.css"/>
+    <style>
+      *{
+        font-family: verdana;
+        font-size: 12px;
+      }
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1000px;
+        height: 500px;
+      }
+      .ui-menu .ui-menu-item{
+        text-align: left;  
+        font-weight: normal;
+      }
+      .ui-menu .ui-menu-item a.ui-state-hover{
+        border: 1px solid red; 
+        background: #FFBFBF; 
+        color: black;
+        font-weight:bold;
+      }
+    </style>
+    
+    <script type="text/javascript">
+        
+        // note: autocomplete require on / off function so at least jQuery 1.7
+    
+        $(function(){
+            
+            $("#test").gmap3();
+            
+            $("#address").autocomplete({
+                source: function() {
+                    $("#test").gmap3({
+                        getaddress: {
+                            address: $(this).val(),
+                            callback: function(results){
+                                if (!results) return;
+                                $("#address").autocomplete("display", results, false);
+                            }
+                        }
+                    });
+                },
+                cb:{
+                    cast: function(item){
+                        return item.formatted_address;
+                    },
+                    select: function(item) {
+                        $("#test").gmap3({
+                            clear: "marker",
+                            marker: {
+                                latLng: item.geometry.location
+                            },
+                            map:{
+                                options: {
+                                    center: item.geometry.location,
+                                }
+                            }
+                        });
+                    }
+                }
+            })
+            .focus();
+        
+        });
+    </script>
+  <body>
+    <input type="text" id="address" size="60">
+    <div id="test" class="gmap3"></div>
+  </body>
+</html>
