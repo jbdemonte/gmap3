@@ -1839,12 +1839,16 @@
       var id, x= 0, y=0, $content,
         $div = $(document.createElement("div"));
       
-      $div
-        .css("position", "absolute")
-        .css("z-index", "1000");
+      $div.css({
+        position: "absolute",
+        zIndex: 1000,
+        visibility: "hidden"
+      });
         
       if (args.opts.content){
         $content = $(args.opts.content);
+        $div.append($content);
+        $this.first().prepend($div);
         
         if (args.opts.left !== undef){
           x = args.opts.left;
@@ -1862,13 +1866,13 @@
           y = ($this.height() - $content.height()) / 2
         }
       
-        $div
-          .css("top", y+"px")
-          .css("left", x+"px")
-          .append($content);
+        $div.css({
+            top: y,
+            left: x,
+            visibility: "visible"
+        });
       }
-      
-      $this.first().prepend($div);
+
       id = store.add(args, "panel", $div);
       manageEnd(args, $div, id);
       $div = null; // memory leak
