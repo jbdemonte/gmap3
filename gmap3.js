@@ -733,18 +733,11 @@
       }
       
       // calculate positions of "visibles" markers (in extended bounds)
-      $.each(todos, function(index, todo){
-        if (!todo){ // marker removed
-          return;
+      for(i=0; i<todos.length; i++){
+        if (todos[i] && (!check || bounds.contains(todos[i].options.position)) && (!ffilter || ffilter(values[i]))){
+          keys.push(i);
         }
-        if (check && (!bounds.contains(todo.options.position))){
-          return;
-        }
-        if (ffilter && !ffilter(values[index])){
-          return;
-        }
-        keys.push(index);
-      });
+      }
       
       // for each "visible" marker, search its neighbors to create a cluster
       // we can't do a classical "for" loop, because, analysis can bypass a marker while focusing on cluster
