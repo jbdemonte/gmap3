@@ -145,6 +145,13 @@
                 content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
                 width: 66,
                 height: 65
+              },
+              events: {
+                click: function(cluster) {
+                  var map = $(this).gmap3("get");
+                  map.setCenter(cluster.main.getPosition());
+                  map.setZoom(map.getZoom() + 1);
+                }
               }
             },
             options: {
