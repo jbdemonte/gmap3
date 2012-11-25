@@ -574,7 +574,7 @@
     };
     
     // lock the redraw
-    this.beginUpdate = function () {
+    this.beginUpdate = function(){
       updating = true;
     };
     
@@ -585,6 +585,15 @@
         redraw();
       }
     };
+
+    // extends current bounds with internal markers
+    this.autofit = function(bounds){
+      for(var i=0; i<todos.length; i++){
+        if (todos[i]){
+          bounds.extend(todos[i].options.position);
+        }
+      }
+    }
     
     // bind events
     function main(){
@@ -2132,7 +2141,6 @@
      **/
     this.autofit = function(args){
       var bounds = new google.maps.LatLngBounds();
-      
       $.each(store.all(), function(i, obj){
         if (obj.getPosition){
           bounds.extend(obj.getPosition());
@@ -2151,6 +2159,11 @@
           });
         } else if (obj.getCenter){
           bounds.extend(obj.getCenter());
+        } else if (obj instanceof Clusterer){
+          obj = store.getById(obj.id(), true);
+          if (obj){
+            obj.autofit(bounds);
+          }
         }
       });
 
