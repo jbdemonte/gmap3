@@ -250,7 +250,7 @@
     }
     
     // create an extended options
-    todo.options = $.extend({}, args.todo.options || {}, value.options || {});
+    todo.options = $.extend({}, args.opts || {}, value.options || {});
     
     return todo;
   }
@@ -1571,20 +1571,38 @@
      * add an overlay
      **/
     this.overlay = function(args, internal){
-      var id, obj,
-        $div = $(document.createElement("div"))
-          .css("border", "none")
-          .css("borderWidth", "0px")
-          .css("position", "absolute");
-      $div.append(args.opts.content);
-      OverlayView.prototype = new defaults.classes.OverlayView();
-      obj = new OverlayView(map, args.opts, args.latLng, $div);
-      $div = null; // memory leak
-      if (internal){
-        return obj;
+      var objs = [], multiple = "values" in args.todo;
+      if (!multiple){
+        args.todo.values = [{latLng: args.latLng, options: args.opts}];
       }
-      id = store.add(args, "overlay", obj);
-      manageEnd(args, obj, id);
+      if (!args.todo.values.length){
+        manageEnd(args, false);
+        return;
+      }
+      if (!OverlayView.__initialised) {
+        OverlayView.prototype = new defaults.classes.OverlayView();
+        OverlayView.__initialised = true;
+      }
+      $.each(args.todo.values, function(i, value){
+        var id, obj, todo = tuple(args, value),
+            $div = $(document.createElement("div")).css({
+              border: "none",
+              borderWidth: "0px",
+              position: "absolute"
+            });
+        $div.append(todo.options.content);
+        obj = new OverlayView(map, todo.options, toLatLng(todo) || toLatLng(value), $div);
+        objs.push(obj);
+        $div = null; // memory leak
+        if (!internal){
+          id = store.add(args, "overlay", obj);
+          attachEvents($this, {todo:todo}, obj, id);
+        }
+      });
+      if (internal){
+        return objs[0];
+      }
+      manageEnd(args, multiple ? objs : objs[0]);
     };
     
     /**
