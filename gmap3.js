@@ -323,6 +323,7 @@
                 google.maps.event.addDomListener($div[0], name, function(e) {
                     $.Event(e).stopPropagation();
                     google.maps.event.trigger(that, name, [e]);
+                    that.draw();
                 })
             );
         });
@@ -330,20 +331,18 @@
             google.maps.event.addDomListener($div[0], "contextmenu", function(e) {
                 $.Event(e).stopPropagation();
                 google.maps.event.trigger(that, "rightclick", [e]);
+                that.draw();
             })
         );
-        this.draw();
     };
     this.getPosition = function(){
-      return latLng;
+        return latLng;
     };
     this.draw = function() {
-        this.draw = function() {
-            var ps = this.getProjection().fromLatLngToDivPixel(latLng);
-            $div
-                .css("left", (ps.x+opts.offset.x) + "px")
-                .css("top" , (ps.y+opts.offset.y) + "px");
-        }
+        var ps = this.getProjection().fromLatLngToDivPixel(latLng);
+        $div
+            .css("left", (ps.x+opts.offset.x) + "px")
+            .css("top" , (ps.y+opts.offset.y) + "px");
     };
     this.onRemove = function() {
       for (var i = 0; i < listeners.length; i++) {
