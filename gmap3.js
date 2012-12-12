@@ -1972,7 +1972,7 @@
           obj = that.overlay({todo:atodo, opts:atodo.options, latLng:toLatLng(cluster)}, true);
           
           atodo.options.pane = "floatShadow";
-          atodo.options.content = $(document.createElement("div")).width(style.width+"px").height(style.height+"px");
+          atodo.options.content = $(document.createElement("div")).width(style.width+"px").height(style.height+"px").css({cursor:"pointer"});
           shadow = that.overlay({todo:atodo, opts:atodo.options, latLng:toLatLng(cluster)}, true);
           
           // store data to the clusterer
