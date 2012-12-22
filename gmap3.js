@@ -1480,6 +1480,9 @@
       args = args || {};
       if (map) {
         if (args.todo && args.todo.options){
+          if (args.todo.options.center) {
+            args.todo.options.center = toLatLng(args.todo.options.center);
+          }
           map.setOptions(args.todo.options);
         }
       } else {
