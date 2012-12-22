@@ -104,37 +104,36 @@
    * ]
    **/
   function attachEvents($container, args, sender, id, senders){
-    if (!(args.todo.events || args.todo.onces)){
-        return;
-    }
-    var context = {
-      id: id,
-      data: args.todo.data,
-      tag: args.todo.tag
-    };
-    if (args.todo.events){
-      $.each(args.todo.events, function(name, f){
-        var that = $container, fn = f;
-        if ($.isArray(f)) {
-          that = f[0];
-          fn = f[1]
-        }
-        google.maps.event.addListener(sender, name, function(event) {
-          fn.apply(that, [senders ? senders : sender, event, context]);
+    if (args.todo.events || args.todo.onces) {
+      var context = {
+        id: id,
+        data: args.todo.data,
+        tag: args.todo.tag
+      };
+      if (args.todo.events){
+        $.each(args.todo.events, function(name, f){
+          var that = $container, fn = f;
+          if ($.isArray(f)) {
+            that = f[0];
+            fn = f[1]
+          }
+          google.maps.event.addListener(sender, name, function(event) {
+            fn.apply(that, [senders ? senders : sender, event, context]);
+          });
         });
-      });
-    }
-    if (args.todo.onces){
-      $.each(args.todo.onces, function(name, f){
-        var that = $container, fn = f;
-        if ($.isArray(f)) {
-          that = f[0];
-          fn = f[1]
-        }
-        google.maps.event.addListenerOnce(sender, name, function(event) {
-          fn.apply(that, [senders ? senders : sender, event, context]);
+      }
+      if (args.todo.onces){
+        $.each(args.todo.onces, function(name, f){
+          var that = $container, fn = f;
+          if ($.isArray(f)) {
+            that = f[0];
+            fn = f[1]
+          }
+          google.maps.event.addListenerOnce(sender, name, function(event) {
+            fn.apply(that, [senders ? senders : sender, event, context]);
+          });
         });
-      });
+      }
     }
   }
 
