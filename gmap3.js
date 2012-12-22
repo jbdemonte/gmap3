@@ -1910,13 +1910,15 @@
     function createClusterer(raw){
       var internalClusterer = new InternalClusterer($this, map, raw.radius, raw.maxZoom),
         todo = {},
-        styles = {}, 
+        styles = {},
+        thresholds = [],
         isInt = /^[0-9]+$/,
         calculator,
         k;
 
       for(k in raw){
         if (isInt.test(k)){
+          thresholds.push(1*k); // cast to int
           styles[k] = raw[k];
           styles[k].width = styles[k].width || 0;
           styles[k].height = styles[k].height || 0;
@@ -1924,6 +1926,7 @@
           todo[k] = raw[k];
         }
       }
+      thresholds.sort(function (a, b) { return a > b});
       
       // external calculator
       if (todo.calculator){
@@ -1947,18 +1950,16 @@
       
       // set display function
       internalClusterer.display(function(cluster){
-        var k, style, n = 0, atodo, obj, offset,
+        var i, style, atodo, obj, offset,
           cnt = calculator(cluster.indexes);
         
         // look for the style to use
-        if (cnt > 1){
-          for(k in styles){
-            k = 1 * k; // cast to int
-            if (k > n && k <= cnt){
-              n = k;
+        if (raw.force || cnt > 1) {
+          for(i = 0; i < thresholds.length; i++) {
+            if (thresholds[i] <= cnt) {
+              style = styles[thresholds[i]];
             }
           }
-          style = styles[n];
         }
         
         if (style){
