@@ -602,7 +602,7 @@
           bounds.extend(todos[i].options.position);
         }
       }
-    }
+    };
     
     // bind events
     function main(){
