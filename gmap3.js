@@ -104,24 +104,35 @@
    * ]
    **/
   function attachEvents($container, args, sender, id, senders){
-    if (args.todo.events || args.todo.onces){
-      var context = {
-        id: id,
-        data: args.todo.data,
-        tag: args.todo.tag
-      };
+    if (!(args.todo.events || args.todo.onces)){
+        return;
     }
+    var context = {
+      id: id,
+      data: args.todo.data,
+      tag: args.todo.tag
+    };
     if (args.todo.events){
       $.each(args.todo.events, function(name, f){
+        var that = $container, fn = f;
+        if ($.isArray(f)) {
+          that = f[0];
+          fn = f[1]
+        }
         google.maps.event.addListener(sender, name, function(event) {
-          f.apply($container, [senders ? senders : sender, event, context]);
+          fn.apply(that, [senders ? senders : sender, event, context]);
         });
       });
     }
     if (args.todo.onces){
       $.each(args.todo.onces, function(name, f){
+        var that = $container, fn = f;
+        if ($.isArray(f)) {
+          that = f[0];
+          fn = f[1]
+        }
         google.maps.event.addListenerOnce(sender, name, function(event) {
-          f.apply($container, [senders ? senders : sender, event, context]);
+          fn.apply(that, [senders ? senders : sender, event, context]);
         });
       });
     }
@@ -1440,18 +1451,15 @@
      * execute callback functions 
      **/
     function callback(args){
-      var i, params = []; 
-      for(i=1; i<arguments.length; i++){
-        params.push(arguments[i]);
-      }
-      if (typeof args.todo.callback === "function") {
-        args.todo.callback.apply($this, params);
-      } else if (typeof args.todo.callback === "object") {
-        $.each(args.todo.callback, function(i, cb){
-          if (typeof cb === "function") {
-            cb.apply($this, params);
+      if (args.todo.callback) {
+        var params = Array.prototype.slice.call(arguments, 1);
+        if (typeof args.todo.callback === "function") {
+          args.todo.callback.apply($this, params);
+        } else if ($.isArray(args.todo.callback)) {
+          if (typeof args.todo.callback[1] === "function") {
+            args.todo.callback[1].apply(args.todo.callback[0], params);
           }
-        });
+        }
       }
     }
     
