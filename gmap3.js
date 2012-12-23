@@ -441,11 +441,23 @@
       
     main();
 
+    function prepareMarker(index) {
+      if (!markers[index]) {
+        delete todos[index].options.map;
+        markers[index] = new defaults.classes.Marker(todos[index].options);
+        attachEvents($container, {todo: todos[index]}, markers[index], todos[index].id);
+      }
+    }
+
     /**
      * return a marker by its id, null if not yet displayed and false if no exist or removed
      **/
     this.getById = function(id){
-      return id in ids ? markers[ids[id]] : false;
+      if (id in ids) {
+        prepareMarker(ids[id]);
+        return  markers[ids[id]];
+      }
+      return false;
     };
     
     /**
@@ -509,10 +521,19 @@
     this.value = function(index){
       return values[index];
     };
-    
+
     // return a marker by its index
     this.marker = function(index){
-      return markers[index];
+      if (index in markers) {
+        prepareMarker(index);
+        return  markers[index];
+      }
+      return false;
+    };
+
+    // return a marker by its index
+    this.markerIsSet = function(index){
+      return Boolean(markers[index]);
     };
     
     // store a new marker instead if the default "false"
@@ -1999,7 +2020,7 @@
           };
           $.each(cluster.indexes, function(i, index){
             todo.data.markers.push(internalClusterer.value(index));
-            if (internalClusterer.marker(index)){
+            if (internalClusterer.markerIsSet(index)){
               internalClusterer.marker(index).setMap(null);
             }
           });
@@ -2007,14 +2028,7 @@
           internalClusterer.store(cluster, obj, shadow);
         } else {
           $.each(cluster.indexes, function(i, index){
-            if (internalClusterer.marker(index)){
-              internalClusterer.marker(index).setMap(map);
-            } else {
-              var todo = internalClusterer.todo(index),
-                marker = new defaults.classes.Marker(todo.options);
-              internalClusterer.setMarker(index, marker);
-              attachEvents($this, {todo:todo}, marker, todo.id);
-            }
+            internalClusterer.marker(index).setMap(map);
           });
         }
       });
