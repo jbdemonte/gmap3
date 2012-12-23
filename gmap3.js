@@ -422,7 +422,7 @@
    *      = null : marker exist but has not been displayed yet
    *      = false : marker has been removed       
    **/
-  function InternalClusterer($container, map, radius, maxZoom){
+  function InternalClusterer($container, map, raw){
     var updating = false,
       updated = false,
       redrawing = false,
@@ -435,7 +435,7 @@
       markers = [], // index => marker
       todos = [],   // index => todo or null if removed
       values = [],  // index => value
-      overlay = newEmptyOverlay(map, radius),
+      overlay = newEmptyOverlay(map, raw.radius),
       timer, projection,
       ffilter, fdisplay, ferror; // callback function
       
@@ -734,8 +734,8 @@
     // generate bounds extended by radius
     function extendsBounds(latLng) {
       var p = projection.fromLatLngToDivPixel(latLng),
-        ne = projection.fromDivPixelToLatLng(new google.maps.Point(p.x+radius, p.y-radius)),
-        sw = projection.fromDivPixelToLatLng(new google.maps.Point(p.x-radius, p.y+radius));
+        ne = projection.fromDivPixelToLatLng(new google.maps.Point(p.x+raw.radius, p.y-raw.radius)),
+        sw = projection.fromDivPixelToLatLng(new google.maps.Point(p.x-raw.radius, p.y+raw.radius));
       return new google.maps.LatLngBounds(sw, ne);
     }
     
@@ -747,10 +747,10 @@
       
       var keys = [], used = {},
         zoom = map.getZoom(),
-        forceDisabled = (maxZoom !== undef) && (zoom > maxZoom),
+        forceDisabled = ("maxZoom" in raw) && (zoom > raw.maxZoom),
         previousKeys = getStoreKeys(),
-        i, j, k, lat, lng, indexes, previous, check = false, bounds, cluster;
-        
+        i, j, k, lat, lng, indexes, previous, check = false, bounds, cluster, position;
+
       // reset flag
       updated = false;
       
@@ -796,10 +796,11 @@
               }
               lat /= previous.length;
               lng /= previous.length;
-              bounds = extendsBounds(new google.maps.LatLng(lat, lng));
+              position = new google.maps.LatLng(lat, lng);
             } else {
-              bounds = extendsBounds(todos[ keys[i] ].options.position);
+              position = todos[ keys[i] ].options.position;
             }
+            bounds = extendsBounds(position);
             
             for(j=i; j<keys.length; j++){
               if (used[j]){
@@ -809,7 +810,7 @@
                 indexes.push(j);
               }
             }
-          } while( (previous.length < indexes.length) && (indexes.length > 1) );
+          } while( (previous.length < indexes.length) && (indexes.length > 1) && !raw.fast);
         } else {
           for(j=i; j<keys.length; j++){
             if (used[j]){
@@ -821,17 +822,26 @@
         }
 
         cluster = {indexes:[], ref:[]};
-        lat = lng = 0;
-        for(k=0; k<indexes.length; k++){
-          used[ indexes[k] ] = true;
-          cluster.indexes.push(keys[indexes[k]]);
-          cluster.ref.push(keys[indexes[k]]);
-          lat += todos[ keys[indexes[k]] ].options.position.lat();
-          lng += todos[ keys[indexes[k]] ].options.position.lng();
+        if (raw.fast) {
+          for(k=0; k<indexes.length; k++){
+            used[ indexes[k] ] = true;
+            cluster.indexes.push(keys[indexes[k]]);
+            cluster.ref.push(keys[indexes[k]]);
+          }
+          cluster.latLng = position;
+        } else {
+          lat = lng = 0;
+          for(k=0; k<indexes.length; k++){
+            used[ indexes[k] ] = true;
+            cluster.indexes.push(keys[indexes[k]]);
+            cluster.ref.push(keys[indexes[k]]);
+            lat += todos[ keys[indexes[k]] ].options.position.lat();
+            lng += todos[ keys[indexes[k]] ].options.position.lng();
+          }
+          lat /= indexes.length;
+          lng /= indexes.length;
+          cluster.latLng = new google.maps.LatLng(lat, lng);
         }
-        lat /= indexes.length;
-        lng /= indexes.length;
-        cluster.latLng = new google.maps.LatLng(lat, lng);
         cluster.ref = cluster.ref.join("-");
         
         if (cluster.ref in previousKeys){ // cluster doesn't change
@@ -1938,7 +1948,7 @@
      * Create an InternalClusterer object
      **/
     function createClusterer(raw){
-      var internalClusterer = new InternalClusterer($this, map, raw.radius, raw.maxZoom),
+      var internalClusterer = new InternalClusterer($this, map, raw),
         todo = {},
         styles = {},
         thresholds = [],
