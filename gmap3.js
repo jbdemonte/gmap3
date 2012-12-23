@@ -395,7 +395,7 @@
    * Usefull to get a projection
    * => done in a function, to let dead-code analyser works without google library loaded    
    **/
-  function newEmptyOverlay(map){
+  function newEmptyOverlay(map, radius){
     function Overlay(){ 
       this.onAdd = function(){};
       this.onRemove = function(){};
@@ -435,7 +435,7 @@
       markers = [], // index => marker
       todos = [],   // index => todo or null if removed
       values = [],  // index => value
-      overlay = newEmptyOverlay(map),
+      overlay = newEmptyOverlay(map, radius),
       timer, projection,
       ffilter, fdisplay, ferror; // callback function
       
@@ -767,7 +767,7 @@
             indexes = [];
             
             if (previous.length){
-            // re-evaluates center
+            // re-evaluate the center
               lat = lng = 0;
               for(k=0; k<previous.length; k++){
                 lat += todos[ keys[previous[k]] ].options.position.lat();
@@ -798,13 +798,19 @@
             break;
           }
         }
-        
-        cluster = {latLng:bounds.getCenter(), indexes:[], ref:[]};
+
+        cluster = {indexes:[], ref:[]};
+        lat = lng = 0;
         for(k=0; k<indexes.length; k++){
           used[ indexes[k] ] = true;
           cluster.indexes.push(keys[indexes[k]]);
           cluster.ref.push(keys[indexes[k]]);
+          lat += todos[ keys[indexes[k]] ].options.position.lat();
+          lng += todos[ keys[indexes[k]] ].options.position.lng();
         }
+        lat /= indexes.length;
+        lng /= indexes.length;
+        cluster.latLng = new google.maps.LatLng(lat, lng);
         cluster.ref = cluster.ref.join("-");
         
         if (cluster.ref in previousKeys){ // cluster doesn't change
