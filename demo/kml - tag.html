@@ -23,7 +23,7 @@
         map:{
           options:{
             mapTypeId : google.maps.MapTypeId.ROADMAP, 
-            center:{lat: 40.65,lng: -73.95}, 
+            center: [48.749907,2.350081], 
             zoom: 12
           }
         }
@@ -36,9 +36,7 @@
             tag: $chk.attr("id"),
             options:{
               url: $chk.data("url"),
-              opts:{
-                suppressInfoWindows: true
-              }
+              preserveViewport: true
             },
             events:{
               click: function(kml, event){
@@ -67,8 +65,8 @@
   </head>
     
   <body>
-    <input type="checkbox" id="rungis" data-url="http://www.gmap3.net/kml/rungis.kml" checked>rungis
-    <input type="checkbox" id="sogaris" data-url="http://www.gmap3.net/kml/sogaris.kml" checked>sogaris
+    <input type="checkbox" id="rungis" data-url="http://gmap3.net/kml/rungis.kml" checked>rungis
+    <input type="checkbox" id="sogaris" data-url="http://gmap3.net/kml/sogaris.kml" checked>sogaris
     <div id="test1" class="gmap3"></div>
     <div id="test1-text"></div>
   </body>

@@ -96,6 +96,29 @@
   }
 
   /**
+   * Return true if current version of Google Maps is equal or above to these in parameter
+   * @param version {string} Minimal version required
+   * @return {Boolean}
+   */
+  function googleVersionMin(version) {
+    var toInt = function(v){return parseInt(v, 10);},
+        // extract the google map version
+        gmVersion = google.maps.version.split(".").map(toInt),
+        i;
+    version = version.split(".").map(toInt);
+    for(i = 0; i < version.length; i++) {
+        if (gmVersion.hasOwnProperty(i)) {
+            if (gmVersion[i] < version[i]) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    return true;
+  }
+
+  /**
    * attach events from a container to a sender 
    * todo[
    *  events => { eventName => function, }
@@ -1884,15 +1907,25 @@
         return;
       }
       $.each(args.todo.values, function(i, value){
-        var id, obj, todo = tuple(args, value);
+        var id, obj, options, todo = tuple(args, value);
         if (!map){
           newMap();
         }
-        if (!todo.options.opts) {
-            todo.options.opts = {};
+        options = todo.options;
+        // compatibility 5.0-
+        if (todo.options.opts) {
+            options = todo.options.opts;
+            if (todo.options.url) {
+                options.url = todo.options.url;
+            }
         }
-        todo.options.opts.map = map;
-        obj = new defaults.classes.KmlLayer(todo.options.url, todo.options.opts);
+        // -- end --
+        options.map = map;
+        if (googleVersionMin("3.10")) {
+            obj = new defaults.classes.KmlLayer(options);
+        } else {
+            obj = new defaults.classes.KmlLayer(options.url, options);
+        }
         objs.push(obj);
         id = store.add({todo:todo}, "kmllayer", obj);
         attachEvents($this, {todo:todo}, obj, id);

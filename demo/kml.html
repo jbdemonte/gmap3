@@ -23,16 +23,14 @@
         { map:{
             options:{
               mapTypeId : google.maps.MapTypeId.ROADMAP, 
-              center:{lat: 40.65,lng: -73.95}, 
+              center: [48.749907,2.350081], 
               zoom: 12
             }
           },
           kmllayer:{
             options:{
-              url: "http://www.gmap3.net/kml/rungis.kml",
-              opts:{
-                suppressInfoWindows: true
-              }
+              url: "http://gmap3.net/kml/rungis.kml",
+              preserveViewport: true
             },
             events:{
               click: function(kml, event){
