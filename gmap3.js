@@ -1888,6 +1888,9 @@
         if (!map){
           newMap();
         }
+        if (!todo.options.opts) {
+            todo.options.opts = {};
+        }
         todo.options.opts.map = map;
         obj = new defaults.classes.KmlLayer(todo.options.url, todo.options.opts);
         objs.push(obj);
