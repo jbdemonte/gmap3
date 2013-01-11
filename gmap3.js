@@ -455,6 +455,7 @@
       events =  [],
       store = {},   // combin of index (id1-id2-...) => object
       ids = {},     // unique id => index
+      idxs = {},    // index => unique id
       markers = [], // index => marker
       todos = [],   // index => todo or null if removed
       values = [],  // index => value
@@ -482,28 +483,67 @@
       }
       return false;
     };
+
+    /**
+     * remove one object from the store
+     **/
+    this.rm = function (id) {
+      var index = ids[id];
+      if (markers[index]){ // can be null
+        markers[index].setMap(null);
+      }
+      delete markers[index];
+      markers[index] = false;
+
+      delete todos[index];
+      todos[index] = false;
+
+      delete values[index];
+      values[index] = false;
+
+      delete ids[id];
+      delete idxs[index];
+      updated = true;
+    };
     
     /**
      * remove a marker by its id
      **/
     this.clearById = function(id){
       if (id in ids){
-        var index = ids[id];
-        
-        if (markers[index]){ // can be null
-          markers[index].setMap(null);
+        this.rm(id);
+        return true;
+      }
+    };
+
+    /**
+     * remove objects from the store
+     **/
+    this.clear = function(last, first, tag){
+      var start, stop, step, index, i,
+          list = [],
+          check = ftag(tag);
+      if (last) {
+        start = todos.length - 1;
+        stop = -1;
+        step = -1;
+      } else {
+        start = 0;
+        stop =  todos.length;
+        step = 1;
+      }
+      for (index = start; index != stop; index += step) {
+        if (todos[index]) {
+          if (!check || check(todos[index].tag)){
+            list.push(idxs[index]);
+            if (first || last) {
+              break;
+            }
+          }
         }
-        delete markers[index];
-        markers[index] = false;
-        
-        delete todos[index];
-        todos[index] = false;
-        
-        delete values[index];
-        values[index] = false;
-        
-        delete ids[id];
-        updated = true;
+      }
+      for (i = 0; i < list.length; i++) {
+        this.rm(list[i]);
       }
     };
     
@@ -512,6 +552,7 @@
       todo.id = globalId(todo.id);
       this.clearById(todo.id);
       ids[todo.id] = markers.length;
+      idxs[markers.length] = todo.id;
       markers.push(null); // null = marker not yet created / displayed
       todos.push(todo);
       values.push(value);
@@ -529,6 +570,7 @@
       todo.options.position = marker.getPosition();
       attachEvents($container, {todo:todo}, marker, todo.id);
       ids[todo.id] = markers.length;
+      idxs[markers.length] = todo.id;
       markers.push(marker);
       todos.push(todo);
       values.push(todo.data || {});
@@ -600,6 +642,7 @@
       values = [];
       
       ids = {};
+      idxs = {};
     };
     
     // link the display function
@@ -920,10 +963,21 @@
       return internalClusterer.getById(id);
     };
     this.clearById = function(id, lock){
+      var result;
       if (!lock) {
         internalClusterer.beginUpdate();
       }
-      internalClusterer.clearById(id);
+      result = internalClusterer.clearById(id);
+      if (!lock) {
+        internalClusterer.endUpdate();
+      }
+      return result;
+    };
+    this.clear = function(last, first, tag, lock){
+      if (!lock) {
+        internalClusterer.beginUpdate();
+      }
+      internalClusterer.clear(last, first, tag);
       if (!lock) {
         internalClusterer.endUpdate();
       }
@@ -936,29 +990,6 @@
   function Store(){
     var store = {}, // name => [id, ...]
       objects = {}; // id => object
-    
-    function ftag(tag){
-      if (tag){
-        if (typeof tag === "function"){
-          return tag;
-        }
-        tag = array(tag);
-        return function(val){
-          if (val === undef){
-            return false;
-          }
-          if (typeof val === "object"){
-            for(var i=0; i<val.length; i++){
-              if($.inArray(val[i], tag) >= 0){
-                return true;
-              }
-            }
-            return false;
-          }
-          return $.inArray(val, tag) >= 0;
-        }
-      }
-    }
 
     function normalize(res) {
       return {
@@ -1172,18 +1203,25 @@
         list = array(list);
       }
       for(i=0; i<list.length; i++){
-        if (list[i]){
-          name = list[i];
-          if (!store[name]){
-            continue;
-          }
-          if (last){
-            this.rm(name, check, true);
-          } else if (first){
-            this.rm(name, check, false);
-          } else { // all
-            while(this.rm(name, check, false));
-          }
+        name = list[i];
+        if (last){
+          this.rm(name, check, true);
+        } else if (first){
+          this.rm(name, check, false);
+        } else { // all
+          while(this.rm(name, check, false));
+        }
+      }
+    };
+
+    /**
+     * remove object from a container object in the store by its tags
+     * ! for now, only cluster manage this feature
+     **/
+    this.objClear = function(list, last, first, tag){
+      if (store["clusterer"] && ($.inArray("marker", list) || !list.length)) {
+        for(var idx in store["clusterer"]){
+          objects[store["clusterer"][idx]].obj.clear(last, first, tag);
         }
       }
     };
@@ -1283,6 +1321,32 @@
       }
     }
     return a;
+  }
+
+  /**
+   * create a function to check a tag
+   */
+  function ftag(tag){
+    if (tag){
+      if (typeof tag === "function"){
+        return tag;
+      }
+      tag = array(tag);
+      return function(val){
+        if (val === undef){
+          return false;
+        }
+        if (typeof val === "object"){
+          for(var i=0; i<val.length; i++){
+            if($.inArray(val[i], tag) >= 0){
+              return true;
+            }
+          }
+          return false;
+        }
+        return $.inArray(val, tag) >= 0;
+      }
+    }
   }
   
   /**
@@ -2267,10 +2331,11 @@
       }
       if (args.todo.id){
         $.each(array(args.todo.id), function(i, id){
-          store.clearById(id);
+          store.clearById(id) || store.objClearById(id);
         });
       } else {
         store.clear(array(args.todo.name), args.todo.last, args.todo.first, args.todo.tag);
+        store.objClear(array(args.todo.name), args.todo.last, args.todo.first, args.todo.tag);
       }
       manageEnd(args, true);
     };
