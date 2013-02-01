@@ -1649,13 +1649,12 @@
       if (!multiple){
         if (args.latLng) {
           args.opts.position = args.latLng;
-        } else if (args.opts.position){
-          args.opts.position = toLatLng(args.opts.position);
         }
         args.todo.values = [{options:args.opts}];
       }
       $.each(args.todo.values, function(i, value){
         var id, obj, todo = tuple(args, value);
+        todo.options.position = todo.options.position ? toLatLng(todo.options.position) : toLatLng(value.latLng);
         if (!map){
           newMap(todo.options.position);
         }
