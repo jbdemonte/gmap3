@@ -815,7 +815,7 @@
         zoom = map.getZoom(),
         forceDisabled = ("maxZoom" in raw) && (zoom > raw.maxZoom),
         previousKeys = getStoreKeys(),
-        i, j, k, lat, lng, indexes, previous, check = false, bounds, cluster, position;
+        i, j, k, indexes, check = false, bounds, cluster, position;
 
       // reset flag
       updated = false;
@@ -849,35 +849,19 @@
         indexes = [];
         
         if (enabled && !forceDisabled){
-          do{
-            previous = indexes;
-            indexes = [];
-            
-            if (previous.length){
-            // re-evaluate the center
-              lat = lng = 0;
-              for(k=0; k<previous.length; k++){
-                lat += todos[ keys[previous[k]] ].options.position.lat();
-                lng += todos[ keys[previous[k]] ].options.position.lng();
-              }
-              lat /= previous.length;
-              lng /= previous.length;
-              position = new google.maps.LatLng(lat, lng);
-            } else {
-              position = todos[ keys[i] ].options.position;
+          position = todos[ keys[i] ].options.position;
+          bounds = extendsBounds(position);
+
+          for(j=i; j<keys.length; j++){
+            if (used[j]){
+              continue;
             }
-            bounds = extendsBounds(position);
-            
-            for(j=i; j<keys.length; j++){
-              if (used[j]){
-                continue;
-              }
-              if (bounds.contains(todos[ keys[j] ].options.position)){
-                indexes.push(j);
-              }
+            if (bounds.contains(todos[ keys[j] ].options.position)){
+              indexes.push(j);
             }
-          } while( (previous.length < indexes.length) && (indexes.length > 1) && !raw.fast);
+          }
         } else {
+          // create a marker of one element (the first not used)
           for(j=i; j<keys.length; j++){
             if (used[j]){
               continue;
@@ -888,26 +872,13 @@
         }
 
         cluster = {indexes:[], ref:[]};
-        if (raw.fast) {
-          for(k=0; k<indexes.length; k++){
-            used[ indexes[k] ] = true;
-            cluster.indexes.push(keys[indexes[k]]);
-            cluster.ref.push(keys[indexes[k]]);
-          }
-          cluster.latLng = position;
-        } else {
-          lat = lng = 0;
-          for(k=0; k<indexes.length; k++){
-            used[ indexes[k] ] = true;
-            cluster.indexes.push(keys[indexes[k]]);
-            cluster.ref.push(keys[indexes[k]]);
-            lat += todos[ keys[indexes[k]] ].options.position.lat();
-            lng += todos[ keys[indexes[k]] ].options.position.lng();
-          }
-          lat /= indexes.length;
-          lng /= indexes.length;
-          cluster.latLng = new google.maps.LatLng(lat, lng);
+        for(k=0; k<indexes.length; k++){
+          used[ indexes[k] ] = true;
+          cluster.indexes.push(keys[indexes[k]]);
+          cluster.ref.push(keys[indexes[k]]);
         }
+        cluster.latLng = position;
+
         cluster.ref = cluster.ref.join("-");
         
         if (cluster.ref in previousKeys){ // cluster doesn't change
