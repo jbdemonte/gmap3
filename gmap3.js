@@ -1190,7 +1190,7 @@
      * ! for now, only cluster manage this feature
      **/
     this.objClear = function(list, last, first, tag){
-      if (store["clusterer"] && ($.inArray("marker", list) || !list.length)) {
+      if (store["clusterer"] && ($.inArray("marker", list) >= 0 || !list.length)) {
         for(var idx in store["clusterer"]){
           objects[store["clusterer"][idx]].obj.clear(last, first, tag);
         }
