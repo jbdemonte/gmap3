@@ -2476,7 +2476,7 @@
         $this.data("gmap3", gmap3);
       }
       if (list.length === 1 && (list[0] === "get" || isDirectGet(list[0]))){
-        results.push(gmap3.get(list[0] === "get" ? "map" : list[0].get, true));
+        results.push(gmap3.get(list[0] === "get" ? "map" : list[0].get, true, list[0].get.full));
       } else {
         gmap3._plan(list);
       }
