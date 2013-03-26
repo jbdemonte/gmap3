@@ -2208,7 +2208,7 @@
       } else if (args.todo.container){
         obj.setPanel($(args.todo.container).get(0));
       }
-      id = store.add(args, "directionrenderer", obj);
+      id = store.add(args, "directionsrenderer", obj);
       manageEnd(args, obj, id);
     };
     
