@@ -1,6 +1,17 @@
 changelog
 ---------
-
+5.1 - 2013-05-18
+  code cleaned
+  cluster cursor updated to "pointer"
+  allows events and callback to be an array [context, function]
+  fix: cast the center if set in option in map function once map is already displayed
+  fix: get by id failed when marker in cluster had never been visible
+  update kml feature to google.maps version 3.10 + compatibility 3.9-
+  fix: clearById + add clear through cluster
+  fix: clear directionsrenderer
+  fix: multiple infowindow using latLng parameter
+  remove a position optimisation on cluster to get faster
+  
 5.0 - 2012-11-01
   code rewritten
   updated: API case sensitive
