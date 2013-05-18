@@ -872,12 +872,15 @@
         }
 
         cluster = {indexes:[], ref:[]};
+        position = {lat: 0, lng: 0};
         for(k=0; k<indexes.length; k++){
           used[ indexes[k] ] = true;
           cluster.indexes.push(keys[indexes[k]]);
           cluster.ref.push(keys[indexes[k]]);
+          position.lat += todos[indexes[k]].options.position.lat();
+          position.lng += todos[indexes[k]].options.position.lng();
         }
-        cluster.latLng = position;
+        cluster.latLng = new google.maps.LatLng(position.lat / indexes.length, position.lng / indexes.length);
 
         cluster.ref = cluster.ref.join("-");
         
