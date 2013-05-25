@@ -1,7 +1,7 @@
 /*!
  *  GMAP3 Plugin for JQuery
- *  Version   : 5.1
- *  Date      : 2013-05-18
+ *  Version   : 5.1.1
+ *  Date      : 2013-05-25
  *  Licence   : GPL v3 : http://www.gnu.org/licenses/gpl.html
  *  Author    : DEMONTE Jean-Baptiste
  *  Contact   : jbdemonte@gmail.com
@@ -810,31 +810,31 @@
       if (updating || redrawing || !ready){
         return;
       }
-      
+
       var keys = [], used = {},
         zoom = map.getZoom(),
         forceDisabled = ("maxZoom" in raw) && (zoom > raw.maxZoom),
         previousKeys = getStoreKeys(),
-        i, j, k, indexes, check = false, bounds, cluster, position;
+        i, j, k, indexes, check = false, bounds, cluster, position, previous, lat, lng, loop;
 
       // reset flag
       updated = false;
-      
+
       if (zoom > 3){
         // extend the bounds of the visible map to manage clusters near the boundaries
         bounds = extendsMapBounds();
-        
-        // check contain only if boundaries are valid 
+
+        // check contain only if boundaries are valid
         check = bounds.getSouthWest().lng() < bounds.getNorthEast().lng();
       }
-      
+
       // calculate positions of "visibles" markers (in extended bounds)
       for(i=0; i<todos.length; i++){
         if (todos[i] && (!check || bounds.contains(todos[i].options.position)) && (!ffilter || ffilter(values[i]))){
           keys.push(i);
         }
       }
-      
+
       // for each "visible" marker, search its neighbors to create a cluster
       // we can't do a classical "for" loop, because, analysis can bypass a marker while focusing on cluster
       while(1){
@@ -845,23 +845,33 @@
         if (i == keys.length){
           break;
         }
-        
-        indexes = [];
-        
-        if (enabled && !forceDisabled){
-          position = todos[ keys[i] ].options.position;
-          bounds = extendsBounds(position);
 
-          for(j=i; j<keys.length; j++){
-            if (used[j]){
-              continue;
+        indexes = [];
+
+        if (enabled && !forceDisabled){
+          loop = 10;
+          do{
+            previous = indexes;
+            indexes = [];
+            loop--;
+
+            if (previous.length){
+              position = bounds.getCenter()
+            } else {
+              position = todos[ keys[i] ].options.position;
             }
-            if (bounds.contains(todos[ keys[j] ].options.position)){
-              indexes.push(j);
+            bounds = extendsBounds(position);
+
+            for(j=i; j<keys.length; j++){
+              if (used[j]){
+                continue;
+              }
+              if (bounds.contains(todos[ keys[j] ].options.position)){
+                indexes.push(j);
+              }
             }
-          }
+          } while( (previous.length < indexes.length) && (indexes.length > 1) && loop);
         } else {
-          // create a marker of one element (the first not used)
           for(j=i; j<keys.length; j++){
             if (used[j]){
               continue;
@@ -872,38 +882,35 @@
         }
 
         cluster = {indexes:[], ref:[]};
-        position = {lat: 0, lng: 0};
+        lat = lng = 0;
         for(k=0; k<indexes.length; k++){
           used[ indexes[k] ] = true;
           cluster.indexes.push(keys[indexes[k]]);
           cluster.ref.push(keys[indexes[k]]);
-          position.lat += todos[indexes[k]].options.position.lat();
-          position.lng += todos[indexes[k]].options.position.lng();
+          lat += todos[ keys[indexes[k]] ].options.position.lat();
+          lng += todos[ keys[indexes[k]] ].options.position.lng();
         }
-        cluster.latLng = new google.maps.LatLng(position.lat / indexes.length, position.lng / indexes.length);
+        lat /= indexes.length;
+        lng /= indexes.length;
+        cluster.latLng = new google.maps.LatLng(lat, lng);
 
         cluster.ref = cluster.ref.join("-");
-        
+
         if (cluster.ref in previousKeys){ // cluster doesn't change
           delete previousKeys[cluster.ref]; // remove this entry, these still in this array will be removed
         } else { // cluster is new
           if (indexes.length === 1){ // alone markers are not stored, so need to keep the key (else, will be displayed every time and marker will blink)
             store[cluster.ref] = true;
           }
-          // use a closure to async the display call make faster the process of cle clustering
-          (function(cl){
-            setTimeout(function(){
-              fdisplay(cl); // while displaying, will use store to link object
-            }, 1);
-          })(cluster);
+          fdisplay(cluster);
         }
       }
-      
+
       // flush the previous overlays which are not still used
       $.each(previousKeys, function(key){
         flush(key);
       });
-      redrawing = false; 
+      redrawing = false;
     }
   }
   
