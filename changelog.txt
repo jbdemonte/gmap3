@@ -1,5 +1,8 @@
 changelog
 ---------
+5.1.1 - 2013-05-25
+  fix clustering feature barycenter 
+  
 5.1 - 2013-05-18
   code cleaned
   cluster cursor updated to "pointer"
