@@ -34,3 +34,6 @@ Why using gmap3 ?
 
 ### Lot of examples 
  - All the features are visible in a single standalone file in the package
+
+
+[Buy author a beer](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WCUX27CFV79S2)
