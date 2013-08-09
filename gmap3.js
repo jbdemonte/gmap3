@@ -373,6 +373,10 @@
     this.getPosition = function(){
         return latLng;
     };
+	this.setPosition = function(newLatLng){
+		latLng = newLatLng;
+		this.draw();
+	};
     this.draw = function() {
         var ps = this.getProjection().fromLatLngToDivPixel(latLng);
         $div
