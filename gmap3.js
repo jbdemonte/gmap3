@@ -2168,12 +2168,14 @@
         $.each(args.todo.values, function(i, value){
           var todo = tuple(args, value);
           todo.options.position = todo.options.position ? toLatLng(todo.options.position) : toLatLng(value);
-          todo.options.map = map;
-          if (init){
-            map.setCenter(todo.options.position);
-            init = false;
+          if (todo.options.position) {
+            todo.options.map = map;
+            if (init){
+              map.setCenter(todo.options.position);
+              init = false;
+            }
+            internalClusterer.add(todo, value);
           }
-          internalClusterer.add(todo, value);
         });
         
         internalClusterer.endUpdate();
@@ -2184,15 +2186,17 @@
         $.each(args.todo.values, function(i, value){
           var id, obj, todo = tuple(args, value);
           todo.options.position = todo.options.position ? toLatLng(todo.options.position) : toLatLng(value);
-          todo.options.map = map;
-          if (init){
-            map.setCenter(todo.options.position);
-            init = false;
+          if (todo.options.position) {
+            todo.options.map = map;
+            if (init){
+              map.setCenter(todo.options.position);
+              init = false;
+            }
+            obj = new defaults.classes.Marker(todo.options);
+            objs.push(obj);
+            id = store.add({todo:todo}, "marker", obj);
+            attachEvents($this, {todo:todo}, obj, id);
           }
-          obj = new defaults.classes.Marker(todo.options);
-          objs.push(obj);
-          id = store.add({todo:todo}, "marker", obj);
-          attachEvents($this, {todo:todo}, obj, id);
         });
         manageEnd(args, multiple ? objs : objs[0]);
       }
