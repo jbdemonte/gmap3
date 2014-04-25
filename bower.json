@@ -1,0 +1,25 @@
+{
+  "name": "gmap3",
+  "version": "6.0.0",
+  "main": "dist/gmap3.min.js",
+  "homepage": "http://gmap3.net",
+  "description": "jQuery plugin to create advanced Google Maps",
+  "author": {
+    "name": "Jean-Baptiste DEMONTE",
+    "email": "jbdemonte@gmail.com",
+    "url": "http://jb.demonte.fr"
+  },
+  "ignore": [
+    "demo",
+    "examples",
+    "jquery",
+    "src",
+    "*.*"
+  ],
+  "keywords": [
+    "jquery",
+    "google",
+    "maps",
+    "googlemaps"
+  ]
+}
