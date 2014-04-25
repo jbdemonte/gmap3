@@ -1,0 +1,32 @@
+{{>functions}}
+{{>services}}
+{{>geocoderCache}}
+{{>stack}}
+{{>store}}
+{{>task}}
+
+{{#getroute}}
+  {{>directionService}}
+{{/getroute}}
+
+{{#getdistance}}
+  {{>distanceMatrixService}}
+{{/getdistance}}
+
+{{#getmaxzoom}}
+  {{>maxZoomService}}
+{{/getmaxzoom}}
+
+{{#getelevation}}
+  {{>elevationService}}
+{{/getelevation}}
+
+{{#cluster}}
+  {{>newEmptyOverlay}}
+  {{>internalClusterer}}
+  {{>clusterer}}
+{{/cluster}}
+
+{{#overlay}}
+  {{>overlayView}}
+{{/overlay}}

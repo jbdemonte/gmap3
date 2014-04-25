@@ -1,5 +1,10 @@
 changelog
 ---------
+6.0.0 - 2014-04-25
+  fix some errors, missing declaration
+  code optimisation
+  new build system based on gulpjs
+
 5.1.1 - 2013-05-25
   fix clustering feature barycenter 
   
