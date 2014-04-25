@@ -10,11 +10,16 @@
     "url": "http://jb.demonte.fr"
   },
   "ignore": [
-    "**/.*",
     "demo",
     "examples",
     "jquery",
-    "src"
+    "src",
+    "bower.json",
+    "changelog.txt",
+    "gulpfile.js",
+    "options.js",
+    "package.json",
+    "README.md"
   ],
   "keywords": [
     "jquery",
