@@ -74,7 +74,7 @@ The builder contains two main tasks named "default" and "package".
   - "default" build the gmap3.js and its minified version
   - "package" also include the demo and examples files
 
-By default, all the features are included in the build, to create your own light version, you can either remove some features by using "--no-option_name" in the build command line or only include the ones you want by using the option "--only".
+By default, all the features are included in the build, to create your own light version, you can either remove some features by using *--no-option_name* in the build command line or only include the ones you want by using the option *--only*.
 
 e.g.,
 
@@ -86,12 +86,12 @@ The code below is equivalent to:
 ```bash
 gulp default --only --rectangle --circle
 ```
-To also include compatible demo and examples:
+To also includes compatible demo and examples:
 ```bash
 gulp package --only --rectangle --circle
 ```
 
-to keep all feature but the cluster support:
+to keep all features but the cluster support:
 ```bash
 gulp --no-cluster
 ```
