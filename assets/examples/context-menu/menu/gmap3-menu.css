@@ -1,0 +1,44 @@
+#gmap3-menu{
+  background-color: #FFFFFF;
+  width:170px;
+  padding:0px;
+  border:1px;
+  cursor:pointer;
+  border-left:1px solid #cccccc;
+  border-top:1px solid #cccccc;
+  border-right:1px solid #676767;
+  border-bottom:1px solid #676767;
+}
+#gmap3-menu .item{
+  font-family: arial,helvetica,sans-serif;
+  font-size: 12px;
+  text-align:left;
+  line-height: 30px;
+  border-left:0px;
+  border-top:0px;
+  border-right:0px;
+  padding-left:30px;
+  background-repeat: no-repeat;
+  background-position: 4px center;
+}
+#gmap3-menu .item.itemA{
+  background-image: url(images/icon_greenA.png);
+}
+#gmap3-menu .item.itemB{
+  background-image: url(images/icon_greenB.png);
+}
+#gmap3-menu .item.zoomIn{
+  background-image: url(images/zoomin.png);
+}
+#gmap3-menu .item.zoomOut{
+  background-image: url(images/zoomout.png);
+}
+#gmap3-menu .item.centerHere{
+  background-image: url(images/here.png);
+}
+#gmap3-menu .item.hover{
+  background-color: #d6e9f8;
+}
+#gmap3-menu .item.separator{
+  border-bottom:1px solid #cccccc;
+}

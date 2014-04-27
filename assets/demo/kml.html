@@ -1,0 +1,59 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    <script type="text/javascript">
+      
+    $(function(){
+    
+      $("#test1").gmap3(
+        { map:{
+            options:{
+              mapTypeId : google.maps.MapTypeId.ROADMAP, 
+              center: [48.749907,2.350081], 
+              zoom: 12
+            }
+          },
+          kmllayer:{
+            options:{
+              url: "http://gmap3.net/kml/rungis.kml",
+              preserveViewport: true
+            },
+            events:{
+              click: function(kml, event){
+                $("#test1-text").html(event.featureData.description);
+              }
+            }
+          }
+        }
+      );
+      
+      $("#chk").change(function(){
+        var map = $("#test1").gmap3("get"),
+          kml = $("#test1").gmap3({get:"kmllayer"});
+        kml.setMap( $(this).is(':checked') ? map : null );
+      });
+      
+    });
+    </script>
+  </head>
+    
+  <body>
+    <input type="checkbox" id="chk" checked>KML
+    <div id="test1" class="gmap3"></div>
+    <div id="test1-text"></div>
+  </body>
+</html>

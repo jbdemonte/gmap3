@@ -1,0 +1,718 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align: center; /* fix ie */
+        background-color: #AFAFAF; 
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+      }
+      #global{
+        text-align: left; /* fix ie */
+        margin: 0 auto;
+        width: 800px;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      .code{
+        text-align: left;
+        width: 750px;
+        margin: 5px auto;
+        padding: 5px;
+        font-family: "Courier New", Courier, mono;
+        font-size: 11px;
+        color: #000;
+        background-color: #FFF;
+        border: 1px solid #000;
+        overflow: auto;
+      }
+    </style>
+  </head>
+    
+  <body>
+  <div id="global">
+
+    <pre class="code">
+$("#test1").gmap3();
+
+$("#test1-destroy").click(function(){
+  $("#test1").gmap3("destroy");
+});
+    </pre>
+    <input id="test1-destroy" type="button" value="destroy">
+    <div id="test1" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test2").gmap3({ 
+    map:{
+      options:{
+        mapTypeId : google.maps.MapTypeId.SATELLITE,
+        mapTypeControlOptions: {
+           mapTypeIds: [google.maps.MapTypeId.SATELLITE, google.maps.MapTypeId.ROADMAP]
+        },
+        center:[48.859667, 2.350874],
+        zoom: 5,
+        disableDefaultUI: false
+      },
+      events:{
+        mouseover: function(map){
+          $("#test2-result .result").html($(this).attr("id") + " : over");
+        },
+        mouseout: function(map){
+          $("#test2-result .result").html($(this).attr("id") + " : out");
+        }
+      }
+    }
+});
+    </pre>
+    <div id="test2-result">
+      <span>Mouse : </span><span class="result"></span>
+    </div>
+    <div id="test2" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test3").gmap3();
+//
+//   ...
+//
+var map = $("#test3").gmap3("get")
+map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
+map.setZoom(7);
+    </pre>
+    <div id="test3" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test4").gmap3();
+
+$("#test4-result .result-1").html(
+  $("#test4").gmap3("get").getZoom()
+);
+
+$("#test4").gmap3("get").setZoom(5);
+
+$("#test4-result .result-2").html(
+  $("#test4").gmap3("get").getZoom()
+);
+    </pre>
+    <div id="test4-result">
+      <span>Result #1 : </span><span class="result-1"></span>
+      <br />
+      <span>Result #2 : </span><span class="result-2"></span>
+    </div>
+    <div id="test4" class="gmap3"></div>
+
+    <pre class="code">
+$("#test5").gmap3({
+  map:{
+    options:{
+      zoom: 18,
+      center: new google.maps.LatLng(40.729884, -73.990988)
+    }
+  }
+});
+function toggleStreetView(){
+  var map = $("#test5").gmap3("get"),
+    panorama = map.getStreetView();
+  if (panorama.getVisible()){
+    panorama.setVisible(false);
+  } else {
+    panorama.setPosition(map.getCenter());
+    panorama.setPov({
+      heading: 265,
+      zoom:1,
+      pitch:0
+    });
+    panorama.setVisible(true);
+  }
+}
+    </pre>
+    <input type="button" value="Toggle Street View" onclick="toggleStreetView();">
+    <div id="test5" class="gmap3"></div>
+      
+    <pre class="code">
+$("#test6").gmap3(); // not needed to use getlatLng
+
+$("#test6").gmap3({
+  getlatlng:{ 
+    address: "2 bis rue saint antoine, eguilles",
+    callback: function(result){
+      if (result){
+        $("#test6-result .result-1").html( result[0]["geometry"]["location"].lat() );
+        $("#test6-result .result-2").html( result[0]["geometry"]["location"].lng() );
+        $(this).gmap3("get").setCenter(result[0].geometry.location);
+      } else {
+        alert("Bad address 2 !");
+      }
+    }
+  }
+});    
+    </pre>
+    <div id="test6-result">
+      <span>Latitude : </span><span class="result-1"></span>
+      <br />
+      <span>Longitude : </span><span class="result-2"></span>
+    </div>
+    <div id="test6" class="gmap3"></div>
+    
+    <pre class="code">
+var address = "place de l'étoile, paris";
+ 
+$("#test7").gmap3({
+  map:{
+    address:address,
+    options:{
+      zoom: 14
+    }
+  },
+  marker:{
+    address: address   // address resolution got from cache from previous call
+  }
+});
+    </pre>
+    <div id="test7" class="gmap3"></div>
+    
+    <pre class="code">
+var position = new google.maps.LatLng(-33, 151); 
+$("#test8").gmap3({
+  map:{
+    options:{
+      center: position,
+      zoom: 8
+    }
+  },
+  marker:{
+    latLng: position,
+    options:{
+      draggable: true,
+      icon: "http://code.google.com/intl/fr/apis/maps/documentation/javascript/examples/images/beachflag.png"
+    },
+    events:{
+      dragend: function(marker){
+        $("#test8-result .result-1").html( marker.position.lat() );
+        $("#test8-result .result-2").html( marker.position.lng() );
+      }
+    }
+  }
+});
+  </pre>
+  <div id="test8-result">
+    <span>Drag & drop the flag :</span>
+    <br />
+    <span>Latitude : </span><span class="result-1"></span>
+    <br />
+    <span>Longitude : </span><span class="result-2"></span>
+  </div>
+  <div id="test8" class="gmap3"></div>
+  
+  <pre class="code">
+var address = "place de l'étoile, paris"; 
+$("#test9").gmap3({
+  map:{
+    address:address,
+    options:{
+      zoom: 14
+    }
+  },
+  infowindow:{
+    address:address,
+    options:{
+      size: new google.maps.Size(50,50),
+      content: "Hello World !"
+    },
+    events:{
+      closeclick: function(infowindow){
+        alert("closing : " + $(this).attr("id") + " : " + infowindow.getContent());
+      }
+    }
+  }
+});
+  </pre>
+  <div id="test9" class="gmap3"></div>
+  
+  <pre class="code">
+var address = "place de l'étoile, paris";
+$("#test10").gmap3({
+  map:{
+    address:address,
+    options:{
+      zoom: 14
+    }
+  },
+  marker:{
+    address:address,
+    options:{
+      draggable: true
+    }
+  },
+  infowindow:{
+    options:{
+      size: new google.maps.Size(50,20),
+      content: "Hello World !"
+    }
+  }
+});
+    </pre>
+    <div id="test10" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test11").gmap3({
+  map:{
+    options:{
+      center:[0, -180], 
+      zoom:2, 
+      mapTypeId: google.maps.MapTypeId.TERRAIN
+    }
+  },
+  polyline:{
+    options:{
+      strokeColor: "#FF0000",
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+      path:[
+        [37.772323, -122.214897],
+        [21.291982, -157.821856],
+        [-18.142599, 178.431],
+        [-27.46758, 153.027892]
+      ]
+    }
+  }
+});
+    </pre>
+    <div id="test11" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test12").gmap3({
+  map:{
+    options:{
+      center:[24.886436490787712, -70.2685546875], 
+      zoom:3, 
+      mapTypeId: google.maps.MapTypeId.TERRAIN 
+    }
+  },
+  polygon:{
+    options:{
+      strokeColor: "#FF0000",
+      strokeOpacity: 0.8,
+      strokeWeight: 2,
+      fillColor: "#FF0000",
+      fillOpacity: 0.35,
+      paths:[
+        [25.774252, -80.190262],
+        [18.466465, -66.118292],
+        [32.321384, -64.75737],
+        [25.774252, -80.190262]
+      ]
+    },
+    events:{
+      click: function(polygon, event){
+        var vertices = polygon.getPath(),
+          contentString = "Bermuda Triangle Polygon&lt;br /&gt;";
+        contentString += "Clicked Location: " + event.latLng.lat() + "," + event.latLng.lng() + "&lt;br /&gt;";
+        
+        for(var i=0; i&lt;vertices.length; i++){
+          var xy = vertices.getAt(i);
+          contentString += "&lt;br /&gt;Coordinate " + i + " : " + xy.lat() +", " + xy.lng();
+        }
+
+        $(this).gmap3({
+          infowindow:{
+            latLng:event.latLng,
+            options:{
+              content: contentString
+            }
+          }
+        });
+      }
+    }
+  }
+});
+    </pre>
+    <div id="test12" class="gmap3"></div>
+    
+    <pre class="code">
+var fenway = new google.maps.LatLng(42.345573,-71.098326);
+$("#test13").gmap3({
+  map:{
+    options:{
+      zoom: 14, 
+      mapTypeId: google.maps.MapTypeId.ROADMAP, 
+      streetViewControl: true, 
+      center: fenway 
+    }
+  },
+  streetviewpanorama:{
+    divId: "test13-view",
+    options:{
+      opts:{
+        position: fenway,
+        pov: {
+          heading: 34,
+          pitch: 10,
+          zoom: 1
+        }
+      }
+    }
+  }
+});
+    </pre>
+    <div id="test13" class="gmap3"></div>
+    <div id="test13-view" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test14").gmap3({
+  map:{
+    options:{
+      mapTypeId : google.maps.MapTypeId.ROADMAP, 
+      center:[40.65, -73.95], 
+      zoom: 12
+    }
+  },
+  kmllayer:{
+    options:{
+      url: "http://www.searcharoo.net/SearchKml/newyork.kml",
+      suppressInfoWindows: true
+    },
+    events:{
+      click: function(kml, event){
+        $("#test14-text").html(event.featureData.description);
+      }
+    }
+  }
+});
+    </pre>
+    <div id="test14" class="gmap3"></div>
+    <div id="test14-text" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test15").gmap3(
+  { map:{
+      options:{
+        mapTypeId : google.maps.MapTypeId.ROADMAP, 
+        center:[42.3726399, -71.1096528], 
+        zoom: 14
+      }
+    }
+  },
+  "bicyclinglayer"
+);
+    </pre>
+    <div id="test15" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test16").gmap3(
+  { map:{
+      options:{
+        mapTypeId : google.maps.MapTypeId.ROADMAP, 
+        center:[34.04924594193164, -118.24104309082031], 
+        zoom: 13 
+      }
+    }
+  },
+  "trafficlayer"
+);
+    </pre>
+    <div id="test16" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test17").gmap3({
+  map:{
+    options:{
+      mapTypeId : google.maps.MapTypeId.ROADMAP, 
+      center:[40.740, -74.18], 
+      zoom: 12
+    }
+  },
+  groundoverlay:{
+    options:{
+      url: "http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg",
+      bounds: [
+        [40.765641, -74.139235],
+        [40.716216, -74.213393]
+      ]
+    },
+    events: {
+        click: function(overlay, event){
+            alert("clicked on "+ overlay.url);
+        }
+    }
+  }
+});
+    </pre>
+    <div id="test17" class="gmap3"></div>
+    
+    
+    <pre class="code">
+$("#test18").gmap3({
+  getgeoloc:{
+    callback : function(latLng){
+      if (latLng){
+        $("#test18-result").html("localised !");
+        $(this).gmap3({
+          map:{
+            latLng: latLng
+          },
+          marker:{
+            latLng: latLng
+          }
+        });
+      } else {
+        $("#test18-result").html("not localised !");
+      }
+    }
+  }
+});
+    </pre>
+    <div id="test18-result"></div>
+    <div id="test18" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test19").gmap3({ 
+  getroute:{
+    options:{
+        origin:"48 Pirrama Road, Pyrmont NSW",
+        destination:"Bondi Beach, NSW",
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+    },
+    callback: function(results){
+      if (!results) return;
+      $(this).gmap3({
+        map:{
+          options:{
+            zoom: 13,  
+            center: [-33.879, 151.235]
+          }
+        },
+        directionsrenderer:{
+          options:{
+            directions:results
+          } 
+        }
+      });
+    }
+  }
+});
+    </pre>
+    <div id="test19" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test20").gmap3({
+  getroute:{
+    options:{
+      origin:"48 Pirrama Road, Pyrmont NSW",
+      destination:"Bondi Beach, NSW",
+      travelMode: google.maps.DirectionsTravelMode.DRIVING
+    },
+    callback: function(results){
+      if (!results) return;
+      $(this).gmap3({
+        map:{
+          options:{
+            zoom: 13,  
+            center: [-33.879, 151.235]
+          }
+        },
+        directionsrenderer:{
+          options:{
+            preserveViewport: true,
+            draggable: true,
+            directions:results
+          }, 
+          events: {
+            directions_changed: function(display, event){
+              $("#test20-updated span").html( parseInt($("#test20-updated span").html()) + 1 );
+            }
+          }
+        }
+      });
+    }
+  }
+});
+    </pre>
+    <div id="test20-updated">Updated : <span>0</span> (move the directions using your mouse)</div>
+    <div id="test20" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test21").gmap3({
+  map:{
+    options:{
+      zoom: 13, 
+      center: [-33.879, 151.235]
+    } 
+  },
+  directionsrenderer:{
+    options:{
+        preserveViewport: true,
+        draggable: true
+    }
+  }
+});
+
+$("#test21-add-button").click(function(){
+  $("#test21").gmap3({
+    getroute:{
+      options:{
+          origin:"48 Pirrama Road, Pyrmont NSW",
+          destination:"Bondi Beach, NSW",
+          travelMode: google.maps.DirectionsTravelMode.DRIVING
+      },
+      callback: function(results){
+        if (results){
+          $(this).gmap3({get:"directionsrenderer"}).setDirections(results);
+        }
+      }
+    }
+  });
+});
+    
+    </pre>
+    <input id="test21-add-button" type="button" value="Set directions">
+    <div id="test21" class="gmap3"></div>
+    
+    <pre class="code">
+$("#test22").gmap3({
+  getroute:{
+    options:{
+      origin:"48 Pirrama Road, Pyrmont NSW",
+      destination:"Bondi Beach, NSW",
+      travelMode: google.maps.DirectionsTravelMode.DRIVING
+    },
+    callback: function(results){
+      if (!results) return;
+      $(this).gmap3({
+        map:{
+          options:{
+            zoom: 13,  
+            center: [-33.879, 151.235]
+          } 
+        },
+        directionsrenderer:{
+          // divId: "test22-panel", // set this div as panel
+          options:{
+            preserveViewport: true,
+            draggable: true,
+            directions:results
+          }
+        }
+      });
+    }
+  }
+});
+
+$("#test22-add-button").click(function(){
+  $("#test22-panel").css("overflow", "auto");
+  $("#test22").gmap3({get:"directionsrenderer"}).setPanel( $("#test22-panel").get(0) );
+});
+
+    </pre>
+    <input id="test22-add-button" type="button" value="Set panel">
+    <div id="test22" class="gmap3"></div>
+    <div id="test22-panel" class="gmap3"></div>
+    
+    <pre class="code active">
+$("#test23").gmap3(
+  { map:{
+      options:{
+        center:[41.850033, -87.650052],
+        zoom:12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControlOptions: {
+           mapTypeIds: [google.maps.MapTypeId.ROADMAP, "style1", "style2"]
+        }
+      }
+    },
+    styledmaptype:{
+      id: "style1",
+      options:{
+        name: "Style 1"
+      },
+      styles : [ // use embedded style
+        {
+          featureType: "road.highway",
+          elementType: "geometry",
+          stylers: [
+            { hue: "#ff0022" },
+            { saturation: 60 },
+            { lightness: -20 }
+          ]
+        }
+      ]
+    }
+  },
+  { styledmaptype:{
+      id: "style2",
+      options:{
+        name: "Style 2"
+      },
+      styles:[
+        {
+          featureType: "road.highway",
+          elementType: "geometry",
+          stylers: [
+            { hue: "#ff0022" },
+            { saturation: 60 },
+            { lightness: -20 }
+          ]
+        },{
+          featureType: "road.arterial",
+          elementType: "all",
+          stylers: [
+            { hue: "#2200ff" },
+            { lightness: -40 },
+            { visibility: "simplified" },
+            { saturation: 30 }
+          ]
+        },{
+          featureType: "road.local",
+          elementType: "all",
+          stylers: [
+            { hue: "#f6ff00" },
+            { saturation: 50 },
+            { gamma: 0.7 },
+            { visibility: "simplified" }
+          ]
+        }
+      ]
+    }
+  }
+);
+
+// activate a style by code
+$(".test23-button").click(function(){
+  var id = $(this).data("styleId");
+  $("#test23").gmap3("get").setMapTypeId(id);
+});
+    </pre>
+    <input class="test23-button" type="button" value="style 1" data-styleId="style1"> <input class="test23-button" type="button" value="style 2" data-styleId="style2">
+    <div id="test23" class="gmap3"></div>
+    
+  </div>            
+<script language="javascript">
+  $(".code").each(function(){
+      var $this = $(this);
+      var code = $this.html();
+      // to display in <pre> block, <br /> has been "htmlentitised"
+      var exe = code.replace(new RegExp("&lt;","g"), "<");
+      var exe = exe.replace(new RegExp("&gt;","g"), ">");
+      
+      if (window.execScript){
+          window.execScript(exe);
+      } else {
+          window.eval(exe);
+      }
+      code = code.replace(/\s+$/,""); // remove last empty lines
+      
+      // ie :X
+      $this.before("<pre class='code'>" + code + "</pre>").remove();
+  });
+</script>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #box{
+        border:1px solid #FF0000; 
+        background-color: #AFAFAF; 
+        width:160px;
+        height: 64;
+        font-size: 11px;
+      }
+      
+      #box .line{
+        border-bottom: 1px solid #FF0000;
+        overflow: auto;
+        clear: both;
+        height: 16px;
+      }
+      #box #lng-west{
+        border-bottom: 0px;
+      }
+      
+      #box .name{
+        width: 30px;
+        border-right: 1px solid #FF0000;
+        float:left;
+      }
+      #box .value{
+        float:left;
+      }
+    </style>
+
+    <script type="text/javascript">
+      $(function(){
+      
+        var $box = $("#box");
+        
+        $box.detach();
+        
+        $('#test1').gmap3(
+          { panel:{
+              options:{
+                content: $box, // a jQuery element or a string 
+                middle: true
+              }
+            },
+            map:{
+              events:{
+                bounds_changed: function(map){
+                  var bounds = map.getBounds();
+                  var ne = bounds.getNorthEast();
+                  var sw = bounds.getSouthWest();
+                  $("#lat-north .value").html(ne.lat());
+                  $("#lng-east .value").html(ne.lng());
+                  $("#lat-south .value").html(sw.lat());
+                  $("#lng-west .value").html(sw.lng());
+                }
+              }
+            }
+          }
+        );
+        
+      });
+    </script>    
+  </head>  
+  <body>
+    <div id="test1" class="gmap3"></div>
+    <div id="box">
+      <div id="lat-north" class="line"><div class="name">North</div><div class="value"></div></div>
+      <div id="lng-east" class="line"><div class="name">East</div><div class="value"></div></div>
+      <div id="lat-south" class="line"><div class="name">South</div><div class="value"></div></div>
+      <div id="lng-west" class="line"><div class="name">West</div><div class="value"></div></div>
+    </div>
+  </body>
+</html>

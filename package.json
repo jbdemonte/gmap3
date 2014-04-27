@@ -36,6 +36,8 @@
     "gulp-rename": "^1.2.0",
     "gulp-mustache-plus": "^1.0.1",
     "streamqueue": "0.0.6",
-    "gulp-replace": "^0.2.0"
+    "gulp-replace": "^0.2.0",
+    "gulp-zip": "^0.3.4",
+    "MD5": "^1.2.1"
   }
 }

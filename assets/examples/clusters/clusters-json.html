@@ -1,0 +1,196 @@
+<html>    
+  <head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="jquery-1.6.1.min.js"></script>        
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../../gmap3.js"></script>
+    <style>
+      #container{
+        position:relative;
+        height:700px;
+      }
+      #googleMap{
+        border: 1px dashed #C0C0C0;
+        width: 75%;
+        height: 700px;
+      }
+      
+      /* cluster */
+      .cluster{
+      	color: #FFFFFF;
+      	text-align:center;
+      	font-family: Verdana;
+      	font-size:14px;
+      	font-weight:bold;
+      	text-shadow: 0 0 2px #000;
+        -moz-text-shadow: 0 0 2px #000;
+        -webkit-text-shadow: 0 0 2px #000;
+      }
+      .cluster-1{
+        background: url(images/m1.png) no-repeat;
+        line-height:50px;
+      	width: 50px;
+      	height: 40px;
+      }
+      .cluster-2{
+        background: url(images/m2.png) no-repeat;
+        line-height:53px;
+      	width: 60px;
+      	height: 48px;
+      }
+      .cluster-3{
+        background: url(images/m3.png) no-repeat;
+        line-height:66px;
+      	width: 70px;
+      	height: 56px;
+      }
+      
+      /* infobulle */
+      .infobulle{
+        overflow: hidden; 
+        cursor: default; 
+        clear: both; 
+        position: relative; 
+        height: 34px; 
+        padding: 0pt; 
+        background-color: rgb(57, 57, 57);
+        border-radius: 4px 4px; 
+        -moz-border-radius: 4px 4px;
+        -webkit-border-radius: 4px 4px;
+        border: 1px solid #2C2C2C;
+      }
+      .infobulle .bg{
+        font-size:1px;
+        height:16px;
+        border:0px;
+        width:100%;
+        padding: 0px;
+        margin:0px;
+        background-color: #5E5E5E;
+      }
+      .infobulle .text{
+        color:#FFFFFF;
+        font-family: Verdana;
+        font-size:11px;
+        font-weight:bold;
+        line-height:25px;
+        padding:4px 20px;
+        text-shadow:0 -1px 0 #000000;
+        white-space: nowrap;
+        margin-top: -17px;
+      }
+      .infobulle.drive .text{
+        background: url(images/drive.png) no-repeat 2px center;
+        padding:4px 20px 4px 36px;
+      }
+      .arrow{
+        position: absolute; 
+        left: 45px; 
+        height: 0pt; 
+        width: 0pt; 
+        margin-left: 0pt; 
+        border-width: 10px 10px 0pt 0pt; 
+        border-color: #2C2C2C transparent transparent; 
+        border-style: solid;
+      }
+      
+    </style>
+    
+    <script type="text/javascript">
+    
+      $(function(){
+        $('input').click(function(){
+          $(this).remove();
+          loadData();
+        });
+      });
+      
+      function loadData(){
+        $.ajax({
+          url:'load.php',
+          success:function(data){
+            display(data.center, data.macDoList);
+          }
+        });
+      }
+    
+    
+      function display(center, macDoList) {
+        $('#googleMap').gmap3({
+          map:{
+            options: {
+              center: center,
+              zoom: 7,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            }
+          },
+          marker: {
+            values: macDoList,
+            cluster: {
+              radius:100,
+              // This style will be used for clusters with more than 0 markers
+              0: {
+                content: '<div class="cluster cluster-1">CLUSTER_COUNT</div>',
+                width: 53,
+                height: 52
+              },
+              // This style will be used for clusters with more than 20 markers
+              20: {
+                content: '<div class="cluster cluster-2">CLUSTER_COUNT</div>',
+                width: 56,
+                height: 55
+              },
+              // This style will be used for clusters with more than 50 markers
+              50: {
+                content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
+                width: 66,
+                height: 65
+              },
+              events: {
+                click: function(cluster) {
+                  var map = $(this).gmap3("get");
+                  map.setCenter(cluster.main.getPosition());
+                  map.setZoom(map.getZoom() + 1);
+                }
+              }
+            },
+            options: {
+              icon: new google.maps.MarkerImage('http://maps.gstatic.com/mapfiles/icon_green.png')
+            },
+            events:{
+              mouseover: function(marker, event, context){
+                $(this).gmap3(
+                  {clear:"overlay"},
+                  {
+                  overlay:{
+                    latLng: marker.getPosition(),
+                    options:{
+                      content:  "<div class='infobulle"+(context.data.drive ? " drive" : "")+"'>" +
+                                  "<div class='bg'></div>" +
+                                  "<div class='text'>" + context.data.city + " (" + context.data.zip + ")</div>" +
+                                "</div>" +
+                                "<div class='arrow'></div>",
+                      offset: {
+                        x:-46,
+                        y:-73
+                      }
+                    }
+                  }
+                });
+              },
+              mouseout: function(){
+                $(this).gmap3({clear:"overlay"});
+              }
+            }
+          }
+        });
+      }
+      
+    </script>  
+  </head>
+    
+  <body>
+    <input type="button" value="load data"><br />
+    <div id="googleMap"></div>
+  </body>
+</html>

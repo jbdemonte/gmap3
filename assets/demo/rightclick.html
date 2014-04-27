@@ -1,0 +1,72 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      $(function(){
+      
+        $('#test1').gmap3(
+          { map:{
+              options:{
+                center:[46.578498,2.457275],
+                zoom: 5
+              },
+              events:{
+                rightclick:function(map, event){
+                  var lat = event.latLng.lat(), 
+                      lng = event.latLng.lng(),
+                      dy = (1/60),
+                      dx = 1/(60* Math.cos(Math.PI * lat / 180)),
+                      miles = 50;
+                      
+                  $(this).gmap3(
+                    { marker:{
+                        latLng: event.latLng
+                      } 
+                    },
+                    { marker:{
+                        latLng: [lat+miles*dy, lng]
+                      }
+                    },
+                    { marker:{
+                        latLng: [lat-miles*dy, lng]
+                      }
+                    },
+                    { marker:{
+                        latLng: [lat, lng-miles*dx]
+                      }
+                    },
+                    { marker:{
+                        latLng: [lat, lng+miles*dx]
+                      }
+                    }
+                  );
+                }
+              }
+            }
+          }
+        );
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="container">
+      <div id="over1" class="box"></div>
+      <div id="over2" class="box"></div>
+    </div>  
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

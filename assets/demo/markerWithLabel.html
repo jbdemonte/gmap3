@@ -1,0 +1,61 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script src="external/markerwithlabel.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      .labels {
+       color: red;
+       background-color: white;
+       font-family: "Lucida Grande", "Arial", sans-serif;
+       font-size: 11px;
+       font-weight: bold;
+       text-align: center;
+       width: 100px;     
+       border: 2px solid black;
+       white-space: nowrap;
+     }
+    </style>
+    
+    <script type="text/javascript">
+      $(function(){
+        var address = "Haltern am See, Weseler Str. 151";
+        
+        $('#test1').gmap3({
+          defaults:{ 
+            classes:{
+              Marker:MarkerWithLabel
+            }
+          },
+          map:{
+            address:address,
+            options:{
+              zoom: 14,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            }
+          },
+          marker:{
+            address:address,
+            options:{
+              labelContent: "$425K",
+              labelAnchor: new google.maps.Point(52, -2),
+              labelClass: "labels",
+              labelStyle: {opacity: 0.75},
+              labelContent: "Here is a label !"
+            }
+          }
+        });
+      });
+    </script>
+  <body>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

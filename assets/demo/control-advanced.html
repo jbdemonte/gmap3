@@ -1,0 +1,196 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+  <script type="text/javascript" src="../gmap3.js"></script>
+  <style>
+    .gmap3{
+      margin: 20px auto;
+      border: 1px dashed #C0C0C0;
+      width: 1024px;
+      height: 768px;
+    }
+    
+    #homeControl{
+      padding: 5px;
+    }
+    
+    #homeControl .outer{
+      background-color: #FFFFFF;
+      cursor: pointer;
+      text-align: center;
+      -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(0, 0, 0, 0.35);
+    }
+    
+    #homeControl .outer .inner{
+      font-family: Arial,sans-serif;
+      font-size: 12px;
+      padding-left: 4px;
+      padding-right: 4px;
+      font-weight: bold;
+    }
+    
+    #homeControl .outer .inner .items{
+      display: none;
+    }
+    
+    #homeControl.hover .outer .inner .items{
+      display: block;
+    }
+    
+    #homeControl.hover .outer .inner .items .item{
+      color: #333333;
+      line-height: 26px;
+      white-space: nowrap;
+      cursor: pointer;
+      font-family: arial,sans-serif;
+      font-weight: normal;
+      font-size: 13px;
+      width: 175px;
+      overflow: auto;
+    }
+    #homeControl.hover .outer .inner .items .item.hover{
+      background-color:#EBEBEB;
+    }
+    #homeControl.hover .outer .inner .items .item .pict{
+      height: 11px;
+      width: 13px;
+      float: left;
+      margin-left: 6px;
+      margin-top: 9px;
+    }
+    #homeControl.hover .outer .inner .items .item.hover .pict{
+      background: url("http://maps.gstatic.com/mapfiles/mv/imgs8.png") no-repeat scroll -18px -54px transparent !important;
+    }
+    #homeControl.hover .outer .inner .items .item.checked .pict,
+    #homeControl.hover .outer .inner .items .item.checked.hover .pict{
+      background: url("http://maps.gstatic.com/mapfiles/mv/imgs8.png") no-repeat scroll -52px -44px transparent !important;
+    }
+    #homeControl.hover .outer .inner .items .item .text{
+      float: left;
+      margin-left: 10px;
+    }
+    #homeControl .outer .inner .items .item.hover .text{
+      font-weight:bold;
+    }
+    
+  </style>
+  <script type="text/javascript">
+
+    function HomeControl($this, map) {
+      var $container = $(document.createElement('DIV')),
+        $outer = $(document.createElement('DIV')),
+        $inner = $(document.createElement('DIV')),
+        $items = $(document.createElement('DIV')),
+        checked = {};
+      
+      $items.addClass("items");
+      
+      $.each("marker rectangle circle".split(" "), function(i, name){
+        $items.append( 
+          $(document.createElement('DIV'))
+            .addClass('item')
+            .html("<div class='pict'></div><div class='text'><span>" + name + "</span></div>")
+            .click(function(){
+              clickOn(this, name);
+            }) 
+        );
+        checked[name] = true;
+      });
+      
+      $items.find(".item")
+        .addClass("checked")
+        .hover(function(){$(this).addClass("hover");}, function(){$(this).removeClass("hover");});
+      
+      
+      $inner.addClass("inner").html("SETUP");
+      $outer.addClass("outer");
+      $container.attr("id", "homeControl");
+      
+      $container.hover(function(){$container.addClass("hover");}, function(){$container.removeClass("hover");});
+      
+      $container.append( $outer.append( $inner.append( $items ) ) );
+      
+      this.index = 1;
+      map.controls[google.maps.ControlPosition.TOP_RIGHT].push($container.get(0));
+      
+      function clickOn(div, name){
+        checked[name] = !checked[name];
+        $(div)[checked[name] ? "addClass" : "removeClass"]("checked");
+        $this.gmap3({
+          exec:{
+            name:name, 
+            all:true,
+            func:function(data){
+              data.object.setMap(checked[name] ? map : null);
+            }
+          }
+        });
+      }
+    }
+
+    $(function(){
+      $("#map_canvas").gmap3({
+        map:{
+          options:{
+            center:[46.578498,2.457275],
+            zoom: 5,            
+            mapTypeControl: false,
+            panControl: false,
+            zoomControl: false,
+            scaleControl: false,
+            streetViewControl: false,
+            rotateControl: false,
+            rotateControlOptions: false,
+            overviewMapControl: false,
+            OverviewMapControlOptions: false
+
+          },
+          callback: function(map){
+            new HomeControl($(this), map);
+          }
+        },
+        marker:{
+          values:[
+            [48.8620722, 2.352047],
+            [46.59433,0.342236],
+            [42.704931, 2.894697]
+          ]
+        },
+        circle:{
+          values:[
+            { options:{
+                center: [47.34329,5.028076],
+                radius : 250000,
+                fillColor : "#F4AFFF",
+                strokeColor : "#CB53DF"
+              }
+            },
+            { options:{
+                center: [47.34329,5.028076],
+                radius : 125000,
+                fillColor : "#008BB2",
+                strokeColor : "#005BB7"
+              }
+            }
+          ]
+        },
+        rectangle:{
+          options:{
+            bounds: {ne:[47.238965,-1.607666], sw:[48.404409,-4.508057]},
+            radius : 750,
+            fillColor : "#008BB2",
+            strokeColor : "#005BB7"
+          }
+        }
+      });
+    });
+
+</script>
+</head>
+<body>
+  <div id="map_canvas" class="gmap3"></div>
+</body>
+</html>

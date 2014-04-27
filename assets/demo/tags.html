@@ -1,0 +1,126 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 800px;
+        height: 600px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      var colors = "black brown green purple yellow grey orange white".split(" "),
+        letters = "A B C D E F".split(" ");
+        
+      $(function(){
+        
+        var allMarkers = [];
+        
+        function stop(){
+          $.each(allMarkers, function(i, marker){
+            marker.setAnimation(null);
+          });
+        } 
+        
+        $.each(colors, function(i, color){
+          $("#colors").append(
+            $("<option></option>")
+             .attr("value", color)
+             .text(color)
+            );
+        }); 
+        
+        $.each(letters, function(i, letter){
+          $("#letters").append(
+            $("<option></option>")
+             .attr("value", letter)
+             .text(letter)
+            );
+        });
+      
+        $('#test1').gmap3({
+          map:{
+            options:{
+              zoom: 2,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            },
+            onces: {
+              bounds_changed: function(){
+                var $this = $(this),
+                  bounds = $this.gmap3("get").getBounds(),
+                  southWest = bounds.getSouthWest(),
+                  northEast = bounds.getNorthEast(),
+                  lngSpan = northEast.lng() - southWest.lng(),
+                  latSpan = northEast.lat() - southWest.lat(),
+                  i, color, letter;
+              	for (i = 0; i < 50; i++) {
+                  letter = letters[Math.floor(Math.random()*letters.length)];
+                  color = colors[Math.floor(Math.random()*colors.length)];
+              	 
+                  $this.gmap3({
+                    marker:{
+                      latLng:[southWest.lat() + latSpan * Math.random(), southWest.lng() + lngSpan * Math.random()],
+                      options:{
+                        icon: "http://maps.google.com/mapfiles/marker_"+color+letter+".png"
+                      },
+                      tag:[color, letter],
+                      callback: function(marker){
+                        allMarkers.push(marker);
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          }
+        });
+        
+        $("#animate").click(function(){
+          var color = $("#colors option:selected").val(),
+            letter = $("#letters option:selected").val(),
+            markers = $("#test1").gmap3({
+              get:{
+                name:"marker",
+                tag:function(tag){
+                  return ((color === "All") || (tag[0] === color))  && ((letter === "All") || (tag[1] === letter));
+                },
+                all: true
+              }
+            });
+            stop();
+            $.each(markers, function(i, marker){
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+            });
+        });
+        
+        $("#remove").click(function(){
+          var color = $("#colors option:selected").val(),
+            letter = $("#letters option:selected").val();
+          $("#test1").gmap3({
+            clear:{
+              name:"marker",
+              tag:function(tag){
+                return ((color === "All") || (tag[0] === color))  && ((letter === "All") || (tag[1] === letter));
+              },
+              all: true
+            }
+          });
+        });
+        
+        
+      });
+    </script>
+  <body>
+    <select id="colors"><option>All</option></select> 
+    <select id="letters"><option>All</option></select> 
+    <button id="animate">Animate</button> 
+    <button id="remove">Remove</button>
+    <br />
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

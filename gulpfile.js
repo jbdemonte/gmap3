@@ -8,14 +8,16 @@ var gulp = require("gulp"),
   jqc = require("gulp-jquery-closure"),
   streamqueue = require('streamqueue'),
   mustache = require("gulp-mustache-plus"),
+  zip = require("gulp-zip"),
+  md5 = require("MD5"),
+  path = require("path"),
 
-  options = require("./options.js").options(),
-  partials = require("./options.js").partials(),
+  gulpOptions = require("./gulp-options.js"),
+  options = gulpOptions.options(),
   pjson = require('./package.json');
 
 options.version = pjson.version;
 options.date = pjson.date;
-options.build_cmd = process.argv.length > 2 ? "Build options : " + process.argv.slice(2).join(" ") + "\n" : "";
 
 gulp.task("clean", function () {
   return gulp.src("dist", {read: false}).pipe(clean());
@@ -35,7 +37,7 @@ gulp.task("copyright", function () {
 // Build tools
 gulp.task("tools", function () {
   return gulp.src("src/tools.mustache")
-    .pipe(mustache(options, {extension: ".js", file_prepend: "\n"}, partials))
+    .pipe(mustache(options, {extension: ".js", file_prepend: "\n"}, gulpOptions.partials()))
     .pipe(gulp.dest("./tmp"));
 });
 
@@ -69,7 +71,41 @@ gulp.task("uglify", function () {
     .pipe(gulp.dest("dist/"));
 });
 
+// Append HTML demo and examples into dist
+gulp.task("html", function () {
+  return gulp.src(gulpOptions.assets(), {base: "assets/"})
+    .pipe(gulp.dest("dist/"));
+});
+
+gulp.task("zip", function () {
+  var filename = "gmap3-" +
+    options.version +
+    (options.build_cmd ? "-" + md5(options.build_cmd) : "") +
+    ".zip";
+  return gulp.src("dist/**/*")
+    .pipe(zip(filename))
+    .pipe(gulp.dest("dist/"));
+});
+
 // default task
 gulp.task("default", function (callback) {
   runSequence("clean", "dist", "uglify", "cleanTmp", callback);
 });
+
+// build package including demo and examples
+gulp.task("package", function (callback) {
+  runSequence("clean", "dist", "uglify", "html", "zip", "cleanTmp", callback);
+});
+
+// extract build_cmd removing task name
+options.build_cmd = (function () {
+  var head = 2,
+    result = "";
+  if (process.argv.length > 2) {
+    if (gulp.hasTask(process.argv[2])) {
+      head++;
+    }
+    result = process.argv.length > head ? "Build options : " + process.argv.slice(head).join(" ") + "\n" : "";
+  }
+  return result;
+}());

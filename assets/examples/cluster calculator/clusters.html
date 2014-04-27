@@ -1,0 +1,148 @@
+<html>    
+  <head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../../gmap3.js"></script>
+    <script type="text/javascript" src="database.js"></script> 
+    <style>
+      #container{
+        position:relative;
+        height:700px;
+      }
+      #googleMap{
+        border: 1px dashed #C0C0C0;
+        width: 75%;
+        height: 700px;
+      }
+      
+      /* cluster */
+      .cluster{
+  			color: #FFFFFF;
+  			text-align:center;
+  			font-family: 'Arial, Helvetica';
+  			font-size:11px;
+  			font-weight:bold;
+      }
+      .cluster-1{
+        background-image:url(images/m1.png);
+        line-height:53px;
+  			width: 53px;
+  			height: 52px;
+      }
+      .cluster-2{
+        background-image:url(images/m2.png);
+        line-height:53px;
+  			width: 56px;
+  			height: 55px;
+      }
+      .cluster-3{
+        background-image:url(images/m3.png);
+        line-height:66px;
+  			width: 66px;
+  			height: 65px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      function getMarkersFromDatabase(zoomLevel){
+        var i, j, result = [];
+        if (zoomLevel < 5){
+          for(i=0; i<database.length; i++){
+            result.push({
+              latLng:database[i].main.pos,
+              data:{
+                label: database[i].main.label,
+                count: database[i].list.length
+              }
+            });
+          }
+        } else {
+          for(i=0; i<database.length; i++){
+            for(j=0; j<database[i].list.length; j++){
+              result.push({
+                latLng:database[i].list[j].pos,
+                data:{
+                  label: database[i].list[j].label,
+                  count: 1
+                }
+              });
+            }
+          }
+        }
+        return result;
+      }
+      
+      function appendMarkers(zoomLevel){
+        $("#googleMap").gmap3({
+          clear:{name:"clusterer"},
+          marker:{
+            values: getMarkersFromDatabase(zoomLevel),
+            cluster:{
+              radius:100,
+              calculator: function(values){
+                var i, cnt = 0;
+                for(i=0; i<values.length; i++){
+                  if (values[i] && values[i].data && values[i].data.count){
+                    cnt += values[i].data.count;
+                  } else {
+                    cnt++;
+                  }
+                }
+                return cnt;
+              },
+              // This style will be used for clusters with more than 0 markers
+              0: {
+                content: "<div class='cluster cluster-1'>CLUSTER_COUNT</div>",
+                width: 53,
+                height: 52
+              },
+              // This style will be used for clusters with more than 20 markers
+              20: {
+                content: "<div class='cluster cluster-2'>CLUSTER_COUNT</div>",
+                width: 56,
+                height: 55
+              },
+              // This style will be used for clusters with more than 50 markers
+              50: {
+                content: "<div class='cluster cluster-3'>CLUSTER_COUNT</div>",
+                width: 66,
+                height: 65
+              }
+            },
+            options: {
+              icon: new google.maps.MarkerImage("http://maps.gstatic.com/mapfiles/icon_green.png")
+            }
+          }
+        });
+      }
+    
+      $(function(){
+      
+        $("#googleMap").gmap3({
+          map:{
+            options:{
+              center:[46.578498,2.457275],
+              zoom: 3,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            },
+            events:{
+              zoom_changed: function(map){
+                appendMarkers(map.getZoom());
+              }
+            },
+            callback: function(map){
+              appendMarkers(map.getZoom());
+            }
+          }
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="googleMap"></div>
+  </body>
+</html>

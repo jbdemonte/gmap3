@@ -1,0 +1,105 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #container{
+        overflow: auto;
+        text-align:center;
+        width: 140px;
+        margin: 20px auto;
+      }
+      .box{
+        float: left;
+        width: 20px;
+        height: 20px;
+        margin-left: 20px;
+        background-color:#FFF;
+        border:1px solid #000;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      function onClk(circle, event, context){
+        var $e = $('#'+context.data);
+        if ($e.hasClass('clicked')) {
+          $e.removeClass('clicked').css('backgroundColor', '#FFFFFF');
+        } else {
+          $e.addClass('clicked').css('backgroundColor', circle.strokeColor);
+        }
+      }
+    
+      $(function(){
+      
+        // 1st call : init the map and create circles
+        $('#test1').gmap3({
+          map:{
+            options:{
+              center: [37.772323, -122.214897],
+              zoom:13
+            }
+          },
+          circle:{
+            values:[
+              { options:{
+                  center: [37.772323, -122.214897],
+                  radius : 750,
+                  fillColor : "#FFAF9F",
+                  strokeColor : "#FF512F"	
+                },
+                data:"box1"
+              },
+              { options:{
+                  center: [37.772323, -122.214897],
+                  radius : 500,
+                  fillColor : "#F4AFFF",
+                  strokeColor : "#CB53DF"	
+                },
+                data: "box2"
+              }
+          ],
+          events:{
+            click: onClk
+          }
+        }
+      }); 
+      
+      // second call : create a single cicle
+      $('#test1').gmap3({
+        circle:{
+          options:{
+            center: [37.772323, -122.214897],
+            radius : 250,
+            fillColor : "#008BB2",
+            strokeColor : "#005BB7"
+          },
+          data: "box3",
+          events:{
+            click: onClk
+          }
+        }
+      });
+      
+      
+    });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="container">
+      <div id="box1" class="box"></div>
+      <div id="box2" class="box"></div>
+      <div id="box3" class="box"></div>
+    </div>  
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

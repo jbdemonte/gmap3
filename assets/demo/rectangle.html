@@ -1,0 +1,103 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #container{
+        overflow: auto;
+        text-align:center;
+        width: 140px;
+        margin: 20 auto;
+      }
+      .box{
+        float: left;
+        width: 20px;
+        height: 20px;
+        margin-left: 20px;
+        background-color:#FFF;
+        border:1px solid #000;
+      }
+    </style>
+    <script type="text/javascript">
+    
+      function onClk(rectangle, event, context){
+        var $e = $('#'+context.data);
+        if ($e.hasClass('clicked')) {
+          $e.removeClass('clicked').css('backgroundColor', '#FFFFFF');
+        } else {
+          $e.addClass('clicked').css('backgroundColor', rectangle.strokeColor);
+        }
+      }
+      
+        
+      $(function(){
+      
+        // 1st call : create rectangles (init the map with defaults values, and center on first rectangle)
+        $('#test1').gmap3({ 
+          rectangle:{
+            values:[
+              { options:{
+                  bounds: {n:40.780, e:-73.932, s:40.742, w:-73.967},
+                  fillColor : "#FFAF9F",
+                  strokeColor : "#FF512F",
+                  clickable:true
+                },
+                data:"box1"
+              },
+              { options:{
+                  bounds: [40.775, -73.937, 40.747, -73.962],
+                  fillColor : "#F4AFFF",
+                  strokeColor : "#CB53DF",
+                  clickable:true
+                },
+                data:"box2"
+              }
+            ],
+            events:{
+              click:onClk
+            }
+          }
+        });
+        
+        // second call : create a single rectangle
+        $('#test1').gmap3({
+          map:{
+            options:{
+              zoom:12
+            }
+          },
+          rectangle:{
+            options:{
+              bounds: {ne:[40.770436, -73.942185], sw:[40.752828, -73.957377]},
+              radius : 750,
+              fillColor : "#008BB2",
+              strokeColor : "#005BB7"
+            },
+            data:"box3",
+            events:{
+              click:onClk
+            }
+          }
+        });
+        
+      });
+    </script>
+  </head>
+    
+  <body>
+    <div id="container">
+      <div id="box1" class="box"></div>
+      <div id="box2" class="box"></div>
+      <div id="box3" class="box"></div>
+    </div>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

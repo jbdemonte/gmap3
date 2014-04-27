@@ -1,0 +1,72 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    <script type="text/javascript">
+      
+    $(function(){
+
+
+      $('#test1').gmap3({
+        map:{
+          options:{
+            center:{lat:24.886436490787712,lng:-70.2685546875}, 
+            zoom:3, 
+            mapTypeId: google.maps.MapTypeId.TERRAIN 
+          }
+        },
+        polygon: {
+          options:{
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            paths:[
+              [25.774252, -80.190262],
+              [18.466465, -66.118292],
+              [32.321384, -64.75737],
+              [25.774252, -80.190262]
+            ]
+          },
+          onces:{
+            click: function(polygon, event){
+              var vertices = polygon.getPath(),
+                contentString = 'Bermuda Triangle Polygon</br>Clicked Location: ' + event.latLng.lat() + ',' + event.latLng.lng() + '</br>';
+              
+              for(var i=0; i<vertices.length; i++){
+                var xy = vertices.getAt(i);
+                contentString += '<br>Coordinate ' + i + ' : ' + xy.lat() +', ' + xy.lng();
+              }
+      
+              $(this).gmap3({
+                infowindow:{
+                  options:{
+                    content: contentString,
+                    position:event.latLng
+                  }
+                }
+              });
+            }
+          }
+        }
+      });
+
+    });
+    </script>
+  </head>
+    
+  <body>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

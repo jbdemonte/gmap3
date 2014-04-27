@@ -1,0 +1,53 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      $(function(){
+        var address = "place de l'�toile, paris";
+        
+        $('#test1').gmap3(
+          { map:{
+              address:address,
+              options:{
+                zoom: 14,
+                opts:{
+                  scrollwheel:true
+                }
+              }
+            },
+            infowindow:{
+              address:address,
+              options:{
+                size: new google.maps.Size(50,50),
+                content: 'Hello World !'
+              },
+              events:{
+                closeclick: function(infowindow){
+                  alert('closing : ' + $(this).attr('id') + ' : ' + infowindow.getContent());
+                }
+              }
+            }
+          }
+        );
+          
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

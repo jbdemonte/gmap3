@@ -1,0 +1,73 @@
+<html>    
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      $(function(){
+      
+        $(".gmap3").gmap3(
+          { map:{
+              options:{
+                center:[22.49156846196823, 89.75802349999992],
+                zoom:2,
+                mapTypeId: google.maps.MapTypeId.SATELLITE,
+                mapTypeControl: true,
+                mapTypeControlOptions: {
+                  style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+                },
+                navigationControl: true,
+                scrollwheel: true,
+                streetViewControl: true
+              },
+              events:{
+                rightclick:function(map, event){
+                  $(this).gmap3({
+                    marker:{
+                      latLng: event.latLng
+                    } 
+                  });
+                }
+              }
+          }
+        });
+        
+        $(".gmap3.top").gmap3({
+          marker:{
+            latLng:[29.132318972825445,81.32052349999992],
+            options:{
+              icon: "http://maps.google.com/mapfiles/markerA.png"
+            }
+          }
+        });
+        
+        $("#test2").gmap3({
+          marker:{
+            latLng:[29.132318972825445,81.32052349999992],
+            options:{
+              icon: "http://maps.google.com/mapfiles/markerB.png"
+            }
+          }
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="test1" class="gmap3 top"></div>
+    <div id="test2" class="gmap3 middle"></div>
+    <div id="test3" class="gmap3 bottom"></div>
+  </body>
+</html>

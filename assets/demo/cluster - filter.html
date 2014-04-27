@@ -1,0 +1,154 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script> 
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1000px;
+        height: 750px;
+      }
+      .cluster{
+  			color: #FFFFFF;
+  			text-align:center;
+  			font-family: 'Arial, Helvetica';
+  			font-size:11px;
+  			font-weight:bold;
+      }
+      .cluster-1{
+        background-image:url(images/m1.png);
+        line-height:53px;
+  			width: 53px;
+  			height: 52px;
+      }
+      .cluster-2{
+        background-image:url(images/m2.png);
+        line-height:53px;
+  			width: 56px;
+  			height: 55px;
+      }
+      .cluster-3{
+        background-image:url(images/m3.png);
+        line-height:66px;
+  			width: 66px;
+  			height: 65px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      // generate an array of colors
+      var colors = "black brown green purple yellow grey orange white".split(" ");
+      
+      // on document ready function
+      $(function(){
+        
+        // create colors checkbox and associate onChange function 
+        $.each(colors, function(i, color){
+          $("#colors").append("<input type='checkbox' name='"+color+"' checked><label for='"+color+"'>"+color+"</label>");
+        });
+        $("#colors input[type=checkbox]").change(onChangeChk);
+        $("#onOff").change(onChangeOnOff); 
+        
+        
+        // create gmap3 and call the marker generation function  
+        $('#test1').gmap3({
+          map:{
+            options:{
+              zoom: 5,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            },
+            onces: {
+              bounds_changed: function(){
+                randomMarkers($(this).gmap3("get").getBounds());
+              }
+            }
+          }
+        });
+        
+      });
+      
+      // generate a list of 100 random marker and call gmap3 clustering function
+      function randomMarkers(bounds){
+        var southWest = bounds.getSouthWest(),
+          northEast = bounds.getNorthEast(),
+          lngSpan = northEast.lng() - southWest.lng(),
+          latSpan = northEast.lat() - southWest.lat(),
+          i, color, list = [];
+           
+        // generate random list
+      	for (i = 0; i < 100; i++) {
+          color = colors[Math.floor(Math.random()*colors.length)];
+          list.push({
+            latLng:[southWest.lat() + latSpan * Math.random(), southWest.lng() + lngSpan * Math.random()],
+            options:{
+              icon: "http://maps.google.com/mapfiles/marker_"+color+".png"
+            },
+            tag:color
+          });
+        }
+        
+        // call the clustering function
+        $('#test1').gmap3({
+          marker:{
+            values: list,
+            cluster:{
+              radius: 100, 
+          		// This style will be used for clusters with more than 0 markers
+          		0: {
+          		  content: '<div class="cluster cluster-1">CLUSTER_COUNT</div>',
+          			width: 53,
+          			height: 52
+          		},
+          		// This style will be used for clusters with more than 20 markers
+          		20: {
+          		  content: '<div class="cluster cluster-2">CLUSTER_COUNT</div>',
+          			width: 56,
+          			height: 55
+          		},
+          		// This style will be used for clusters with more than 50 markers
+          		50: {
+          		  content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
+          			width: 66,
+          			height: 65
+          		}
+          	}
+          }
+        });
+      }
+      
+      function onChangeOnOff(){
+        if ($(this).is(":checked")){
+          $('#test1').gmap3({get:"clusterer"}).enable();
+        } else {
+          $('#test1').gmap3({get:"clusterer"}).disable();
+        }
+      }
+      
+      function onChangeChk(){
+        // first : create an object where keys are colors and values is true (only for checked objects)
+        var checkedColors = {};
+        $("#colors input[type=checkbox]:checked").each(function(i, chk){
+          checkedColors[$(chk).attr("name")] = true;
+        });
+        
+        // set a filter function using the closure data "checkedColors"
+        $('#test1').gmap3({get:"clusterer"}).filter(function(data){
+          return data.tag in checkedColors;
+        });
+      }
+      
+    </script>
+  <body>
+    <div id="main"><input type="checkbox" name="onOff" id="onOff" checked><label for="onOff">Clustering</label></div>
+    <div id="colors"></div>
+    <br />
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

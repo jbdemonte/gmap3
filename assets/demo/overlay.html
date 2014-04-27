@@ -1,0 +1,102 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      #panTo{
+        text-align:center;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      $(function(){
+      
+        $('#test1').gmap3({
+          map:{
+            options:{
+              center:[44.797916,-93.278046]
+            },
+            callback: function(map){
+              if (map.getBounds()){
+                generateMarkers($(this), map);
+              } else {
+                $(this).gmap3({
+                  map:{
+                    onces:{
+                      bounds_changed: function(map){
+                        generateMarkers($(this), map);
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
+        
+      });
+      
+      function generateMarkers($this, map, bounds){
+        var i,
+          bounds = map.getBounds(), 
+          southWest = bounds.getSouthWest(),
+          northEast = bounds.getNorthEast(),
+          lngSpan = Math.abs(northEast.lng() - southWest.lng()),
+          latSpan = Math.abs(northEast.lat() - southWest.lat());
+      	for (i = 0; i < 10; i++) {
+          newMarker($this, i, southWest.lat() + latSpan * Math.random(), southWest.lng() + lngSpan * Math.random());
+        }
+      }
+      
+      
+      function newMarker($this, i, lat, lng){
+        $this.gmap3({ 
+          marker:{
+            latLng: [lat, lng],
+            callback: function(marker){
+              var $button = $('<span id="button-'+i+'"> ['+i+'] </span>');
+              $button
+                .click(function(){
+                  $this.gmap3("get").panTo(marker.position);
+                })
+                .css('cursor','pointer');
+              $('#panTo').append($button);
+            }
+          },
+          overlay:{
+            latLng: [lat, lng],
+            options:{
+              content: '<div style="border:1px solid #FF0000; background-color: #00FF00; width:50px; height: 20px; text-align:center">'+i+'</div>',
+              offset:{
+                y:-32,
+                x:12
+              }
+            },
+            events:{
+              mouseover: function(overlay){
+                $(overlay.getDOMElement()).children().css('backgroundColor', '#0000FF');
+              },
+              mouseout: function(overlay){
+                $(overlay.getDOMElement()).children().css('backgroundColor', '#00FF00');
+              }
+            }
+          }
+        });
+      }
+    </script>       
+  </head>
+    
+  <body>
+    <div id="panTo"></div>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

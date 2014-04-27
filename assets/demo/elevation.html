@@ -1,0 +1,137 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1024px;
+        height: 768px;
+      }
+      
+      #meters{
+        height: 30px;
+        width: 800px;
+        margin: 10px auto;
+        border: 1px solid #000000;
+        position: relative;
+      }
+      
+      #value{
+        position: absolute;
+        padding-top: 5px;
+        text-align: center;
+        width: 800px;
+      }
+      
+      #pct{
+        position: absolute;
+        top: 0px;
+        height: 30px;
+        width: 0px;
+        background-color: #FF0000;
+      }
+
+        #elevation {
+            width: 200px;
+            height: 45px;
+        }
+    </style>
+    
+    <script type="text/javascript">
+      
+      function refreshinfowindow( latLng ){
+        $('#test1').gmap3({
+          getelevation:{ 
+            latLng:latLng,
+            callback: function(results){
+              if (results) $('#elevation').html("The elevation at this point <br/>is " + results[0].elevation + " meters.");
+            }
+          }
+        });
+      }
+      
+      var max = 4000;
+      var last, ts;
+      
+      function updateLast(){
+        var r = (new Date).getTime();
+        last = r;
+        return r;
+      }
+      
+      function refreshMeterValue( latLng ){
+        if ( ts ) clearTimeout(ts);
+        ts = setTimeout(
+          function(){doRefreshMeterValue( latLng )},
+          200
+        );
+      }
+      
+      function doRefreshMeterValue( latLng ){
+        var myLast = updateLast();
+        $('#test1').gmap3({
+          getelevation:{ 
+            latLng:latLng,
+            callback: function(results){
+              if (!results || (myLast != last)) return;
+              var v = Math.min(100, Math.round((results[0].elevation * 100 / max)));
+              $('#value').html(Math.round(results[0].elevation) + ' meters');
+              $('#pct').css('width', v + '%');
+            }
+          }
+        });
+      }
+      
+      $(function(){
+      
+        var center = [63.3333333, -150.5];
+      
+        $('#test1').gmap3({
+          map:{
+            options:{
+              zoom:8,
+              center: center,
+              mapTypeId: 'terrain'
+            },
+            events:{
+              mousemove: function(map, event){
+                refreshMeterValue( event.latLng ); 
+              }
+            }
+          },
+          marker:{
+            latLng: center,
+            options:{
+              draggable: true
+            },
+            events:{
+              dragend: function(marker, event){
+                refreshinfowindow( event.latLng );
+              }
+            }
+          },
+          infowindow:{
+            options:{
+              content: '<div id="elevation"></div>'
+            },
+            onces: {
+              domready: function(){
+                refreshinfowindow( center );
+              }
+            }
+          }
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="meters"><div id="pct"></div><div id="value"></div></div>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

@@ -1,0 +1,124 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script> 
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1000px;
+        height: 750px;
+      }
+      .cluster{
+  			color: #FFFFFF;
+  			text-align:center;
+  			font-family: 'Arial, Helvetica';
+  			font-size:11px;
+  			font-weight:bold;
+      }
+      .cluster-1{
+        background-image:url(images/m1.png);
+        line-height:53px;
+  			width: 53px;
+  			height: 52px;
+      }
+      .cluster-2{
+        background-image:url(images/m2.png);
+        line-height:53px;
+  			width: 56px;
+  			height: 55px;
+      }
+      .cluster-3{
+        background-image:url(images/m3.png);
+        line-height:66px;
+  			width: 66px;
+  			height: 65px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      $(function(){
+        
+        // init the map and create a cluster with some markers
+        $('#test1').gmap3({
+          map:{
+            options:{
+              center:[46.578498,2.457275],
+              zoom: 4,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            }
+          },
+          marker:{
+            values: [
+              [49.28952958093682, 6.152559438984804],
+              [44.28952958093682, 6.152559438984804],
+              [49.28952958093682, -1.1501188139848408],
+              [44.28952958093682, -1.1501188139848408]
+            ],
+            cluster:{
+              radius: 100,
+          		// This style will be used for clusters with more than 0 markers
+          		0: {
+          		  content: '<div class="cluster cluster-1">CLUSTER_COUNT</div>',
+          			width: 53,
+          			height: 52
+          		},
+          		// This style will be used for clusters with more than 20 markers
+          		20: {
+          		  content: '<div class="cluster cluster-2">CLUSTER_COUNT</div>',
+          			width: 56,
+          			height: 55
+          		},
+          		// This style will be used for clusters with more than 50 markers
+          		50: {
+          		  content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
+          			width: 66,
+          			height: 65
+          		}
+          	}
+          }
+        });
+        
+        // append a draggable alone marker
+        $('#test1').gmap3({
+          marker:{
+            latLng:[50.92104315206032, 2.1936031249999814],
+            options:{
+              draggable: true
+            }
+          }
+        });
+        
+        // attach insertion action
+        $('button').click(function(){
+          var marker = $('#test1').gmap3({get:{name:"marker"}});
+          var clusterer = $('#test1').gmap3({get:{name:"clusterer"}});
+          
+          // append the marker to the cluster and attach one event
+          clusterer.add(
+            marker, 
+            { events: {
+              click: function(){
+                alert("I was the one !")
+              }
+            }}
+          );
+            
+            $(this).remove();
+        });
+        
+      });
+      
+    </script>
+  <body>
+    <button>Insert into clustering</button>
+    <div id="test1" class="gmap3"></div>
+    Drag and drop the marker, and then, click to add it into the current clustering
+  </body>
+</html>

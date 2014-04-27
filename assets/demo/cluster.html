@@ -1,0 +1,167 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script> 
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1000px;
+        height: 750px;
+      }
+      .cluster{
+  			color: #FFFFFF;
+  			text-align:center;
+  			font-family: 'Arial, Helvetica';
+  			font-size:11px;
+  			font-weight:bold;
+      }
+      .cluster-1{
+        background-image:url(images/m1.png);
+        line-height:53px;
+  			width: 53px;
+  			height: 52px;
+      }
+      .cluster-2{
+        background-image:url(images/m2.png);
+        line-height:53px;
+  			width: 56px;
+  			height: 55px;
+      }
+      .cluster-3{
+        background-image:url(images/m3.png);
+        line-height:66px;
+  			width: 66px;
+  			height: 65px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      var globalCluster;
+    
+      $(function(){
+        $('#test1').gmap3({ 
+          map:{
+            options:{
+              center:[46.578498,2.457275],
+              zoom: 6,
+              mapTypeId: google.maps.MapTypeId.TERRAIN
+            },
+            events:{
+              click: function(map, event){
+                addMarkerToCluster($(this), event.latLng);
+              },
+              rightclick: function(map, event){
+                addMarkersToCluster($(this), event.latLng);
+              }
+            },
+            callback: function(map){
+              waitForBounds(map);
+            }
+          }
+        });
+      });
+      
+      function waitForBounds(map){
+        var ne, sw, bounds = map.getBounds();
+        if (!bounds){
+          google.maps.event.addListenerOnce(map, 'bounds_changed', 
+            function() {
+              waitForBounds(map)
+            }
+          );
+          return;
+        }
+        ne = bounds.getNorthEast();
+        sw = bounds.getSouthWest();
+        randomMarkers(ne.lat(), sw.lng(), sw.lat(), ne.lng());
+      }
+      
+      function randomMarkers(lat1, lng1, lat2, lng2){
+        var i, list = [], rlat=lat2-lat1, rlng=lng2-lng1, lat, lng;
+        for(i=0; i<1000; i++){
+          lat = lat1 + rlat * Math.random();
+          lng = lng1 + rlng * Math.random();
+          list.push({latLng:[lat, lng]});
+        }
+        $('#test1').gmap3({
+          marker:{
+            values: list,
+            cluster:{
+              radius: 100,
+              events:{
+            	 mouseover: function(cluster, event){
+            	   $(cluster.main.getDOMElement()).css('border', '1px solid #FF0000');
+            	 },
+            	 mouseout: function(cluster, event){
+            	   $(cluster.main.getDOMElement()).css('border', '0px');
+            	 }
+            	},
+          		// This style will be used for clusters with more than 0 markers
+          		0: {
+          		  content: '<div class="cluster cluster-1">CLUSTER_COUNT</div>',
+          			width: 53,
+          			height: 52
+          		},
+          		// This style will be used for clusters with more than 20 markers
+          		20: {
+          		  content: '<div class="cluster cluster-2">CLUSTER_COUNT</div>',
+          			width: 56,
+          			height: 55
+          		},
+          		// This style will be used for clusters with more than 50 markers
+          		50: {
+          		  content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
+          			width: 66,
+          			height: 65
+          		}
+          	},
+          	callback: function(cluster){ // get the cluster and save it in global variable
+          	 globalCluster = cluster;
+          	}
+          }
+        });
+      }
+      
+      function addMarkerToCluster($this, latLng){
+        $this.gmap3({
+          marker:{
+            latLng:latLng,
+            cluster:globalCluster
+          }
+        });  
+      }
+      
+      function addMarkersToCluster($this, latLng){
+        var lat = latLng.lat(), 
+            lng = latLng.lng(),
+            dy = (1/60),
+            dx = 1/(60* Math.cos(Math.PI * lat / 180)),
+            miles = 15,
+            list = [];
+        list.push([lat, lng]);
+        list.push([lat+miles*dy, lng]);
+        list.push([lat-miles*dy, lng]);
+        list.push([lat, lng+miles*dx]);
+        list.push([lat, lng-miles*dx]);
+            
+      $this.gmap3({ 
+        marker:{
+          values: list,
+          cluster:globalCluster
+        }
+      });
+    }
+      
+    </script>
+  <body>
+    <div id="test1" class="gmap3"></div>
+    click to add new markers to the cluster
+  </body>
+</html>

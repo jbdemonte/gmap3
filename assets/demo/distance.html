@@ -1,0 +1,54 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <script type="text/javascript">
+    
+      function distance(){
+        $("body").gmap3({
+          getdistance:{
+            options:{ 
+              origins:[$("#origins").val()], 
+              destinations:[$("#destinations").val()],
+              travelMode: google.maps.TravelMode.DRIVING
+            },
+            callback: function(results, status){
+              var html = "";
+              if (results){
+                for (var i = 0; i < results.rows.length; i++){
+                  var elements = results.rows[i].elements;
+                  for(var j=0; j<elements.length; j++){
+                    switch(elements[j].status){
+                      case "OK":
+                        html += elements[j].distance.text + " (" + elements[j].duration.text + ")<br />";
+                        break;
+                      case "NOT_FOUND":
+                        html += "The origin and/or destination of this pairing could not be geocoded<br />";
+                        break;
+                      case "ZERO_RESULTS":
+                        html += "No route could be found between the origin and destination.<br />";
+                        break;
+                    }
+                  }
+                } 
+              } else {
+                html = "error";
+              }
+              $("#results").html( html );
+            }
+          }
+        });
+      }
+      
+    </script>  
+  </head>
+    
+  <body>
+    Origin : <input type="text" id="origins" /> Destination : <input type="text" id="destinations" /> <input type="button" id="distance" value="distance" onclick="distance();">
+    <br /><br />
+    Results : 
+    <div id="results"></div>
+  </body>
+</html>

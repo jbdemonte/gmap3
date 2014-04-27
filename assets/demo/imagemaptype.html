@@ -1,0 +1,61 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 1000px;
+        height: 1000px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      
+      $(function(){
+      
+        var id = "sectional";
+        
+        $("#test1").gmap3({
+          map:{
+            options:{
+              center:[33, -111],
+              zoom:9,
+              mapTypeControlOptions: { 
+                mapTypeIds: [google.maps.MapTypeId.ROADMAP, 
+        					google.maps.MapTypeId.SATELLITE,
+        					google.maps.MapTypeId.HYBRID,
+        					google.maps.MapTypeId.TERRAIN,
+        					id]
+              }
+            }
+          },
+          imagemaptype:{
+            id: id,
+            options:{
+              getTileUrl: function(coord, zoom) { 
+            	 return "http://www.fourpeaksnavigation.com/sectionals/phx" + "/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+              }, 
+              tileSize: new google.maps.Size(256, 256), 
+              isPng: true,
+              name: "Chart",
+              minZoom: 1,
+              maxZoom: 111
+            },
+            callback: function(){
+              $(this).gmap3("get").setMapTypeId(id);
+            }
+          }
+        });   
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>

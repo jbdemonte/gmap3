@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>EBRO</title>
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../../gmap3.js"></script>
+    <script type="text/javascript" src="js/data.js"></script>
+    <script type="text/javascript">
+	
+      var mapMenuOpen = true;
+	  
+      var shadow = new google.maps.MarkerImage(
+        'css/images/marker-images/shadow.png',
+        new google.maps.Size(87,50),
+        new google.maps.Point(0,0),
+        new google.maps.Point(30,50)
+      );
+      
+      function mapMenuClose() {
+        if (!mapMenuOpen) {
+        $('#haritaPopUp').css('display', 'none');
+          mapMenuOpen = true;	
+        }
+      }
+
+
+      $(function () {
+	
+        // map initialisation
+        $('#anaharita').gmap3({
+          map:{
+            options: {
+              center: [39.93396, 32.853928],
+              zoom: 11,
+              panControl: true,
+              overviewMapControl: false,
+              mapTypeControl: false,
+              scaleControl: false,
+              streetViewControl: false,
+              zoomControl: true,
+              maxZoom: 16,
+              minZoom: 9
+            }
+          }
+        });
+        
+        $('#anaharita').gmap3({
+          marker:{
+            values: list, // from js/data.js
+            
+            // single marker options
+            options: {
+              draggable: false,
+              shadow: shadow
+            },
+            // single marker events
+            events: {
+              mouseover: function (marker, event, context) {
+                mapMenuOpen = true;
+                var map = $(this).gmap3('get');
+                var scale = Math.pow(2, map.getZoom());
+                var nw = new google.maps.LatLng(
+                map.getBounds().getNorthEast().lat(), map.getBounds().getSouthWest().lng());
+                var worldCoordinateNW = map.getProjection().fromLatLngToPoint(nw);
+                var worldCoordinate = map.getProjection().fromLatLngToPoint(marker.getPosition());
+                var pixelOffset = new google.maps.Point(Math.floor((worldCoordinate.x - worldCoordinateNW.x) * scale), Math.floor((worldCoordinate.y - worldCoordinateNW.y) * scale));
+                var mapposition = $("#anaharita").position();
+                
+                if (context.data.type != "merkez") {
+                  var icerik = "<div class='left'><div class='magazaadi' id='magazaadi'> " + context.data.adi + "</div><div class='magazaadres' id='magazaadres'> " + context.data.adres + "</div><div class='magazabilgi' id='magazabilgi'>" + context.data.bilgi + "</div></div><div class='right'><div class='urunlogo' onClick='CreatePresentation("+context.data.brosurID+",1,2);'> <img id='magazabrosur' src='"+context.data.brosur+"' width='100' height='141'></div></div>";
+                  
+                  $(".accordion").html(icerik);
+                  
+                  magazalogopath = "logo/";
+                  magazabrosurpath = "";
+                  
+                  $("#haritaPopUp").css('display', 'block');
+                  $("#haritaPopUp").css('left', (pixelOffset.x + mapposition.left + 15 + 'px'));
+                  $("#haritaPopUp").css('top', (pixelOffset.y + mapposition.top - 62 + 'px'));
+                  
+                }
+              },
+              mouseout: function () {
+                mapMenuOpen = false;
+                var t = setTimeout("mapMenuClose()", 500)
+              }
+            },
+            
+            // cluster definition
+            cluster:{
+              radius: 100,
+              
+              // This style will be used for clusters with more than 0 markers
+              0: {
+                content: '<div class="cluster cluster-1">CLUSTER_COUNT</div>',
+                width: 50,
+                height: 50
+              },
+              // This style will be used for clusters with more than 6 markers
+              6: {
+                content: '<div class="cluster cluster-2">CLUSTER_COUNT</div>',
+                width: 70,
+                height: 70
+              },
+              // This style will be used for clusters with more than 7 markers
+              7: {
+                content: '<div class="cluster cluster-3">CLUSTER_COUNT</div>',
+                width: 90,
+                height: 90
+              },
+              events: {
+                mouseover: function (cluster, event, context) {
+                  var icerik = "";
+                  magazalogopath = "logo/";
+                  magazabrosurpath = "";
+                  
+                  // If more than 7 markers, don't display the panel
+                  if(context.data.markers.length > 7 ){
+                    return;
+                  }
+                  for (i = 0; i < context.data.markers.length; i++) {
+                    icerik += "<div class='accordionButton'>" + context.data.markers[i].data.adi + "</div><div class='accordionContent'><div class='left'><div class='magazaadres' id='magazaadres'> " + context.data.markers[i].data.adres + "</div><div class='magazabilgi' id='magazabilgi'>" + context.data.markers[i].data.bilgi + "</div></div><div class='right'><div class='urunlogo' onClick='CreatePresentation("+context.data.markers[i].data.brosurID+",1,2);'> <img id='magazabrosur' src='"+context.data.markers[i].data.brosur+"' width='100' height='141'></div></div></div>";
+                  }
+                  
+                  $(".accordion").html(icerik);
+                  $("#haritaPopUp").css('display', 'block');
+                  $("#haritaPopUp").css('left', ($(cluster.main.getDOMElement()).offset().left + 10 + ($(cluster.main.getDOMElement()).width()/2) +'px'));
+                  $("#haritaPopUp").css('top', ($(cluster.main.getDOMElement()).offset().top -30+ ($(cluster.main.getDOMElement()).height()/2)+'px'));
+                  
+                  $(cluster.main.getDOMElement()).css('border', '0px solid #FF0000');
+                  
+                  $('.accordionButton').click(function () {
+                    $('.accordionButton').removeClass('on');
+                    $('.accordionContent').slideUp('normal');
+                    if ($(this).next().is(':hidden')) {
+                      $(this).addClass('on'); 
+                      $(this).next().slideDown('normal');
+                    }
+                  });
+                  
+                  $('.accordionContent').hide();
+                },
+                mouseout: function (cluster, event) {
+                  mapMenuOpen = false;
+                  var t = setTimeout("mapMenuClose()", 500)
+                },
+                click: function (cluster, event, context){
+                  var map = $(this).gmap3('get');
+                  mapMenuOpen = false;
+                  var t = setTimeout("mapMenuClose()", 100)				
+                  map.setCenter(context.data.latLng);
+                  map.setZoom(map.getZoom() + 1);
+                }
+              }
+            }
+          }
+        });
+
+        $("#haritaPopUp").mouseover(function() {
+          mapMenuOpen = true;
+          $("#haritaPopUp").css('display', 'block');
+        });
+        
+        $("#haritaPopUp").mouseout(function() {
+          $('#haritaPopUp').css('display', 'none');
+        });
+        
+      }); // end of $(function(){
+        
+        
+    </script>
+  </head>
+  <body>
+    <h1>Advanced example of use of the clustering feature</h1>
+    <div>
+      Produced by <a href="http://www.ebrosur.com">www.ebrosur.com</a>
+    </div>
+    <div id="haritaPopUp">
+      <div class="arrow"></div>
+      <div class="haritaWrapper">
+        <div class="top"></div>
+        <div class="content">
+          <div class="container">
+            <div class="accordion"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="haritaMain">
+      <div id="haritaSehir">ANKARA</div>
+      <div id="anaharita" class="anaharita"> </div>
+    </div>
+</body>
+</html>

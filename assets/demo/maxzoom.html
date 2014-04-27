@@ -1,0 +1,49 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      $(function(){
+      
+        $('#test').gmap3({
+          map:{
+            events:{
+              click: function(map, latLng){
+                $(this).gmap3({
+                  getmaxzoom:{ 
+                    latLng:latLng,
+                    callback:function(zoom){
+                      $('#result').html('Max Zoom : ' + (zoom !== false ? zoom : 'not available'));
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="result">&nbsp;</div>  
+    <div id="test" class="gmap3"></div>
+    click on the map to get the max zoom of the clicked position
+  </body>
+</html>

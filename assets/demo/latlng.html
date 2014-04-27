@@ -1,0 +1,65 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      body{
+        text-align:center;
+      }
+      #ctrl{
+        width: 500px;
+        margin:0 auto;
+      }
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+    </style>
+    
+    <script type="text/javascript">
+    
+      $(function(){
+      
+        $("#test").gmap3();
+  
+        $('#test-ok').click(function(){
+          var addr = $('#test-address').val();
+          if ( !addr || !addr.length ) return;
+          $("#test").gmap3({
+            getlatlng:{
+              address:  addr,
+              callback: function(results){
+                if ( !results ) return;
+                $(this).gmap3({
+                  marker:{
+                    latLng:results[0].geometry.location,
+                    map:{
+                      center: true
+                    }
+                  }
+                });
+              }
+            }
+          });
+        });
+        
+        $('#test-address').keypress(function(e){
+          if (e.keyCode == 13){
+            $('#test-ok').click();
+          }
+        });
+      });
+
+    </script>  
+  </head>
+    
+  <body>
+    <div id="ctrl">Address : <input type="text" id="test-address" size="60"> <button type="button" id="test-ok">Ok</button></div>  
+    <div id="test" class="gmap3"></div>
+    Fill in an address, a marker will be added and the map will be centered on it
+  </body>
+</html>

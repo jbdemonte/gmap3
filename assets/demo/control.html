@@ -1,0 +1,79 @@
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+  <script type="text/javascript" src="../gmap3.js"></script>
+  <style>
+    .gmap3{
+      margin: 20px auto;
+      border: 1px dashed #C0C0C0;
+      width: 1024px;
+      height: 768px;
+    }
+    
+    #homeControl{
+      padding: 5px;
+    }
+    
+    #homeControl .outer{
+      background-color: #FFFFFF;
+      border: 2px solid #000000;
+      cursor: pointer;
+      text-align: center;
+    }
+    
+    #homeControl .outer .inner{
+      font-family: Arial,sans-serif;
+      font-size: 12px;
+      padding-left: 4px;
+      padding-right: 4px;
+      font-weight: bold;
+    }
+    
+  </style>
+  <script type="text/javascript">
+
+    var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+    
+    function HomeControl(map) {
+      var $container = $(document.createElement('DIV')),
+        $outer = $(document.createElement('DIV')),
+        $inner = $(document.createElement('DIV'));
+        
+      $inner.addClass("inner").html("Home");
+      $outer.addClass("outer").attr('title', "Click to set the map to Home");
+      $container.attr("id", "homeControl");
+      
+      $container.append( $outer.append( $inner ) );
+      
+      google.maps.event.addDomListener($outer.get(0), 'click', function() {
+        map.setCenter(chicago)
+      });
+      
+      this.index = 1;
+      map.controls[google.maps.ControlPosition.TOP_RIGHT].push($container.get(0));
+    }
+
+    $(function(){
+      $("#map_canvas").gmap3({
+        map:{
+          options:{
+            zoom: 12,
+            center: chicago,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          },
+          callback: function(map){
+            new HomeControl(map);
+          }
+        }
+      });
+    });
+
+</script>
+</head>
+<body>
+  <h1>jQuery / Gmap3 version of the <a href="https://developers.google.com/maps/documentation/javascript/controls#CustomExample" target="blank">google example</a></h1>
+  <div id="map_canvas" class="gmap3"></div>
+</body>
+</html>

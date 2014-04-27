@@ -1,0 +1,48 @@
+<html>   
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" /> 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+    <script type="text/javascript" src="../gmap3.js"></script>
+    <style>
+      .gmap3{
+        margin: 20px auto;
+        border: 1px dashed #C0C0C0;
+        width: 500px;
+        height: 250px;
+      }
+      
+      .test1-result{
+        text-align:center;
+      }
+    </style>
+    
+    <script type="text/javascript">
+      $(function(){
+      
+        $('#test1').gmap3({
+          getgeoloc:{
+            callback : function(latLng){
+              if (latLng){
+                $('#test1-result').html('localised !');
+                $(this).gmap3({
+                  marker:{ 
+                    latLng:latLng
+                  }
+                });
+              } else {
+                $('#test1-result').html('not localised !');
+              }
+            }
+          }
+        });
+        
+      });
+    </script>  
+  </head>
+    
+  <body>
+    <div id="test1-result"></div>  
+    <div id="test1" class="gmap3"></div>
+  </body>
+</html>
