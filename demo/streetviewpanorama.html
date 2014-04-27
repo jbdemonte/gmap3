@@ -1,7 +1,7 @@
 <html>    
   <head> 
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <script type="text/javascript" src="../jquery/jquery-1.4.4.min.js"></script>        
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
     <script type="text/javascript" src="../dist/gmap3.js"></script>
     <style>
@@ -28,19 +28,19 @@
         
         this.setMap = function(obj){
           map = obj;
-        }
+        };
         
         this.setMarker = function(obj){
           marker = obj;
-        }
+        };
         
         this.setInfowindow = function(obj){
           infowindow = obj;
-        }
+        };
         
         this.open = function(){
           infowindow.open(map, marker);
-        }
+        };
         
         this.run = function(id){
           if (!marker) {
@@ -57,8 +57,8 @@
           );
           p.bindTo("position", marker);
           p.setVisible(true);
-        }
-      };
+        };
+      }
     
       $(function(){
         
