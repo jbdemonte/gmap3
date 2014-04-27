@@ -55,12 +55,13 @@ var features = ["autofit", "bicyclinglayer", "circle", "clear", "cluster", "defa
     selector: ["marker"],
     streetviewpanorama: ["marker", "infowindow"],
     tags: ["get", "marker", "clear"],
-    trigger: []
+    trigger: ["trigger"]
   };
 
 var argv = require("yargs").argv,
   fs = require("fs"),
-  path = require("path");
+  path = require("path"),
+  revert = !!argv.only;
 
 /**
  * Return CLI value or default value
@@ -79,7 +80,7 @@ function getOptions() {
   var result = [];
   features.forEach(function (name) {
     if (!result[name]) { // may already be done by dependencies
-      result[name] = testOption(name, true);
+      result[name] = testOption(name, !revert);
       if (result[name]) {
         getDependecies(name).forEach(function (dependency) {
           result[dependency] = true;

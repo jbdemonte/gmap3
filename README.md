@@ -70,47 +70,66 @@ gulp
 
 The built version of Gmap3 will be put in the `dist/` subdirectory, along with the minified copy.
 
-By default, all the features are included in the build, to create your own light version, you can remove some feature by using "--no-option_name" in the build command line.
+The builder contains two main tasks named "default" and "package".
+  - "default" build the gmap3.js and its minified version
+  - "package" also include the demo and examples files
 
-e.g., to remove cluster support:
+By default, all the features are included in the build, to create your own light version, you can either remove some features by using "--no-option_name" in the build command line or only include the ones you want by using the option "--only".
+
+e.g.,
+
+only include "rectange" and "circle" features:
+```bash
+gulp --only --rectangle --circle
+```
+The code below is equivalent to:
+```bash
+gulp default --only --rectangle --circle
+```
+To also include compatible demo and examples:
+```bash
+gulp package --only --rectangle --circle
+```
+
+to keep all feature but the cluster support:
 ```bash
 gulp --no-cluster
 ```
 
-If a feature is removed while it's a dependency for another one, the remove option will be ignored.
+If a feature is removed while it is a dependency for another one, it will be nevertheless kept.
 
 Available options:
- - --no-autofit
- - --no-bicyclinglayer
- - --no-circle
- - --no-clear
- - --no-cluster (use marker)
- - --no-defaults
- - --no-destroy
- - --no-directionsrenderer
- - --no-exec
- - --no-get
- - --no-getaddress
- - --no-getdistance
- - --no-getelevation
- - --no-getgeoloc
- - --no-getlatlng
- - --no-getmaxzoom
- - --no-getroute
- - --no-groundoverlay
- - --no-imagemaptype
- - --no-infowindow
- - --no-kmllayer
- - --no-marker
- - --no-overlay
- - --no-panel
- - --no-polygon
- - --no-polyline
- - --no-rectangle
- - --no-streetviewpanorama
- - --no-styledmaptype
- - --no-trafficlayer
- - --no-trigger
+ - autofit
+ - bicyclinglayer
+ - circle
+ - clear
+ - cluster (use marker)
+ - defaults
+ - destroy
+ - directionsrenderer
+ - exec
+ - get
+ - getaddress
+ - getdistance
+ - getelevation
+ - getgeoloc
+ - getlatlng
+ - getmaxzoom
+ - getroute
+ - groundoverlay
+ - imagemaptype
+ - infowindow
+ - kmllayer
+ - marker
+ - overlay
+ - panel
+ - polygon
+ - polyline
+ - rectangle
+ - streetviewpanorama
+ - styledmaptype
+ - trafficlayer
+ - trigger
 
 
 Licence
