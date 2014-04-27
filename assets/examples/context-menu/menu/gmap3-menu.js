@@ -29,18 +29,18 @@ function Gmap3Menu($div){
         function(){$(this).removeClass("hover");}
       );
     return $item;
-  };
+  }
   
   function clearTs(){
     if (ts){
       clearTimeout(ts);
       ts = null;
     }
-  };
+  }
   
   function initTs(t){
-    ts = setTimeout(function(){that.close()}, t);
-  };
+    ts = setTimeout(function(){that.close();}, t);
+  }
   
   this.add = function(label, cl, fnc){
     items.push({
@@ -48,7 +48,7 @@ function Gmap3Menu($div){
       fnc:fnc,
       cl:cl
     });
-  }
+  };
 
   // close previous and open a new menu 
   this.open = function(event){
@@ -89,11 +89,11 @@ function Gmap3Menu($div){
     
     // start auto-close
     initTs(5000);
-  }
+  };
   
   // close the menu
   this.close = function(){
     clearTs();
     $div.gmap3({clear:{name:"overlay", tag:namespace}});
-  }
+  };
 }
