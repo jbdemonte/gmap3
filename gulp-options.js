@@ -1,6 +1,6 @@
 var features = ["autofit", "bicyclinglayer", "circle", "clear", "cluster", "defaults", "destroy", "directionsrenderer",
     "exec", "get", "getaddress", "getdistance", "getelevation", "getgeoloc", "getlatlng", "getmaxzoom", "getroute",
-    "groundoverlay", "imagemaptype", "infowindow", "kmllayer", "marker", "panel", "polygon", "polyline", "rectangle",
+    "groundoverlay", "imagemaptype", "infowindow", "kmllayer", "marker", "overlay", "panel", "polygon", "polyline", "rectangle",
     "streetviewpanorama", "styledmaptype", "trafficlayer", "trigger"],
 
   dependencies = {
