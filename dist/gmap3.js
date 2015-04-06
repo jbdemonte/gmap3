@@ -49,7 +49,7 @@ function initDefaults() {
       },
       classes: (function () {
         var r = {};
-        $.each("Map Marker InfoWindow Circle Rectangle OverlayView StreetViewPanorama KmlLayer TrafficLayer BicyclingLayer GroundOverlay StyledMapType ImageMapType".split(" "), function (_, k) {
+        $.each("Map Marker InfoWindow Circle Rectangle OverlayView StreetViewPanorama KmlLayer TrafficLayer TransitLayer BicyclingLayer GroundOverlay StyledMapType ImageMapType".split(" "), function (_, k) {
           r[k] = gm[k];
         });
         return r;
@@ -2136,6 +2136,20 @@ function Gmap3($this) {
       obj = new defaults.classes.TrafficLayer();
       obj.setMap(map);
       store.add(args, "trafficlayer", obj);
+    }
+    manageEnd(args, obj);
+  };
+
+  /**
+   * add a transit layer
+   **/
+  self.transitlayer = function (args) {
+    newMap();
+    var obj = store.get("transitlayer");
+    if (!obj) {
+      obj = new defaults.classes.TransitLayer();
+      obj.setMap(map);
+      store.add(args, "transitlayer", obj);
     }
     manageEnd(args, obj);
   };
