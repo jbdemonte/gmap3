@@ -2330,22 +2330,22 @@ function Gmap3($this) {
   self.autofit = function (args) {
     var bounds = new gm.LatLngBounds();
     $.each(store.all(), function (i, obj) {
-      if (obj.getPosition) {
+      if (obj.getPosition && obj.getPosition()) {
         bounds.extend(obj.getPosition());
-      } else if (obj.getBounds) {
+      } else if (obj.getBounds && obj.getBounds()) {
         bounds.extend(obj.getBounds().getNorthEast());
         bounds.extend(obj.getBounds().getSouthWest());
-      } else if (obj.getPaths) {
+      } else if (obj.getPaths && obj.getPaths()) {
         obj.getPaths().forEach(function (path) {
           path.forEach(function (latLng) {
             bounds.extend(latLng);
           });
         });
-      } else if (obj.getPath) {
+      } else if (obj.getPath && obj.getPath()) {
         obj.getPath().forEach(function (latLng) {
           bounds.extend(latLng);
         });
-      } else if (obj.getCenter) {
+      } else if (obj.getCenter && obj.getCenter()) {
         bounds.extend(obj.getCenter());
       } else if (typeof Clusterer === "function" && obj instanceof Clusterer) {
         obj = store.getById(obj.id(), true);
