@@ -1,5 +1,9 @@
 changelog
 ---------
+6.1.0 - 2016-01-01
+  added: transitlayer
+  fix: autofit when infowindow is added with an anchor
+
 6.0.0 - 2014-04-25
   fix some errors, missing declaration
   code optimisation
