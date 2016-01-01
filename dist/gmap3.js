@@ -2156,6 +2156,20 @@ function Gmap3($this) {
   };
 
   /**
+   * add a transit layer
+   **/
+  self.transitlayer = function (args) {
+    newMap();
+    var obj = store.get("transitlayer");
+    if (!obj) {
+      obj = new defaults.classes.TransitLayer();
+      obj.setMap(map);
+      store.add(args, "transitlayer", obj);
+    }
+    manageEnd(args, obj);
+  };
+
+  /**
    * add a bicycling layer
    **/
   self.bicyclinglayer = function (args) {
