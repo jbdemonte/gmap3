@@ -1,7 +1,7 @@
 var features = ["autofit", "bicyclinglayer", "circle", "clear", "cluster", "defaults", "destroy", "directionsrenderer",
     "exec", "get", "getaddress", "getdistance", "getelevation", "getgeoloc", "getlatlng", "getmaxzoom", "getroute",
     "groundoverlay", "imagemaptype", "infowindow", "kmllayer", "marker", "overlay", "panel", "polygon", "polyline", "rectangle",
-    "streetviewpanorama", "styledmaptype", "trafficlayer", "trigger"],
+    "streetviewpanorama", "styledmaptype", "trafficlayer", "transitlayer", "trigger"],
 
   dependencies = {
     cluster: ["overlay", "marker"],
@@ -55,6 +55,8 @@ var features = ["autofit", "bicyclinglayer", "circle", "clear", "cluster", "defa
     selector: ["marker"],
     streetviewpanorama: ["marker", "infowindow"],
     tags: ["get", "marker", "clear"],
+    trafficlayer: ["trafficlayer"],
+    transitlayer: ["transitlayer"],
     trigger: ["trigger"]
   };
 

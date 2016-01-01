@@ -129,6 +129,7 @@ Available options:
  - streetviewpanorama
  - styledmaptype
  - trafficlayer
+ - transitlayer
  - trigger
 
 
