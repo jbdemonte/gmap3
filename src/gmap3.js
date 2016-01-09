@@ -91,10 +91,28 @@
   }
 
   /**
+   * Uppercase first letter of a string
+   * @param str {string}
+   * @returns {string}
+   */
+  function ucFirst(str) {
+    return str[0].toUpperCase() + str.substr(1);
+  }
+
+  /**
+   * Split string a execute a function on each item
+   * @param str {string} space separated list of string concatenated
+   * @param fn {function(item:string)}
+   */
+  function foreachStr(str, fn) {
+    str.split(' ').forEach(fn);
+  }
+
+  /**
    * Resolve an address location / convert a LatLng array to google.maps.LatLng object
    * @param options {object}
    * @param key {string} LatLng key name in options object
-   * @param fn {function(options)}
+   * @param fn {function(options, latLng)}
    * @returns {Deferred}
    */
   function resolveLatLng(options, key, fn) {
@@ -148,7 +166,7 @@
   function Handler(chain, items) {
     var self = this;
 
-    'map marker then'.split(' ').forEach(function (name) {
+    foreachStr('map marker circle then', function (name) {
       self[name] = function () {
         var args = arraySlice.call(arguments);
         items.forEach(function (item) {
@@ -242,12 +260,15 @@
       }
     }
 
-    self.marker = multiple(function (options) {
-      return promise = promise.then(function () {
-        return resolveLatLng(options, 'position', function (opts, latLng) {
-          opts.map = getMap(latLng);
-          return gmElement('Marker', opts);
-        })
+    foreachStr('marker:position circle:center', function (item) {
+      item = item.split(':');
+      self[item[0]] = multiple(function (options) {
+        return promise = promise.then(function () {
+          return resolveLatLng(options, item[1], function (opts, latLng) {
+            opts.map = getMap(latLng);
+            return gmElement(ucFirst(item[0]), opts);
+          })
+        });
       });
     });
 
