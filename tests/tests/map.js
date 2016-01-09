@@ -29,7 +29,7 @@ describe('map', function () {
       });
   });
 
-  it('would convert the center array', function (done) {
+  it('would convert the center as array', function (done) {
     this.handler
       .map({center: [100,200]})
       .then(function (map) {
@@ -41,7 +41,7 @@ describe('map', function () {
       });
   });
 
-  it('would not modify the simple center object', function (done) {
+  it('would not modify the center as literal object', function (done) {
     var center = {lat: 100, lng: 200};
     this.handler
       .map({center: center})
@@ -53,7 +53,7 @@ describe('map', function () {
       });
   });
 
-  it('would not modify the simple center as google.maps.LatLng object', function (done) {
+  it('would not modify the center as google.maps.LatLng object', function (done) {
     var center = new google.maps.LatLng(100, 200);
     this.handler
       .map({center: center})

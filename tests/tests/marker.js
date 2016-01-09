@@ -39,7 +39,7 @@ describe('marker', function () {
       });
   });
 
-  it('would convert the position array', function (done) {
+  it('would convert the position as array', function (done) {
     this.handler
       .marker({position: [100,200]})
       .then(function (marker) {
@@ -51,7 +51,7 @@ describe('marker', function () {
       });
   });
 
-  it('would not modify the simple position object', function (done) {
+  it('would not modify position as literal object', function (done) {
     var position = {lat: 100, lng: 200};
     this.handler
       .marker({position: position})
@@ -63,7 +63,7 @@ describe('marker', function () {
       });
   });
 
-  it('would not modify the simple position as google.maps.LatLng object', function (done) {
+  it('would not modify the position as google.maps.LatLng object', function (done) {
     var position = new google.maps.LatLng(100, 200);
     this.handler
       .marker({position: position})
