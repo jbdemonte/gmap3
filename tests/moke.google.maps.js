@@ -171,6 +171,10 @@ window.google = (function () {
     this.ne = function () {
       return ne;
     };
+
+    this.getCenter = function () {
+      return new maps.LatLng(123, 456); // fixed because not representative in tests
+    }
   };
 
 

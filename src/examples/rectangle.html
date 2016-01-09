@@ -1,0 +1,23 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3()
+        .map({
+          center: [40.76, -73.9495],
+          zoom: 13,
+          mapTypeId : google.maps.MapTypeId.ROADMAP
+        })
+        .rectangle({
+          //bounds: {north:40.780, east:-73.932, south:40.742, west:-73.967}
+          bounds: [40.780, -73.932, 40.742, -73.967]
+        })
+          .on('click', function (rectangle, event) {
+          rectangle.setOptions({fillColor: "#AAFF55"});
+          setTimeout(function () {
+            rectangle.setOptions({fillColor: "#000000"});
+          }, 200);
+          })
+    ;
+  });
+</script>

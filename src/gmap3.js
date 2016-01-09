@@ -109,6 +109,27 @@
   }
 
   /**
+   * convert bounds from array [ n, e, s, w ] to google.maps.LatLngBounds
+   * @param options {Object} container of options.bounds
+   * @param fn {function(options, latLng)}
+   * @returns {Deferred}
+   */
+  function resolveLatLngBounds(options, fn) {
+    options = options ? extend(true, {}, options) : {}; // never modify original object
+    var bounds = options.bounds;
+    if (bounds) {
+      if (isArray(bounds)) {
+        options.bounds = gmElement('LatLngBounds', {lat: bounds[2], lng: bounds[3]}, {lat: bounds[0], lng: bounds[1]});
+      } else if (!bounds.getCenter){
+        options.bounds = gmElement('LatLngBounds', {lat: bounds.south, lng: bounds.west}, {lat: bounds.north, lng: bounds.east});
+      }
+    }
+    return when().then(function () {
+      return fn(options, bounds ? options.bounds.getCenter() : null);
+    })
+  }
+
+  /**
    * Resolve an address location / convert a LatLng array to google.maps.LatLng object
    * @param options {object}
    * @param key {string} LatLng key name in options object
@@ -166,7 +187,7 @@
   function Handler(chain, items) {
     var self = this;
 
-    foreachStr('map marker circle then', function (name) {
+    foreachStr('map marker rectangle circle then', function (name) {
       self[name] = function () {
         var args = arraySlice.call(arguments);
         items.forEach(function (item) {
@@ -269,6 +290,15 @@
             return gmElement(ucFirst(item[0]), opts);
           })
         });
+      });
+    });
+
+    self.rectangle = multiple(function (options) {
+      return promise = promise.then(function () {
+        return resolveLatLngBounds(options, function (opts, latLng) {
+          opts.map = getMap(latLng);
+          return gmElement('Rectangle', opts);
+        })
       });
     });
 
