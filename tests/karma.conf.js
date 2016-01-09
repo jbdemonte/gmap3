@@ -15,8 +15,7 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'tests/moke.google.maps.js',
       'src/gmap3.js',
-      'tests/tests/events.js'
-      //'tests/**/*.js'
+      'tests/**/*.js'
     ],
 
 
