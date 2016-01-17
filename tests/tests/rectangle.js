@@ -11,18 +11,9 @@ describe('rectangle', function () {
       .rectangle(options)
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
-        done();
-      });
-  });
-
-  it('would return an instance based on options', function (done) {
-    this.handler
-      .rectangle({a: 123})
-      .then(function (rectangle) {
-        expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.a).to.be.equal(123);
         done();
       });
   });
@@ -32,6 +23,7 @@ describe('rectangle', function () {
       .rectangle({bounds: [1,2,3,4]})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
         expect(rectangle.__data.bounds.ne().lat).to.be.equal(1);
         expect(rectangle.__data.bounds.ne().lng).to.be.equal(2);
@@ -47,6 +39,7 @@ describe('rectangle', function () {
       .rectangle({bounds: bounds})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
         expect(rectangle.__data.bounds.ne().lat).to.be.equal(1);
         expect(rectangle.__data.bounds.ne().lng).to.be.equal(2);
@@ -62,6 +55,7 @@ describe('rectangle', function () {
       .rectangle({bounds: bounds})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle.__data.bounds).to.equal(bounds);
         expect(rectangle.__data.bounds.ne().north).to.be.equal(1);
         expect(rectangle.__data.bounds.ne().east).to.be.equal(2);
@@ -78,10 +72,12 @@ describe('rectangle', function () {
       .then(function (rectangle) {
         previous = rectangle;
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
       })
       .rectangle()
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle).not.to.be.equal(previous);
         done();
       })
@@ -102,6 +98,7 @@ describe('rectangle', function () {
       .rectangle({bounds: [13, 14, 15, 16]})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         rectangles.push(rectangle)
       })
       .rectangle([
@@ -116,6 +113,7 @@ describe('rectangle', function () {
       .rectangle({bounds: [29, 30, 31, 32]})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         rectangles.push(rectangle)
       })
       .then(function () {
@@ -127,6 +125,7 @@ describe('rectangle', function () {
           var w = 4 * index + 4;
           var bounds = rectangle.__data.bounds;
           expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
+          expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
           // may be either a google.maps.LatLng or a simple {lat, lng} object
           if (bounds.ne().north) {
             expect(bounds.ne().north).to.be.equal(n);

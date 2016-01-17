@@ -11,18 +11,9 @@ describe('marker', function () {
       .marker(options)
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
-        done();
-      });
-  });
-
-  it('would return an instance based on options', function (done) {
-    this.handler
-      .marker({a: 123})
-      .then(function (marker) {
-        expect(marker).to.be.an.instanceof(google.maps.Marker);
-        expect(marker.__data.a).to.be.equal(123);
         done();
       });
   });
@@ -32,6 +23,7 @@ describe('marker', function () {
       .marker({address: '100,200'})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker.__data.position).to.be.an.instanceof(google.maps.LatLng);
         expect(marker.__data.position.lat()).to.be.equal(100);
         expect(marker.__data.position.lng()).to.be.equal(200);
@@ -44,6 +36,7 @@ describe('marker', function () {
       .marker({position: [100,200]})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker.__data.position).to.be.an.instanceof(google.maps.LatLng);
         expect(marker.__data.position.lat()).to.be.equal(100);
         expect(marker.__data.position.lng()).to.be.equal(200);
@@ -57,6 +50,7 @@ describe('marker', function () {
       .marker({position: position})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker.__data.position).not.to.equal(position); // should have clone the options object to not modify it
         expect(marker.__data.position).to.deep.equal({lat: 100, lng: 200});
         done();
@@ -69,6 +63,7 @@ describe('marker', function () {
       .marker({position: position})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker.__data.position).to.equal(position);
         expect(marker.__data.position.lat()).to.be.equal(100);
         expect(marker.__data.position.lng()).to.be.equal(200);
@@ -83,10 +78,12 @@ describe('marker', function () {
       .then(function (marker) {
         previous = marker;
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
       })
       .marker()
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(marker).not.to.be.equal(previous);
         done();
       })
@@ -107,6 +104,7 @@ describe('marker', function () {
       .marker({position: [7, 8]})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         markers.push(marker)
       })
       .marker([
@@ -121,6 +119,7 @@ describe('marker', function () {
       .marker({position: new google.maps.LatLng(15, 16)})
       .then(function (marker) {
         expect(marker).to.be.an.instanceof(google.maps.Marker);
+        expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
         markers.push(marker)
       })
       .then(function () {
@@ -129,6 +128,7 @@ describe('marker', function () {
           var lat = 2 * index + 1;
           var lng = 2 * index + 2;
           expect(marker).to.be.an.instanceof(google.maps.Marker);
+          expect(marker.__data.map).to.be.an.instanceof(google.maps.Map);
           // may be either a google.maps.LatLng or a simple {lat, lng} object
           if (marker.__data.position instanceof google.maps.LatLng) {
             expect(marker.__data.position.lat()).to.be.equal(lat);

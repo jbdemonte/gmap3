@@ -11,18 +11,9 @@ describe('circle', function () {
       .circle(options)
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
-        done();
-      });
-  });
-
-  it('would return an instance based on options', function (done) {
-    this.handler
-      .circle({a: 123})
-      .then(function (circle) {
-        expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.a).to.be.equal(123);
         done();
       });
   });
@@ -32,6 +23,7 @@ describe('circle', function () {
       .circle({address: '100,200'})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle.__data.center).to.be.an.instanceof(google.maps.LatLng);
         expect(circle.__data.center.lat()).to.be.equal(100);
         expect(circle.__data.center.lng()).to.be.equal(200);
@@ -44,6 +36,7 @@ describe('circle', function () {
       .circle({center: [100,200]})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle.__data.center).to.be.an.instanceof(google.maps.LatLng);
         expect(circle.__data.center.lat()).to.be.equal(100);
         expect(circle.__data.center.lng()).to.be.equal(200);
@@ -57,6 +50,7 @@ describe('circle', function () {
       .circle({center: center})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle.__data.center).not.to.equal(center); // should have clone the options object to not modify it
         expect(circle.__data.center).to.deep.equal({lat: 100, lng: 200});
         done();
@@ -69,6 +63,7 @@ describe('circle', function () {
       .circle({center: center})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle.__data.center).to.equal(center);
         expect(circle.__data.center.lat()).to.be.equal(100);
         expect(circle.__data.center.lng()).to.be.equal(200);
@@ -83,10 +78,12 @@ describe('circle', function () {
       .then(function (circle) {
         previous = circle;
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
       })
       .circle()
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(circle).not.to.be.equal(previous);
         done();
       })
@@ -107,6 +104,7 @@ describe('circle', function () {
       .circle({center: [7, 8]})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         circles.push(circle)
       })
       .circle([
@@ -121,6 +119,7 @@ describe('circle', function () {
       .circle({center: new google.maps.LatLng(15, 16)})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
+        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
         circles.push(circle)
       })
       .then(function () {
@@ -129,6 +128,7 @@ describe('circle', function () {
           var lat = 2 * index + 1;
           var lng = 2 * index + 2;
           expect(circle).to.be.an.instanceof(google.maps.Circle);
+          expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
           // may be either a google.maps.LatLng or a simple {lat, lng} object
           if (circle.__data.center instanceof google.maps.LatLng) {
             expect(circle.__data.center.lat()).to.be.equal(lat);
