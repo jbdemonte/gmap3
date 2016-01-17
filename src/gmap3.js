@@ -5,7 +5,6 @@
     arraySlice = Array.prototype.slice,
     when = $.when,
     extend = $.extend,
-    arrayMap = $.map,
     isArray = $.isArray,
     isFunction = $.isFunction,
     deferred = $.Deferred,
@@ -187,7 +186,7 @@
   function Handler(chain, items) {
     var self = this;
 
-    foreachStr('map marker rectangle circle then', function (name) {
+    foreachStr('map marker rectangle circle then resume', function (name) {
       self[name] = function () {
         var args = arraySlice.call(arguments);
         items.forEach(function (item) {
@@ -243,18 +242,22 @@
    */
   function Gmap3($container) {
     var map,
+      resume = [],
       promise = when(),
       self = this;
 
-    function getMap(latLng) {
-      // todo: handle defaults
-      return map = map || gmElement('Map', $container.get(0), {mapTypeId : gm.MapTypeId.ROADMAP, zoom: 2, center: latLng});
+    function getMap(latLng, opts) {
+      if (!map) {
+        map = gmElement('Map', $container.get(0), opts ||{mapTypeId : gm.MapTypeId.ROADMAP, zoom: 2, center: latLng});
+        resume.push(map);
+      }
+      return map;
     }
 
     self.map = function (options) {
       return promise = promise.then(function () {
-        return resolveLatLng(options, 'center', function (opts) {
-          return map = map || gmElement('Map', $container.get(0), opts);
+        return resolveLatLng(options, 'center', function (opts, latLng) {
+          return getMap(latLng, opts);
         })
       });
     };
@@ -268,16 +271,20 @@
       return function (options) {
         if (isArray(options)) {
           var instances = [];
-          var promises = arrayMap(options, function (opts) {
+          var promises = options.map(function (opts) {
             return fn.call(self, opts).then(function (instance) {
               instances.push(instance);
             });
           });
           return promise = all(promises).then(function () {
+            resume.push(instances);
             return instances;
           });
         }
-        return fn.apply(self, arguments);
+        return fn.apply(self, arguments).then(function (instance) {
+          resume.push(instance);
+          return instance;
+        });
       }
     }
 
@@ -308,6 +315,20 @@
       if (isFunction(fn)) {
         promise.then(function (instance) {
           fn.call(new Handler($container, [self]), instance);
+        });
+      }
+    };
+
+    self.resume = function (fn) {
+      // note: this one is voluntary not chained in the promise to keep all "then" in the same
+      // hierarchical level and to not propagate any modifications of the result from the callback
+      if (isFunction(fn)) {
+        promise.then(function () {
+          // copy arrays to no accept modifications on the internal array
+          var copy = resume.map(function (instance) {
+            return isArray(instance) ? instance.slice() : instance;
+          });
+          fn.apply(new Handler($container, [self]), copy);
         });
       }
     };
