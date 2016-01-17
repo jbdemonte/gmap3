@@ -186,7 +186,7 @@
   function Handler(chain, items) {
     var self = this;
 
-    foreachStr('map marker rectangle circle then resume', function (name) {
+    foreachStr('map marker rectangle circle infowindow then resume', function (name) {
       self[name] = function () {
         var args = arraySlice.call(arguments);
         items.forEach(function (item) {
@@ -288,13 +288,17 @@
       }
     }
 
-    foreachStr('marker:position circle:center', function (item) {
+    // Space separated string of : separated element
+    // (google.maps class name) : (latLng property name) : (add map - 0|1 - default = 1)
+    foreachStr('Marker:position Circle:center InfoWindow:position:0', function (item) {
       item = item.split(':');
-      self[item[0]] = multiple(function (options) {
+      self[item[0].toLowerCase()] = multiple(function (options) {
         return promise = promise.then(function () {
           return resolveLatLng(options, item[1], function (opts, latLng) {
-            opts.map = getMap(latLng);
-            return gmElement(ucFirst(item[0]), opts);
+            if (item[2] !== '0') {
+              opts.map = getMap(latLng);
+            }
+            return gmElement(item[0], opts);
           })
         });
       });
