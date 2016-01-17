@@ -1,0 +1,25 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+
+    $('#test')
+      .gmap3()
+        .map({
+          zoom: 2,
+          center: [0, -180]
+        })
+        .polyline({
+          strokeColor: "#FF0000",
+          strokeOpacity: 1.0,
+          strokeWeight: 2,
+          path: [
+            [37.772323, -122.214897],
+            [21.291982, -157.821856],
+            [-18.142599, 178.431],
+            [-27.46758, 153.027892]
+          ]
+        })
+
+    ;
+  });
+</script>

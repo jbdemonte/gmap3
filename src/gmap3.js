@@ -7,10 +7,27 @@
     extend = $.extend,
     isArray = $.isArray,
     isFunction = $.isFunction,
-    deferred = $.Deferred,
-    all = function (deferreds) {
-      return when.apply($, deferreds);
-    };
+    deferred = $.Deferred;
+
+  /**
+   * Equivalent to Promise.all
+   * @param deferreds {array} of {promise}
+   * @returns {Deferred}
+   */
+  function all(deferreds) {
+    return when.apply($, deferreds);
+  }
+
+  /**
+   * Equivalent to Promise.resolve
+   * @param value {*}
+   * @returns {Deferred}
+   */
+  function resolved(value) {
+    return when().then(function () {
+      return value;
+    });
+  }
 
   // Auto-load google maps library if needed
   (function () {
@@ -90,15 +107,6 @@
   }
 
   /**
-   * Uppercase first letter of a string
-   * @param str {string}
-   * @returns {string}
-   */
-  function ucFirst(str) {
-    return str[0].toUpperCase() + str.substr(1);
-  }
-
-  /**
    * Split string a execute a function on each item
    * @param str {string} space separated list of string concatenated
    * @param fn {function(item:string)}
@@ -123,9 +131,7 @@
         options.bounds = gmElement('LatLngBounds', {lat: bounds.south, lng: bounds.west}, {lat: bounds.north, lng: bounds.east});
       }
     }
-    return when().then(function () {
-      return fn(options, bounds ? options.bounds.getCenter() : null);
-    })
+    return resolved(fn(options, bounds ? options.bounds.getCenter() : null));
   }
 
   /**
@@ -159,6 +165,22 @@
   }
 
   /**
+   * convert an array of mixed LatLng to google.maps.LatLng object
+   * No address resolution here
+   * @param options {object}
+   * @param key {string} Array key name in options object
+   * @param fn {function(options, latLng)} where latLng is the first one
+   * @returns {Deferred}
+   */
+  function resolveArrayOfLatLng(options, key, fn) {
+    options = options ? extend(true, {}, options) : {}; // never modify original object
+    options[key] = (options[key] || []).map(function (item) {
+      return isArray(item) ? gmElement('LatLng', item[0], item[1]) : item;
+    });
+    return resolved(fn(options, options[key][0]));
+  }
+
+  /**
    * jQuery Plugin
    */
   $.fn.gmap3 = function () {
@@ -186,7 +208,7 @@
   function Handler(chain, items) {
     var self = this;
 
-    foreachStr('map marker rectangle circle infowindow then resume', function (name) {
+    foreachStr('map marker rectangle circle infowindow polyline then resume', function (name) {
       self[name] = function () {
         var args = arraySlice.call(arguments);
         items.forEach(function (item) {
@@ -290,11 +312,12 @@
 
     // Space separated string of : separated element
     // (google.maps class name) : (latLng property name) : (add map - 0|1 - default = 1)
-    foreachStr('Marker:position Circle:center InfoWindow:position:0', function (item) {
+    foreachStr('Marker:position Circle:center InfoWindow:position:0 Polyline:path', function (item) {
       item = item.split(':');
+      var property = item[1];
       self[item[0].toLowerCase()] = multiple(function (options) {
         return promise = promise.then(function () {
-          return resolveLatLng(options, item[1], function (opts, latLng) {
+          return (property.match(/^path/) ? resolveArrayOfLatLng : resolveLatLng)(options, property, function (opts, latLng) {
             if (item[2] !== '0') {
               opts.map = getMap(latLng);
             }
