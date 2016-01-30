@@ -1,0 +1,25 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        address: "Haltern am See, Weseler Str. 151",
+        zoom: 6,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .route({
+        origin:"48 Pirrama Road, Pyrmont NSW",
+        destination:"Bondi Beach, NSW",
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+      })
+      .directionsrenderer(function (results) {
+        if (results) {
+          return {
+            panel: $("<div></div>").addClass("gmap3").insertAfter($("#test")), // accept: string (jQuery selector), jQuery element or HTML node targeting a div
+            directions: results
+          }
+        }
+      })
+    ;
+  });
+</script>

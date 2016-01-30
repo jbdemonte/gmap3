@@ -400,7 +400,21 @@
         previousResults.push(results);
         dfd.resolve(status === gm.DirectionsStatus.OK ? results : false);
       });
-      return when(dfd);
+      return dfd;
+    });
+
+    self.directionsrenderer = chainToPromise(function (options) {
+      var instance;
+      if (options) {
+        options = dupOpts(options);
+        options.map = map;
+        if (options.panel) {
+          options.panel = $(options.panel).get(0);
+        }
+        instance = gmElement('DirectionsRenderer', options)
+      }
+      previousResults.push(instance);
+      return instance;
     });
 
     self.then = function (fn) {
