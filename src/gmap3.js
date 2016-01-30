@@ -381,6 +381,16 @@
       });
     }));
 
+    self.groundoverlay = chainToPromise(function (url, bounds, options) {
+      return resolveLatLngBounds({bounds: bounds}, function (opts) {
+        options = dupOpts(options);
+        options.map = map;
+        var instance = gmElement('GroundOverlay', url, opts.bounds, options);
+        previousResults.push(instance);
+        return instance;
+      })
+    });
+
     self.then = function (fn) {
       if (isFunction(fn)) {
         promise = promise.then(function (instance) {
