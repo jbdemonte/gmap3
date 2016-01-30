@@ -66,20 +66,4 @@ describe('map', function () {
       });
   });
 
-  it('would return always the same instance', function (done) {
-    var previous;
-    this.handler
-      .map()
-      .then(function (map) {
-        previous = map;
-        expect(map).to.be.an.instanceof(google.maps.Map);
-      })
-      .map()
-      .then(function (map) {
-        expect(map).to.be.an.instanceof(google.maps.Map);
-        expect(map).to.be.equal(previous);
-        done();
-      })
-  });
-
 });

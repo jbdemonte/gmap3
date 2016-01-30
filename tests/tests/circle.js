@@ -2,7 +2,7 @@ describe('circle', function () {
 
   beforeEach(function () {
     this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3();
+    this.handler = this.$element.gmap3({});
   });
 
   it('would not modify options and return an instance based on options', function (done) {

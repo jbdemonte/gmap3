@@ -3,24 +3,23 @@
   $(function () {
     var center = [37.772323, -122.214897];
     $('#test')
-      .gmap3()
-        .map({
-          center: center,
-          zoom: 13,
-          mapTypeId : google.maps.MapTypeId.ROADMAP
-        })
-        .circle({
-          center: center,
-          radius : 750,
-          fillColor : "#FFAF9F",
-          strokeColor : "#FF512F"
-        })
-        .on('click', function (circle, event) {
-          circle.setOptions({fillColor: "#AAFF55"});
-          setTimeout(function () {
-            circle.setOptions({fillColor: "#FFAF9F"});
-          }, 200);
-        })
+      .gmap3({
+        center: center,
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        center: center,
+        radius : 750,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .on('click', function (circle, event) {
+        circle.setOptions({fillColor: "#AAFF55"});
+        setTimeout(function () {
+          circle.setOptions({fillColor: "#FFAF9F"});
+        }, 200);
+      })
     ;
   });
 </script>

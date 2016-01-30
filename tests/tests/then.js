@@ -1,9 +1,9 @@
-describe('resume', function () {
+describe('then', function () {
 
   beforeEach(function () {
     var self = this;
     self.$element = jQuery('<div></div>');
-    self.handler = this.$element.gmap3();
+    self.handler = this.$element.gmap3({});
     self.events = {};
     self.build = function (name) {
       return function () {
@@ -12,24 +12,15 @@ describe('resume', function () {
     }
   });
 
-  it('should return no data at first', function (done) {
-    this.handler
-      .resume(function () {
-        expect(arguments.length).to.be.equal(0);
-        done();
-      });
-  });
-
   it('should return the map', function (done) {
     var map;
 
     this.handler
-      .map()
       .then(function (m) {
         expect(m).to.be.an.instanceof(google.maps.Map);
         map = m;
       })
-      .resume(function (m) {
+      .then(function (m) {
         expect(arguments.length).to.be.equal(1);
         expect(m).to.be.equal(map);
         done();
@@ -40,7 +31,6 @@ describe('resume', function () {
     var map, marker1, markers, circle1, marker2, rectangles;
 
     this.handler
-      .map()
       .then(function (obj) {
         expect(obj).to.be.an.instanceof(google.maps.Map);
         map = obj;
@@ -83,39 +73,38 @@ describe('resume', function () {
         });
         rectangles = items;
       })
-      .resume(function () {
-        expect(arguments.length).to.be.equal(6);
-        expect(arguments[0]).to.be.equal(map);
-        expect(arguments[1]).to.be.equal(marker1);
-        expect(arguments[2]).to.be.an('array');
-        expect(arguments[2]).not.to.be.equal(markers); // array should be another one to not accept modifications on it
-        expect(arguments[2].length).to.be.equal(markers.length); // array should be another one to not accept modifications on it
-        arguments[2].forEach(function (marker, index) {
+      .then(function () {
+        var self = this;
+        var args = this.get();
+
+        expect(args.length).to.be.equal(6);
+        expect(args[0]).to.be.equal(map);
+        expect(args[1]).to.be.equal(marker1);
+        expect(args[2]).to.be.an('array');
+        expect(args[2]).not.to.be.equal(markers); // array should be another one to not accept modifications on it
+        expect(args[2].length).to.be.equal(markers.length); // array should be another one to not accept modifications on it
+        args[2].forEach(function (marker, index) {
           expect(marker).to.be.equal(markers[index]);
         });
-        expect(arguments[3]).to.be.equal(circle1);
-        expect(arguments[4]).to.be.equal(marker2);
-        expect(arguments[5]).not.to.be.equal(rectangles); // same as markers
-        expect(arguments[5].length).to.be.equal(rectangles.length);
-        arguments[5].forEach(function (rectangle, index) {
+        expect(args[3]).to.be.equal(circle1);
+        expect(args[4]).to.be.equal(marker2);
+        expect(args[5]).not.to.be.equal(rectangles); // same as markers
+        expect(args[5].length).to.be.equal(rectangles.length);
+        args[5].forEach(function (rectangle, index) {
           expect(rectangle).to.be.equal(rectangles[index]);
         });
-        done();
-      });
-  });
 
-  it('would return a silent created map', function (done) {
-    var marker;
-    this.handler
-      .marker()
-      .then(function (obj) {
-        expect(obj).to.be.an.instanceof(google.maps.Marker);
-        marker = obj;
-      })
-      .resume(function () {
-        expect(arguments.length).to.be.equal(2);
-        expect(arguments[0]).to.be.an.instanceof(google.maps.Map);
-        expect(arguments[1]).to.be.equal(marker);
+
+        for(var i=0; i<6; i++) {
+          if (i !== 2 && i !== 5) {
+            expect(this.get(i)).to.be.equal(args[i]);
+          } else {
+            args[i].forEach(function (marker, index) {
+              expect(marker).to.be.equal(self.get(i)[index]);
+            });
+          }
+        }
+
         done();
       });
   });

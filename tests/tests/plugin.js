@@ -2,7 +2,7 @@ describe('plugin', function () {
 
   beforeEach(function () {
     this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3();
+    this.handler = this.$element.gmap3({});
   });
 
   it('should start a gmap3 chain', function () {
@@ -12,8 +12,8 @@ describe('plugin', function () {
   });
 
   it('should allow to chain jQuery', function () {
-    expect(this.handler.end()).to.be.an.instanceof(jQuery);
-    expect(this.handler.end()).to.be.equal(this.$element);
+    expect(this.handler.$).to.be.an.instanceof(jQuery);
+    expect(this.handler.$).to.be.equal(this.$element);
   });
 
   it('should allow to chain jQuery from each function but "end"', function () {
@@ -21,17 +21,17 @@ describe('plugin', function () {
     var names = Object.keys(self.handler);
     expect(names.length).to.be.gt(0);
     names.forEach(function (name) {
-      if (name !== 'end') { // end return the jQuery chain
+      if (name !== 'get' && name !== '$') { // end return the jQuery chain
         expect(self.handler[name]()).to.be.equal(self.handler);
-        expect(self.handler[name]().end()).to.be.an.instanceof(jQuery);
-        expect(self.handler[name]().end()).to.be.equal(self.$element);
+        expect(self.handler[name]().$).to.be.an.instanceof(jQuery);
+        expect(self.handler[name]().$).to.be.equal(self.$element);
       }
     });
   });
 
   it('should handle multiple elements', function (done) {
     this.$element = jQuery('<div></div><div></div><div></div>');
-    this.handler = this.$element.gmap3();
+    this.handler = this.$element.gmap3({});
     expect(this.$element.length).to.be.equal(3);
     expect(this.handler).to.be.an('object');
     expect(this.handler).not.to.be.an.instanceof(jQuery);
@@ -39,12 +39,11 @@ describe('plugin', function () {
     var maps = [];
 
     this.handler
-      .map()
       .then(function (map) {
         expect(map).to.be.an.instanceof(google.maps.Map);
         maps.push(map)
       })
-      .end(function () {
+      .then(function () {
         expect(maps.length).to.be.equal(3);
         // check that all maps are differents one
         expect(maps[0]).not.to.be.equal(maps[1]);

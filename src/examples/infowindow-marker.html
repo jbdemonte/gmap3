@@ -26,22 +26,23 @@
         '</div>';
 
     $('#test')
-      .gmap3()
-        .map({
-          zoom: 4,
-          center: uluru
-        })
-        .marker({
-          position: uluru
-        })
-        .infowindow({
-          content: contentString
-        })
-        .resume(function (map, marker, infowindow) {
-          marker.addListener('click', function() {
-            infowindow.open(map, marker);
-          });
-        })
+      .gmap3({
+        zoom: 4,
+        center: uluru
+      })
+      .marker({
+        position: uluru
+      })
+      .infowindow({
+        content: contentString
+      })
+      .then(function (infowindow) {
+        var map = this.get(0);
+        var marker = this.get(1);
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      })
     ;
   });
 </script>

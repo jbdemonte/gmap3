@@ -5,8 +5,7 @@
     var uluru = {lat: -25.363, lng: 131.044};
 
     var contentString = '<div id="content">'+
-        '<div id="siteNotice">'+
-        '</div>'+
+        '<div id="siteNotice"></div>'+
         '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
         '<div id="bodyContent">'+
         '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
@@ -26,18 +25,17 @@
         '</div>';
 
     $('#test')
-      .gmap3()
-        .map({
-          zoom: 4,
-          center: uluru
-        })
-        .infowindow({
-          position: {lat: -25.363, lng: 131.044},
-          content: contentString
-        })
-        .resume(function (map, infowindow) {
-          infowindow.open(map);
-        })
-      ;
+      .gmap3({
+        zoom: 4,
+        center: uluru
+      })
+      .infowindow({
+        position: {lat: -25.363, lng: 131.044},
+        content: contentString
+      })
+      .then(function (infowindow) {
+        infowindow.open(this.get(0));
+      })
+    ;
   });
 </script>

@@ -3,7 +3,7 @@ describe('events', function () {
   beforeEach(function () {
     var self = this;
     self.$element = jQuery('<div></div>');
-    self.handler = this.$element.gmap3();
+    self.handler = this.$element.gmap3({});
     self.events = {};
     self.build = function (name) {
       return function () {
@@ -33,7 +33,6 @@ describe('events', function () {
     var mouseoverOnce = self.build('mouseoverOnce');
 
     this.handler
-      .map()
       .on('click', click1)
       .once('click', click1Once)
       .on('click', click2)
@@ -76,7 +75,6 @@ describe('events', function () {
     var mouseoverMarker = self.build('mouseoverMarker');
 
     this.handler
-      .map()
       .on('click', clickMap)
       .on({
         mouseover: mouseoverMap
@@ -123,7 +121,6 @@ describe('events', function () {
     }
 
     this.handler
-      .map()
       .marker([
         {m:1},
         {m:2},
@@ -155,7 +152,6 @@ describe('events', function () {
     }
 
     this.handler
-      .map()
       .marker()
       .on('click', click)
       .then(function (m) {
@@ -203,7 +199,6 @@ describe('events', function () {
     }
 
     this.handler
-      .map()
       .marker()
       .on('click', click1, click2)
       .on({
