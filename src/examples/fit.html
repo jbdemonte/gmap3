@@ -1,0 +1,20 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    var center = [37.772323, -122.214897];
+    $('#test')
+      .gmap3({
+        center: center,
+        zoom: 1,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        center: center,
+        radius : 750,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .fit()
+    ;
+  });
+</script>

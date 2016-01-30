@@ -440,6 +440,37 @@
       });
     }));
 
+    self.fit = chainToPromise(function () {
+      var bounds = new gm.LatLngBounds();
+      foreach(previousResults, function (instances) {
+        if (instances !== map) {
+          foreach(instances, function (instance) {
+            if (instance.getPosition && instance.getPosition()) {
+              bounds.extend(instance.getPosition());
+            } else if (instance.getBounds && instance.getBounds()) {
+              bounds.extend(instance.getBounds().getNorthEast());
+              bounds.extend(instance.getBounds().getSouthWest());
+            } else if (instance.getPaths && instance.getPaths()) {
+              foreach(instance.getPaths(), function (path) {
+                foreach(path, function (latLng) {
+                  bounds.extend(latLng);
+                });
+              });
+            } else if (instance.getPath && instance.getPath()) {
+              foreach(instance.getPath(), function (latLng) {
+                bounds.extend(latLng);
+              });
+            } else if (instance.getCenter && instance.getCenter()) {
+              bounds.extend(instance.getCenter());
+            }
+          });
+        }
+      });
+      if (!bounds.isEmpty()) {
+        map.fitBounds(bounds);
+      }
+    });
+
     self.then = function (fn) {
       if (isFunction(fn)) {
         promise = promise.then(function (instance) {

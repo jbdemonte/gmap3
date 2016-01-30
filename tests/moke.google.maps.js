@@ -60,6 +60,10 @@ window.google = (function () {
       this.setStreetView = function (streetView) {
         self.__data.__streetView = streetView;
       };
+
+      this.fitBounds = function (bounds) {
+        self.__data.__fitBounds = bounds;
+      };
     }
   });
 
@@ -175,6 +179,8 @@ window.google = (function () {
 
   maps.LatLngBounds = function (sw, ne) {
 
+    this.__extended = [];
+
     this.sw = function () {
       return sw;
     };
@@ -183,9 +189,25 @@ window.google = (function () {
       return ne;
     };
 
+    this.getSouthWest = function () {
+      return sw;
+    };
+
+    this.getNorthEast = function () {
+      return ne;
+    };
+
+    this.isEmpty = function () {
+      return !!ne
+    };
+
     this.getCenter = function () {
       return new maps.LatLng(123, 456); // fixed because not representative in tests
-    }
+    };
+
+    this.extend = function (latLng) {
+      this.__extended.push(latLng);
+    };
   };
 
 
