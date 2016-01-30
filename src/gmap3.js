@@ -398,6 +398,15 @@
       return instance;
     });
 
+    self.streetviewpanorama = chainToPromise(function (container, options) {
+      return resolveLatLng(options, 'position', function (opts) {
+        var instance = gmElement('StreetViewPanorama', $(container).get(0), opts);
+        map.setStreetView(instance);
+        previousResults.push(instance);
+        return instance;
+      });
+    });
+
     self.route = chainToPromise(function (options) {
       var dfd = deferred();
       options = dupOpts(options);

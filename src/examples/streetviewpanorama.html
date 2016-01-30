@@ -1,0 +1,25 @@
+<div id="test" class="gmap3"></div>
+<div id="panorama" class="gmap3"></div>
+<script>
+  $(function () {
+    var fenway = [42.345573,-71.098326];
+
+    $('#test')
+      .gmap3({
+        center:fenway,
+        zoom: 13
+      })
+      .streetviewpanorama(
+        '#panorama',
+        {
+          position: fenway,
+          pov: {
+            heading: 34,
+            pitch: 10,
+            zoom: 1
+          }
+        }
+      )
+    ;
+  });
+</script>

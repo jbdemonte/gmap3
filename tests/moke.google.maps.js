@@ -55,7 +55,11 @@ window.google = (function () {
         set: function (id, styles) {
           self.__data.__mapTypes.push({id: id, styles: styles});
         }
-      }
+      };
+
+      this.setStreetView = function (streetView) {
+        self.__data.__streetView = streetView;
+      };
     }
   });
 
