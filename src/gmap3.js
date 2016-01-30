@@ -359,6 +359,15 @@
       }));
     });
 
+    foreachStr('TrafficLayer TransitLayer BicyclingLayer', function (item) {
+      self[item.toLowerCase()] = chainToPromise(function () {
+        var instance = gmElement(item);
+        previousResults.push(instance);
+        instance.setMap(map);
+        return when(instance);
+      });
+    });
+
     self.kmllayer = chainToPromise(multiple(function (options) {
       options = dupOpts(options);
       options.map = map;
