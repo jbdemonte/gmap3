@@ -391,6 +391,18 @@
       })
     });
 
+    self.route = chainToPromise(function (options) {
+      var dfd = deferred();
+      options = dupOpts(options);
+      options.origin = toLatLng(options.origin);
+      options.destination = toLatLng(options.destination);
+      service('DirectionsService').route(options, function (results, status) {
+        previousResults.push(results);
+        dfd.resolve(status === gm.DirectionsStatus.OK ? results : false);
+      });
+      return when(dfd);
+    });
+
     self.then = function (fn) {
       if (isFunction(fn)) {
         promise = promise.then(function (instance) {

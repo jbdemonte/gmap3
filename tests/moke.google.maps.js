@@ -111,6 +111,16 @@ window.google = (function () {
     prop: 'map directions options',
     constructor: true
   });
+  maps.DirectionsStatus = {
+    OK: 'OK',
+    NOT_FOUND: 'NOT_FOUND',
+    ZERO_RESULTS: 'ZERO_RESULTS',
+    MAX_WAYPOINTS_EXCEEDED: 'MAX_WAYPOINTS_EXCEEDED',
+    INVALID_REQUEST: 'INVALID_REQUEST',
+    OVER_QUERY_LIMIT: 'OVER_QUERY_LIMIT',
+    REQUEST_DENIED: 'REQUEST_DENIED',
+    UNKNOWN_ERROR: 'UNKNOWN_ERROR'
+  };
 
   maps.TrafficLayer = createGenericObject({
     prop: 'map options',
@@ -207,12 +217,11 @@ window.google = (function () {
     };
   }());
 
-
   maps.DirectionsService = function () {
     this.route = function (options, callback) {
       setTimeout(function () {
-        callback({options: options}, 'status');
-      });
+        callback({options: options}, maps.DirectionsStatus.OK);
+      }, 25);
     }
   };
 
@@ -251,7 +260,7 @@ window.google = (function () {
           status = maps.GeocoderStatus.OK;
         }
         callback(results, status);
-      });
+      }, 25);
     }
   };
 
