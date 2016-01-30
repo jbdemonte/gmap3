@@ -1,4 +1,6 @@
 (function ($, window) {
+  "use strict";
+
   var gm, services = {},
 
     // Proxify functions to get shorter minified code
