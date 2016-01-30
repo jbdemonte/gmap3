@@ -137,11 +137,8 @@ window.google = (function () {
   });
 
   maps.KmlLayer = createGenericObject({
-    prop: 'defaultViewport:get map metadata:get status:get url zIndex options',
-    constructor: function (url, options) {
-      this.__data.url = url;
-      $.extend(this.__data, options);
-    }
+    prop: 'defaultViewport:get map metadata:get status:get url zIndex',
+    constructor: true
   });
 
   maps.StyledMapType = createGenericObject({

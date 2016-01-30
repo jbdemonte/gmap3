@@ -1,0 +1,12 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center:[41.876, -87.624],
+        zoom: 11
+      })
+      .kmllayer({url: 'http://googlemaps.github.io/js-v2-samples/ggeoxml/cta.kml'})
+    ;
+  });
+</script>

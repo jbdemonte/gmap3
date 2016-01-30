@@ -11,6 +11,15 @@
     deferred = $.Deferred;
 
   /**
+   * Duplicate option to never modify original object
+   * @param options {object}
+   * @returns {object}
+   */
+  function dupOpts(options) {
+    return extend(true, {}, options || {});
+  }
+
+  /**
    * Slice an array like
    * @returns {Array}
    */
@@ -151,7 +160,7 @@
    * @returns {Deferred}
    */
   function resolveLatLngBounds(options, fn) {
-    options = options ? extend(true, {}, options) : {}; // never modify original object
+    options = dupOpts(options);
     var bounds = options.bounds;
     if (bounds) {
       if (isArray(bounds)) {
@@ -172,12 +181,11 @@
    */
   function resolveLatLng(options, key, fn) {
     var dfd = deferred();
-    options = options ? extend(true, {}, options) : {}; // never modify original object
+    options = dupOpts(options);
     when()
       .then(function () {
         var address = options.address;
         if (address) {
-          options = extend(true, {}, options); // never modify original object
           delete options.address;
           return geocode(address).then(function (latLng) {
             options[key] = latLng;
@@ -200,7 +208,7 @@
    * @returns {Deferred}
    */
   function resolveArrayOfLatLng(options, key, fn) {
-    options = options ? extend(true, {}, options) : {}; // never modify original object
+    options = dupOpts(options);
     options[key] = (options[key] || []).map(function (item) {
       return toLatLng(item);
     });
@@ -350,6 +358,12 @@
         });
       }));
     });
+
+    self.kmllayer = chainToPromise(multiple(function (options) {
+      options = dupOpts(options);
+      options.map = map;
+      return when(gmElement('KmlLayer', options));
+    }));
 
     self.rectangle = chainToPromise(multiple(function (options) {
       return resolveLatLngBounds(options, function (opts) {
