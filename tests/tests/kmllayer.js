@@ -14,6 +14,7 @@ describe('kmllayer', function () {
         expect(kmllayer.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(kmllayer.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
+        expect(this.get(1)).to.be.equal(kmllayer);
         done();
       });
   });

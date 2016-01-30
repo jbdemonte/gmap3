@@ -16,6 +16,7 @@ describe('route', function () {
         expect(result.options.origin.lng()).to.be.equal(2);
         expect(result.options.destination.lat()).to.be.equal(3);
         expect(result.options.destination.lng()).to.be.equal(4);
+        expect(this.get(1)).to.be.equal(result);
         done();
       });
   });

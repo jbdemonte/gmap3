@@ -20,6 +20,8 @@ describe('groundoverlay', function () {
         expect(groundoverlay.__data.bounds.ne().lng).to.be.equal(2);
         expect(groundoverlay.__data.bounds.sw().lat).to.be.equal(3);
         expect(groundoverlay.__data.bounds.sw().lng).to.be.equal(4);
+
+        expect(this.get(1)).to.be.equal(groundoverlay);
         done();
       });
   });

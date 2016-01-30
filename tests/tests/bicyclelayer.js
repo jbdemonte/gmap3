@@ -11,6 +11,7 @@ describe('bicyclinglayer', function () {
       .then(function (layer) {
         expect(layer).to.be.an.instanceof(google.maps.BicyclingLayer);
         expect(layer.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(this.get(1)).to.be.equal(layer);
         done();
       });
   });

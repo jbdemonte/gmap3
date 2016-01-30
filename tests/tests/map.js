@@ -13,6 +13,7 @@ describe('map', function () {
         expect(map).to.be.an.instanceof(google.maps.Map);
         expect(map.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
+        expect(this.get(0)).to.be.equal(map);
         done();
       });
   });

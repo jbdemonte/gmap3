@@ -2,7 +2,7 @@ describe('infowindow', function () {
 
   beforeEach(function () {
     this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3();
+    this.handler = this.$element.gmap3({});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
@@ -14,6 +14,7 @@ describe('infowindow', function () {
         expect(infowindow.__data.map).to.be.an('undefined');
         expect(infowindow.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
+        expect(this.get(1)).to.be.equal(infowindow);
         done();
       });
   });

@@ -14,6 +14,7 @@ describe('rectangle', function () {
         expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
         expect(rectangle.__data.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
+        expect(this.get(1)).to.be.equal(rectangle);
         done();
       });
   });
