@@ -264,14 +264,14 @@
    */
   function Gmap3($container) {
     var map,
-      resume = [],
+      previousResults = [],
       promise = when(),
       self = this;
 
     function getMap(latLng, opts) {
       if (!map) {
         map = gmElement('Map', $container.get(0), opts ||{mapTypeId : gm.MapTypeId.ROADMAP, zoom: 2, center: latLng});
-        resume.push(map);
+        previousResults.push(map);
       }
       return map;
     }
@@ -299,12 +299,12 @@
             });
           });
           return promise = all(promises).then(function () {
-            resume.push(instances);
+            previousResults.push(instances);
             return instances;
           });
         }
         return fn.apply(self, arguments).then(function (instance) {
-          resume.push(instance);
+          previousResults.push(instance);
           return instance;
         });
       }
@@ -352,7 +352,7 @@
       if (isFunction(fn)) {
         promise.then(function () {
           // copy arrays to no accept modifications on the internal array
-          var copy = resume.map(function (instance) {
+          var copy = previousResults.map(function (instance) {
             return isArray(instance) ? instance.slice() : instance;
           });
           fn.apply(new Handler($container, [self]), copy);
