@@ -1,0 +1,64 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center:[41.850033, -87.650052],
+        zoom:12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControlOptions: {
+          mapTypeIds: [google.maps.MapTypeId.ROADMAP, "style1", "style2"]
+        }
+      })
+      .styledmaptype(
+          // styleId (gmap3)
+          "style1",
+          // styles:Array<MapTypeStyle>
+          [{
+            featureType: "road.highway",
+            elementType: "geometry",
+            stylers: [
+              { hue: "#ff0022" },
+              { saturation: 60 },
+              { lightness: -20 }
+            ]
+          }],
+          // options?:StyledMapTypeOptions
+          {name: "Style 1"}
+      )
+      .styledmaptype(
+          "style2",
+          [
+            {
+              featureType: "road.highway",
+              elementType: "geometry",
+              stylers: [
+                { hue: "#ff0022" },
+                { saturation: 60 },
+                { lightness: -20 }
+              ]
+            },{
+            featureType: "road.arterial",
+            elementType: "all",
+            stylers: [
+              { hue: "#2200ff" },
+              { lightness: -40 },
+              { visibility: "simplified" },
+              { saturation: 30 }
+            ]
+          },{
+            featureType: "road.local",
+            elementType: "all",
+            stylers: [
+              { hue: "#f6ff00" },
+              { saturation: 50 },
+              { gamma: 0.7 },
+              { visibility: "simplified" }
+            ]
+          }
+          ],
+          {name: "Style 2"}
+      )
+    ;
+  });
+</script>

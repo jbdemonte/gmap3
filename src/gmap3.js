@@ -391,6 +391,13 @@
       })
     });
 
+    self.styledmaptype = chainToPromise(function (styleId, styles, options) {
+      var instance = gmElement('StyledMapType', styles, options);
+      previousResults.push(instance);
+      map.mapTypes.set(styleId, instance);
+      return instance;
+    });
+
     self.route = chainToPromise(function (options) {
       var dfd = deferred();
       options = dupOpts(options);
