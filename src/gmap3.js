@@ -417,6 +417,13 @@
       return instance;
     });
 
+    self.latlng = chainToPromise(multiple(function (options) {
+      return resolveLatLng(options, 'latlng', function (opts) {
+        previousResults.push(opts.latlng);
+        return opts.latlng;
+      });
+    }));
+
     self.then = function (fn) {
       if (isFunction(fn)) {
         promise = promise.then(function (instance) {
