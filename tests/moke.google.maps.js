@@ -102,12 +102,37 @@ window.google = (function () {
 
   maps.Polyline = createGenericObject({
     prop: 'draggable editable map path visible options',
-    constructor: true
+    constructor: function (options) {
+      var self = this;
+      $.extend(self.__data, options);
+      this.getPath = function () {
+        return {
+          getArray: function () {
+            return (self.__data.path || []).slice();
+          }
+        }
+      };
+    }
   });
 
   maps.Polygon = createGenericObject({
     prop: 'draggable editable map path paths visible options',
-    constructor: true
+    constructor: function (options) {
+      var self = this;
+      $.extend(self.__data, options);
+      // simulate only one path
+      this.getPaths = function () {
+        return {
+          getArray: function () {
+            return [{
+              getArray: function () {
+                return (self.__data.paths || []).slice()
+              }
+            }]
+          }
+        }
+      };
+    }
   });
 
   maps.InfoWindow.prototype.open = function (map, anchor) {

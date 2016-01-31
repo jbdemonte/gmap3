@@ -6,7 +6,7 @@ describe('fit', function () {
     self.handler = this.$element.gmap3({center: [1, 2]});
   });
 
-  it('should return the differents object in the good order', function (done) {
+  it('should handle all latLng', function (done) {
 
     this.handler
       .marker({position: [3, 4]})
