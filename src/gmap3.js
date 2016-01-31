@@ -425,7 +425,7 @@
         return promise = promise.then(function () {
           if (isFunction(args[0])) {
             // handle return as a deferred / promise to support both sync & async result
-            return when(args[0].apply(context(), previousResults.slice(-1))).then(function (value) { // voir si on branche ici, car s'il retourne la promise d'un this.marker() => loop oO
+            return when(args[0].apply(context(), previousResults.slice(-1))).then(function (value) {
               args[0] = value;
               return fn.apply(self, args);
             });
@@ -464,7 +464,7 @@
         var instance = gmElement(item);
         previousResults.push(instance);
         instance.setMap(map);
-        return when(instance);
+        return instance;
       });
     });
 
@@ -561,23 +561,25 @@
       foreach(previousResults, function (instances) {
         if (instances !== map) {
           foreach(instances, function (instance) {
-            if (instance.getPosition && instance.getPosition()) {
-              bounds.extend(instance.getPosition());
-            } else if (instance.getBounds && instance.getBounds()) {
-              bounds.extend(instance.getBounds().getNorthEast());
-              bounds.extend(instance.getBounds().getSouthWest());
-            } else if (instance.getPaths && instance.getPaths()) {
-              foreach(instance.getPaths(), function (path) {
-                foreach(path, function (latLng) {
+            if (instance) {
+              if (instance.getPosition && instance.getPosition()) {
+                bounds.extend(instance.getPosition());
+              } else if (instance.getBounds && instance.getBounds()) {
+                bounds.extend(instance.getBounds().getNorthEast());
+                bounds.extend(instance.getBounds().getSouthWest());
+              } else if (instance.getPaths && instance.getPaths()) {
+                foreach(instance.getPaths().getArray(), function (path) {
+                  foreach(path.getArray(), function (latLng) {
+                    bounds.extend(latLng);
+                  });
+                });
+              } else if (instance.getPath && instance.getPath()) {
+                foreach(instance.getPath().getArray(), function (latLng) {
                   bounds.extend(latLng);
                 });
-              });
-            } else if (instance.getPath && instance.getPath()) {
-              foreach(instance.getPath(), function (latLng) {
-                bounds.extend(latLng);
-              });
-            } else if (instance.getCenter && instance.getCenter()) {
-              bounds.extend(instance.getCenter());
+              } else if (instance.getCenter && instance.getCenter()) {
+                bounds.extend(instance.getCenter());
+              }
             }
           });
         }
@@ -585,6 +587,7 @@
       if (!bounds.isEmpty()) {
         map.fitBounds(bounds);
       }
+      return true;
     });
 
     self.then = function (fn) {
