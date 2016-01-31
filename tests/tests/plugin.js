@@ -1,8 +1,11 @@
 describe('plugin', function () {
 
-  beforeEach(function () {
+  beforeEach(function (done) {
     this.$element = jQuery('<div></div>');
     this.handler = this.$element.gmap3({});
+    this.handler.then(function () {
+      done();
+    });
   });
 
   it('should start a gmap3 chain', function () {
@@ -16,7 +19,7 @@ describe('plugin', function () {
     expect(this.handler.$).to.be.equal(this.$element);
   });
 
-  it('should allow to chain jQuery from each function but "end"', function () {
+  it('should allow to chain jQuery from most functions', function (done) {
     var self = this;
     var names = Object.keys(self.handler);
     expect(names.length).to.be.gt(0);
@@ -26,6 +29,9 @@ describe('plugin', function () {
         expect(self.handler[name]().$).to.be.an.instanceof(jQuery);
         expect(self.handler[name]().$).to.be.equal(self.$element);
       }
+    });
+    self.handler.then(function () {
+      done();
     });
   });
 
