@@ -225,6 +225,106 @@
   }
 
   /**
+   * Create a custom overlay view
+   * @param map {google.maps.Map}
+   * @param options {object}
+   * @param $div {jQuery}
+   * @returns {OverlayView}
+   */
+  function createOverlayView(map, options, $div) {
+
+    var GMOverlayView = gm.OverlayView;
+
+    options = extend({pane: 'floatPane', x: 0, y: 0}, options);
+
+    /**
+     * Class OverlayView
+     * @constructor
+     */
+    function OverlayView() {
+      var self = this,
+        listeners = [];
+
+      GMOverlayView.call(self);
+      self.setMap(map);
+
+      function fromLatLngToDivPixel(latlng) {
+        return self.getProjection().fromLatLngToDivPixel(latlng);
+      }
+
+      self.onAdd = function () {
+        var panes = self.getPanes();
+        if (options.pane in panes) {
+          $(panes[options.pane]).append($div);
+        }
+        foreachStr('dblclick click mouseover mousemove mouseout mouseup mousedown contextmenu', function (name) {
+          listeners.push(
+            gm.event.addDomListener($div[0], name, function (e) {
+              $.Event(e).stopPropagation();
+              gm.event.trigger(self, name === 'contextmenu' ? 'rightclick' : name, [e]);
+              self.draw();
+            })
+          );
+        });
+      };
+
+      if (options.position) {
+        self.getPosition = function () {
+          return options.position;
+        };
+
+        self.setPosition = function (latlng) {
+          options.position = latlng;
+          self.draw();
+        };
+
+        self.draw = function () {
+          var ps = fromLatLngToDivPixel(options.position);
+          $div.css({
+            left: (ps.x + options.x) + 'px',
+            top: (ps.y + options.y) + 'px'
+          });
+        };
+      } else {
+        self.getBounds = function () {
+          return options.bounds;
+        };
+
+        self.setBounds = function (bounds) {
+          options.bounds = bounds;
+          self.draw();
+        };
+
+        self.draw = function() {
+          var sw = fromLatLngToDivPixel(options.bounds.getSouthWest());
+          var ne = fromLatLngToDivPixel(options.bounds.getNorthEast());
+
+          $div.css({
+            left: (sw.x + options.x) + 'px',
+            top: (ne.y + options.y) + 'px',
+            width: (ne.x - sw.x + options.x) + 'px',
+            height: (sw.y - ne.y + options.y) + 'px'
+          });
+        };
+      }
+
+      self.onRemove = function () {
+        listeners.map(function (handler) {
+          gm.event.removeListener(handler);
+        });
+        $div.remove();
+        self.$ = $div = null; // mem leaks
+      };
+
+      self.$ = $div;
+    }
+
+    OverlayView.prototype = new GMOverlayView();
+
+    return new OverlayView();
+  }
+
+  /**
    * jQuery Plugin
    */
   $.fn.gmap3 = function (options) {
@@ -379,6 +479,21 @@
         opts.map = map;
         return gmElement('Rectangle', opts);
       });
+    }));
+
+    self.overlay = chainToPromise(multiple(function (options) {
+      function fn(opts) {
+        var $div = $(document.createElement("div"))
+          .css({
+            border: "none",
+            borderWidth: 0,
+            position: "absolute"
+          })
+          .append(opts.content);
+        return createOverlayView(map, opts, $div);
+      }
+
+      return options.bounds ? resolveLatLngBounds(options, fn) : resolveLatLng(options, 'position', fn);
     }));
 
     self.groundoverlay = chainToPromise(function (url, bounds, options) {

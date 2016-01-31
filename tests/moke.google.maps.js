@@ -75,6 +75,11 @@ window.google = (function () {
     }
   });
 
+  maps.OverlayView = createGenericObject({
+    prop: 'map options',
+    constructor: true
+  });
+
   maps.Marker = createGenericObject({
     prop: 'animation attribution clickable cursor draggable icon map opacity place position shape title visible zIndex options',
     constructor: true
