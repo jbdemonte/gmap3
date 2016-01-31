@@ -493,6 +493,7 @@
         return createOverlayView(map, opts, $div);
       }
 
+      options = dupOpts(options);
       return options.bounds ? resolveLatLngBounds(options, fn) : resolveLatLng(options, 'position', fn);
     }));
 
