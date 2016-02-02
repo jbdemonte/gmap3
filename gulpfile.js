@@ -6,6 +6,7 @@ var gulp = require("gulp"),
   replace = require("gulp-replace"),
   runSequence = require("run-sequence"),
   jqc = require("gulp-jquery-closure"),
+  wrapJS = require("gulp-wrap-js"),
   streamqueue = require('streamqueue'),
   mustache = require("gulp-mustache-plus"),
   zip = require("gulp-zip"),
@@ -57,6 +58,19 @@ gulp.task("dist", ["copyright", "tools", "gmap3"], function () {
       .pipe(concat("gmap3.js"))
         .pipe(replace(/(\r\n|\n|\r) *\/\/ *(\r\n|\n|\r)/g, "$1")) // remove the standalone // due to mustache parameters in comments
         .pipe(jqc({undefined: "undef"}))
+        .pipe(wrapJS(
+          "(function (root, factory) {\n" +
+          "    if (typeof define === 'function' && define.amd) {\n" +
+          "        define(['jquery'], factory);\n" +
+          "    } else if (typeof module === 'object' && module.exports) {\n" +
+          "        factory(require('jquery'));\n" +
+          "    } else {\n" +
+          "        factory(root.jQuery);\n" +
+          "    }\n" +
+          "}(this, function (jQuery) {\n" +
+          "    %= body %\n"+
+          "}));\n"
+        ))
   );
   return stream.done()
     .pipe(concat("gmap3.js"))
