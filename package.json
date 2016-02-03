@@ -19,12 +19,7 @@
     "email": "jbdemonte@gmail.com",
     "url": "http://jb.demonte.fr"
   },
-  "license": [
-    {
-      "type": "GPL v3",
-      "url": "http://www.gnu.org/licenses/gpl.html"
-    }
-  ],
+  "license": "GPL-3.0",
   "devDependencies": {
     "gulp": "^3.6.1",
     "gulp-concat": "^2.2.0",
