@@ -3,7 +3,7 @@
 
   var gm, services = {},
 
-    // Proxify functions to get shorter minified code
+    // Proxify functions to get shorter minimized code
     when = $.when,
     extend = $.extend,
     isArray = $.isArray,
@@ -12,8 +12,8 @@
 
   /**
    * Duplicate option to never modify original object
-   * @param options {object}
-   * @returns {object}
+   * @param {Object} options
+   * @returns {Object}
    */
   function dupOpts(options) {
     return extend(true, {}, options || {});
@@ -21,6 +21,9 @@
 
   /**
    * Slice an array like
+   * @params {Array|Object}
+   * @params {Number} [start]
+   * @params {Number} [end]
    * @returns {Array}
    */
   function slice() {
@@ -31,8 +34,8 @@
 
   /**
    * Return true if value is undefined
-   * @param value {*}
-   * @returns {boolean}
+   * @param {*} value
+   * @returns {Boolean}
    */
   function isUndefined(value) {
     return typeof value === 'undefined';
@@ -40,7 +43,7 @@
 
   /**
    * Equivalent to Promise.all
-   * @param deferreds {array} of {promise}
+   * @param {Deferred[]} deferreds
    * @returns {Deferred}
    */
   function all(deferreds) {
@@ -49,7 +52,7 @@
 
   /**
    * Equivalent to Promise.resolve
-   * @param value {*}
+   * @param {*} value
    * @returns {Deferred}
    */
   function resolved(value) {
@@ -61,7 +64,7 @@
   // Auto-load google maps library if needed
   (function () {
     var dfd = deferred(),
-      cbname = '__gmap3',
+      cbName = '__gmap3',
       script;
 
     $.holdReady(true);
@@ -70,13 +73,13 @@
       dfd.resolve();
     } else {
       // callback function - resolving promise after maps successfully loaded
-      window[cbname] = function () {
-        delete window[cbname];
+      window[cbName] = function () {
+        delete window[cbName];
         dfd.resolve();
       };
       script = window.document.createElement('script');
       script.type = 'text/javascript';
-      script.src = 'https://maps.googleapis.com/maps/api/js?callback=' + cbname;
+      script.src = 'https://maps.googleapis.com/maps/api/js?callback=' + cbName;
       $("head").append(script);
     }
     return dfd.promise();
@@ -85,9 +88,9 @@
   });
 
   /**
-   * Instanciate only once a google service
-   * @param name {string}
-   * @returns {object}
+   * Instantiate only once a google service
+   * @param {String} name
+   * @returns {Object}
    */
   function service(name) {
     if (!services[name]) {
@@ -98,8 +101,8 @@
 
   /**
    * Return GoogleMap Class (or overwritten by user) instance
-   * @param name {string}
-   * @returns {object}
+   * @param {String} name
+   * @returns {Object}
    */
   function gmElement(name) {
     var cls = gm[name];
@@ -115,7 +118,7 @@
   /**
    * Resolve a GeocodeRequest
    * https://developers.google.com/maps/documentation/javascript/geocoding
-   * @param request {string|object}
+   * @param {String|Object} request
    * @returns {Deferred}
    */
   function geocode(request) {
@@ -126,7 +129,7 @@
       };
     }
     service('Geocoder').geocode(request, function(results, status) {
-      if (status == gm.GeocoderStatus.OK) {
+      if (status === gm.GeocoderStatus.OK) {
         dfd.resolve(results[0].geometry.location);
       } else {
         dfd.reject();
@@ -136,27 +139,40 @@
   }
 
   /**
-   * Split string a execute a function on each item
-   * @param str {string} space separated list of string concatenated
-   * @param fn {function(item:string)}
+   * Callable function taking a parameter as string
+   * @callback StringCallback
+   * @param {String}
+   */
+
+  /**
+   * Split a string and execute a function on each item
+   * @param {String} str - Space separated list of items
+   * @param {StringCallback} fn - Callback function
    */
   function foreachStr(str, fn) {
     str.split(' ').forEach(fn);
   }
 
   /**
-   * execute a function on each items if items is an array and on items as a single element if it is not an array
-   * @param items {array|*} space separated list of string concatenated
-   * @param fn {function(*)}
+   * Execute a function on each items if items is an array and on items as a single element if it is not an array
+   * @param {Array|*} items - Items to execute foreach callback on
+   * @param {Function} fn - Callback function
    */
   function foreach(items, fn) {
     (isArray(items) ? items : [items]).forEach(fn);
   }
 
   /**
-   * convert bounds from array [ n, e, s, w ] to google.maps.LatLngBounds
-   * @param options {Object} container of options.bounds
-   * @param fn {function(options)}
+   * Resolution function
+   * @callback OptionCallback
+   * @param {Object} options
+   * @returns {Deferred|*}
+   */
+
+  /**
+   * Convert bounds from array [ n, e, s, w ] to google.maps.LatLngBounds
+   * @param {Object} options - Container of options.bounds
+   * @param {OptionCallback} fn
    * @returns {Deferred}
    */
   function resolveLatLngBounds(options, fn) {
@@ -174,9 +190,9 @@
 
   /**
    * Resolve an address location / convert a LatLng array to google.maps.LatLng object
-   * @param options {object}
-   * @param key {string} LatLng key name in options object
-   * @param fn {function(options)}
+   * @param {Object} options
+   * @param {String} key - LatLng key name in options object
+   * @param {OptionCallback} fn
    * @returns {Deferred}
    */
   function resolveLatLng(options, key, fn) {
@@ -189,7 +205,7 @@
           delete options.address;
           return geocode(address).then(function (latLng) {
             options[key] = latLng;
-          })
+          });
         }
         options[key] = toLatLng(options[key]);
       })
@@ -200,11 +216,11 @@
   }
 
   /**
-   * convert an array of mixed LatLng to google.maps.LatLng object
+   * Convert an array of mixed LatLng to google.maps.LatLng object
    * No address resolution here
-   * @param options {object}
-   * @param key {string} Array key name in options object
-   * @param fn {function(options, latLng)} where latLng is the first one
+   * @param {Object} options
+   * @param {String} key - Array key name in options object
+   * @param {OptionCallback} fn
    * @returns {Deferred}
    */
   function resolveArrayOfLatLng(options, key, fn) {
@@ -212,12 +228,12 @@
     options[key] = (options[key] || []).map(function (item) {
       return toLatLng(item);
     });
-    return resolved(fn(options, options[key][0]));
+    return resolved(fn(options));
   }
 
   /**
    * Convert a LatLng array to google.maps.LatLng iff mixed is an array
-   * @param mixed {*}
+   * @param {Array|*} mixed
    * @returns {*}
    */
   function toLatLng(mixed) {
@@ -226,9 +242,9 @@
 
   /**
    * Create a custom overlay view
-   * @param map {google.maps.Map}
-   * @param options {object}
-   * @param $div {jQuery}
+   * @param {Object} map - google.maps.Map object
+   * @param {Object} options
+   * @param {jQuery} $div
    * @returns {OverlayView}
    */
   function createOverlayView(map, options, $div) {
@@ -345,8 +361,8 @@
   /**
    * Class Handler
    * Chainable objet which handle all Gmap3 items associated to all jQuery elements in the current command set
-   * @param chain {jQuery} "this" to return to maintain the jQuery chain
-   * @param items {Array} of {Gmap3}
+   * @param {jQuery} chain - "this" to return to maintain the jQuery chain
+   * @param {Gmap3[]} items
    * @constructor
    */
   function Handler(chain, items) {
@@ -370,8 +386,8 @@
   /**
    * Class Gmap3
    * Handle a Google.maps.Map instance
-   * @param $container {jQuery} Element to display the map in
-   * @param options {object} MapOptions
+   * @param {jQuery} $container - Element to display the map in
+   * @param {Object} options - MapOptions
    * @constructor
    */
   function Gmap3($container, options) {
@@ -389,7 +405,7 @@
 
     /**
      * Decorator to handle multiple call based on array of options
-     * @param fn {function(?)}
+     * @param {Function} fn
      * @returns {Deferred}
      */
     function multiple(fn) {
@@ -411,18 +427,18 @@
             return instance;
           });
         }
-      }
+      };
     }
 
     /**
      * Decorator to chain promise result onto the main promise chain
-     * @param fn {function(?)}
+     * @param {Function} fn
      * @returns {Deferred}
      */
     function chainToPromise(fn) {
       return function () {
         var args = slice(arguments);
-        return promise = promise.then(function () {
+        promise = promise.then(function () {
           if (isFunction(args[0])) {
             // handle return as a deferred / promise to support both sync & async result
             return when(args[0].apply(context(), previousResults.slice(-1))).then(function (value) {
@@ -433,6 +449,7 @@
 
           return when(fn.apply(self, args));
         });
+        return promise;
       };
     }
 
@@ -504,7 +521,7 @@
         var instance = gmElement('GroundOverlay', url, opts.bounds, options);
         previousResults.push(instance);
         return instance;
-      })
+      });
     });
 
     self.styledmaptype = chainToPromise(function (styleId, styles, options) {
@@ -543,7 +560,7 @@
         if (options.panel) {
           options.panel = $(options.panel).get(0);
         }
-        instance = gmElement('DirectionsRenderer', options)
+        instance = gmElement('DirectionsRenderer', options);
       }
       previousResults.push(instance);
       return instance;
