@@ -3,7 +3,7 @@
   "version": "6.1.0",
   "date": "2016-01-01",
   "description": "jQuery plugin to generate Google Maps",
-  "main": "gmap3.js",
+  "main": "dist/gmap3.js",
   "directories": {
     "example": "examples"
   },
@@ -21,18 +21,22 @@
   },
   "license": "GPL-3.0",
   "devDependencies": {
+    "MD5": "^1.2.1",
     "gulp": "^3.6.1",
+    "gulp-clean": "^0.2.4",
     "gulp-concat": "^2.2.0",
     "gulp-jquery-closure": "^1.1.0",
-    "yargs": "^1.2.1",
-    "gulp-clean": "^0.2.4",
-    "run-sequence": "^0.3.6",
-    "gulp-uglify": "^0.2.1",
-    "gulp-rename": "^1.2.0",
     "gulp-mustache-plus": "^1.0.1",
-    "streamqueue": "0.0.6",
+    "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.2.0",
+    "gulp-uglify": "^0.2.1",
     "gulp-zip": "^0.3.4",
-    "MD5": "^1.2.1"
+    "run-sequence": "^0.3.6",
+    "streamqueue": "0.0.6",
+    "yargs": "^1.2.1",
+    "gulp-wrap-js": "^0.4.1"
+  },
+  "peerDependencies": {
+    "jquery": ">=1.7"
   }
 }
