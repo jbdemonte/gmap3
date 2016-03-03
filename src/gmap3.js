@@ -61,6 +61,24 @@
     });
   }
 
+  /**
+   * return the distance between 2 latLng in meters
+   * @param {LatLng} origin
+   * @param {LatLng} destination
+   * @returns {Number}
+   **/
+  function distanceInMeter(origin, destination) {
+    var m = Math,
+      pi = m.PI,
+      e = pi * origin.lat() / 180,
+      f = pi * origin.lng() / 180,
+      g = pi * destination.lat() / 180,
+      h = pi * destination.lng() / 180,
+      cos = m.cos,
+      sin = m.sin;
+    return 1000 * 6371 * m.acos(m.min(cos(e) * cos(g) * cos(f) * cos(h) + cos(e) * sin(f) * cos(g) * sin(h) + sin(e) * sin(g), 1));
+  }
+
   // Auto-load google maps library if needed
   (function () {
     var dfd = deferred(),
@@ -163,6 +181,26 @@
   }
 
   /**
+   * Return Object keys
+   * @param {Object} obj
+   * @returns {String[]}
+   */
+  function objectKeys(obj) {
+    return Object.keys(obj);
+  }
+
+  /**
+   * Return Object values
+   * @param {Object} obj
+   * @returns {*[]}
+   */
+  function objectValues(obj) {
+    return objectKeys(obj).map(function (key) {
+      return obj[key];
+    });
+  }
+
+  /**
    * Resolution function
    * @callback OptionCallback
    * @param {Object} options
@@ -242,16 +280,23 @@
 
   /**
    * Create a custom overlay view
-   * @param {Object} map - google.maps.Map object
+   * @param {Map} map
    * @param {Object} options
-   * @param {jQuery} $div
    * @returns {OverlayView}
    */
-  function createOverlayView(map, options, $div) {
+  function createOverlayView(map, options) {
 
     var GMOverlayView = gm.OverlayView;
 
-    options = extend({pane: 'floatPane', x: 0, y: 0}, options);
+    var $div = $(document.createElement("div"))
+      .css({
+        border: "none",
+        borderWidth: 0,
+        position: "absolute"
+      })
+      .append(options.content);
+
+    options = extend({x: 0, y: 0}, options);
 
     /**
      * Class OverlayView
@@ -270,18 +315,7 @@
 
       self.onAdd = function () {
         var panes = self.getPanes();
-        if (options.pane in panes) {
-          $(panes[options.pane]).append($div);
-        }
-        foreachStr('dblclick click mouseover mousemove mouseout mouseup mousedown contextmenu', function (name) {
-          listeners.push(
-            gm.event.addDomListener($div[0], name, function (e) {
-              $.Event(e).stopPropagation();
-              gm.event.trigger(self, name === 'contextmenu' ? 'rightclick' : name, [e]);
-              self.draw();
-            })
-          );
-        });
+        panes.overlayMouseTarget.appendChild($div[0]);
       };
 
       if (options.position) {
@@ -341,6 +375,332 @@
   }
 
   /**
+   * Return a map projection
+   * @param {Map} map
+   * @returns {*}
+   */
+  function getProjection(map) {
+    function Overlay() {
+      var self = this;
+      self.onAdd = self.onRemove = self.draw = function () {};
+      return gm.OverlayView.call(self);
+    }
+    Overlay.prototype = new gm.OverlayView();
+    var overlay = new Overlay();
+    overlay.setMap(map);
+    return overlay.getProjection();
+  }
+
+  /**
+   * Class used as event first parameter on clustering overlays
+   * @param {Cluster} cluster
+   * @param {Marker[]} markers
+   * @param {OverlayView} overlay
+   * @param {LatLngBounds} bounds
+   * @constructor
+   */
+  function ClusterOverlay(cluster, markers, overlay, bounds) {
+    var self = this;
+    self.cluster = cluster;
+    self.markers = markers;
+    self.$ = overlay.$;
+    self.overlay = overlay;
+
+    overlay.getBounds = function () {
+      return gmElement('LatLngBounds', bounds.getSouthWest(), bounds.getNorthEast());
+    };
+  }
+
+  /**
+   * Cluster Group definition.
+   * @typedef {Object} ClusterGroupDef
+   * @property {String|jQuery} content
+   * @property {Number} [x] Offset
+   * @property {Number} [y] Offset
+   */
+
+  /**
+   * Cluster evaluation function
+   * @callback clusterCallback
+   * @param {Marker[]} markers
+   * @return {ClusterGroupDef|undefined}
+   */
+
+  /**
+   * Class used to handle clustering
+   * @param {Map} map
+   * @param {Object} options
+   * @param {Integer} [options.size]
+   * @param {Object[]} [options.markers] markers definition
+   * @param {clusterCallback} [options.cb] callback used to evaluate clustering elements
+   * @constructor
+   */
+  function Cluster(map, options) {
+    var timer, igniter, previousViewHash, projection, filter,
+      self = this,
+      markers = [],
+      radius = (options.size || 200) >> 1,
+      enabled = true,
+      overlays = {},
+      handlers = [];
+
+    /**
+     * Cluster evaluation function
+     * @callback bindCallback
+     * @param {ClusterOverlay[]} instances
+     */
+
+    /**
+     * Bind a function to each current or future overlays
+     * @param {bindCallback} fn
+     */
+    self.bind = function (fn) {
+      fn(objectValues(overlays));
+      handlers.push(fn);
+    };
+
+    /**
+     * Get the marker list
+     * @returns {Marker[]}
+     */
+    self.markers = function () {
+      return slice(markers);
+    };
+
+    /**
+     * Enable the clustering feature
+     */
+    self.enable = function () {
+      if (!enabled) {
+        enabled = true;
+        previousViewHash = '';
+        delayRedraw();
+      }
+    };
+
+
+    /**
+     * Disable the clustering feature
+     */
+    self.disable = function () {
+      if (enabled) {
+        enabled = false;
+        previousViewHash = '';
+        delayRedraw();
+      }
+    };
+
+    /**
+     * Add a marker
+     * @param {Marker} marker
+     */
+    self.add = function (marker) {
+      markers.push(marker);
+      previousViewHash = '';
+      delayRedraw();
+    };
+
+    /**
+     * Remove a marker
+     * @param {Marker} marker
+     */
+    self.remove = function (marker) {
+      markers = markers.filter(function (item) {
+        return item !== marker;
+      });
+      previousViewHash = '';
+      delayRedraw();
+    };
+
+    /**
+     * Filtering function, Cluster only handle those who return true
+     * @callback filterCallback
+     * @param {Marker} marker
+     * @returns {Boolean}
+     */
+
+    /**
+     * Set a filter function
+     * @param {filterCallback} fn
+     */
+    self.filter = function (fn) {
+      if (filter !== fn) {
+        filter = fn;
+        previousViewHash = '';
+        delayRedraw();
+      }
+    };
+
+    /**
+     * Generate extended visible bounds
+     * @returns {LatLngBounds}
+     */
+    function extendsMapBounds() {
+      var circle = gmElement('Circle', {
+        center: map.getCenter(),
+        radius: 1.15 * distanceInMeter(map.getCenter(), map.getBounds().getNorthEast()) // + 15%
+      });
+      return circle.getBounds();
+    }
+
+    /**
+     * Generate bounds extended by radius
+     * @param {LatLng} latLng
+     * @returns {LatLngBounds}
+     */
+    function extendsBounds(latLng) {
+      var p = projection.fromLatLngToDivPixel(latLng);
+      return gmElement('LatLngBounds',
+        projection.fromDivPixelToLatLng(gmElement('Point', p.x - radius, p.y + radius)),
+        projection.fromDivPixelToLatLng(gmElement('Point', p.x + radius, p.y - radius))
+      );
+    }
+
+    options.markers.map(function (opts) {
+      opts.position = toLatLng(opts.position);
+      markers.push(gmElement('Marker', opts));
+    });
+
+    /**
+     * Redraw clusters
+     */
+    function redraw() {
+      var keys, bounds, overlayOptions, hash, currentMarkers, viewHash,
+        zoom = map.getZoom(),
+        currentHashes = {},
+        newOverlays = [],
+        ignore = {};
+
+      viewHash = '' + zoom;
+
+      if (zoom > 3) {
+        bounds = extendsMapBounds();
+        foreach(markers, function (marker, index) {
+          if (!bounds.contains(marker.getPosition())) {
+            viewHash += '-' + index;
+            ignore[index] = true;
+            if (marker.getMap()) {
+              marker.setMap(null);
+            }
+          }
+        });
+      }
+      if (filter) {
+        foreach(markers, function (marker, index) {
+          if (!ignore[index] && !filter(marker)) {
+            viewHash += '-' + index;
+            ignore[index] = true;
+            if (marker.getMap()) {
+              marker.setMap(null);
+            }
+          }
+        });
+      }
+
+      if (viewHash === previousViewHash) {
+        return;
+      }
+      previousViewHash = viewHash;
+
+      foreach(markers, function (marker, index) {
+        if (ignore[index]) {
+          return;
+        }
+
+        keys = [index];
+        bounds = extendsBounds(marker.getPosition());
+
+        if (enabled) {
+          foreach(slice(markers, index + 1), function (marker, idx) {
+            idx += index + 1;
+            if (!ignore[idx] && bounds.contains(marker.getPosition())) {
+              keys.push(idx);
+              ignore[idx] = true;
+            }
+          });
+        }
+
+        hash = keys.join('-');
+        currentHashes[hash] = true;
+
+        if (overlays[hash]) { // hash is already set
+          return;
+        }
+
+        currentMarkers = keys.map(function (key) {
+          return markers[key];
+        });
+
+        // ask the user callback on this subset (may be composed by only one marker)
+        overlayOptions = options.cb(slice(currentMarkers));
+
+        // create an overlay if cb returns its properties
+        if (overlayOptions) {
+          bounds = gmElement('LatLngBounds');
+          foreach(currentMarkers, function (marker) {
+            bounds.extend(marker.getPosition());
+            if (marker.getMap()) {
+              marker.setMap(null);
+            }
+          });
+
+          overlayOptions = dupOpts(overlayOptions);
+          overlayOptions.position = bounds.getCenter();
+          overlays[hash] = new ClusterOverlay(self, slice(currentMarkers), createOverlayView(map, overlayOptions), bounds);
+          newOverlays.push(overlays[hash]);
+
+        } else {
+          foreach(currentMarkers, function (marker) {
+            if (!marker.getMap()) { // to avoid marker blinking
+              marker.setMap(map);
+            }
+          });
+        }
+
+      });
+
+      // remove previous overlays
+      foreach(objectKeys(overlays), function (key) {
+        if (!currentHashes[key]) {
+          overlays[key].overlay.setMap(null);
+          delete overlays[key];
+        }
+      });
+
+      if (newOverlays.length) {
+        foreach(handlers, function (fn) {
+          fn(newOverlays);
+        });
+      }
+    }
+
+    /**
+     * Restart redraw timer
+     */
+    function delayRedraw() {
+      clearTimeout(timer);
+      timer = setTimeout(redraw, 100);
+    }
+
+    /**
+     * Init clustering
+     */
+    function init() {
+      gm.event.addListener(map, "zoom_changed", delayRedraw);
+      gm.event.addListener(map, "bounds_changed", delayRedraw);
+      redraw();
+    }
+
+    igniter = setInterval(function () {
+      projection = getProjection(map);
+      if (projection) {
+        clearInterval(igniter);
+        init();
+      }
+    }, 10);
+  }
+
+  /**
    * jQuery Plugin
    */
   $.fn.gmap3 = function (options) {
@@ -369,7 +729,7 @@
     var self = this;
 
     // Map all functions from Gmap3 class
-    Object.keys(items[0]).forEach(function (name) {
+    objectKeys(items[0]).forEach(function (name) {
       self[name] = function () {
         var results = [],
           args = slice(arguments);
@@ -401,6 +761,29 @@
         $: $container,
         get: self.get
       };
+    }
+
+    /**
+     * Attach events to instances
+     * @param {Object } events
+     * @param {Array|Object} instances
+     * @param {Boolean} once
+     */
+    function attachEvents(events, instances, once) {
+      $.each(events, function (eventName, handlers) {
+        foreach(instances, function (instance) {
+          var isDom = (instance instanceof gm.OverlayView) || (instance instanceof ClusterOverlay);
+          var eventListener = isDom ? instance.$.get(0) : instance;
+          gm.event[(isDom ? 'addDomListener' : 'addListener') + (once ? 'Once' : '')](eventListener, eventName, function (event) {
+            var target = instance;
+            foreach(handlers, function (handler) {
+              if (isFunction(handler)) {
+                handler.call(context(), target, event);
+              }
+            });
+          });
+        });
+      });
     }
 
     /**
@@ -500,14 +883,7 @@
 
     self.overlay = chainToPromise(multiple(function (options) {
       function fn(opts) {
-        var $div = $(document.createElement("div"))
-          .css({
-            border: "none",
-            borderWidth: 0,
-            position: "absolute"
-          })
-          .append(opts.content);
-        return createOverlayView(map, opts, $div);
+        return createOverlayView(map, opts);
       }
 
       options = dupOpts(options);
@@ -552,6 +928,12 @@
       return dfd;
     });
 
+    self.cluster = chainToPromise(function (options) {
+      var cluster = new Cluster(map, dupOpts(options));
+      previousResults.push(cluster);
+      return resolved(cluster);
+    });
+
     self.directionsrenderer = chainToPromise(function (options) {
       var instance;
       if (options) {
@@ -574,7 +956,7 @@
     }));
 
     self.fit = chainToPromise(function () {
-      var bounds = new gm.LatLngBounds();
+      var bounds = gmElement('LatLngBounds');
       foreach(previousResults, function (instances) {
         if (instances !== map) {
           foreach(instances, function (instance) {
@@ -617,27 +999,29 @@
       }
     };
 
-    foreachStr('on once', function (name) {
+    foreachStr('on once', function (name, once) {
       self[name] = function () {
-        var data = arguments[0];
-        if (data) {
-          if (typeof data === 'string') { // cast call on('click', handler) to on({click: handler})
-            data = {};
-            data[arguments[0]] = slice(arguments, 1);
+        var events = arguments[0];
+        if (events) {
+          if (typeof events === 'string') { // cast call on('click', handler) to on({click: handler})
+            events = {};
+            events[arguments[0]] = slice(arguments, 1);
           }
           promise.then(function (instances) {
             if (instances) {
-              $.each(data, function (eventName, handlers) {
-                foreach(instances, function (instance) {
-                  gm.event['addListener' + (name === 'once' ? 'Once' : '')](instance, eventName, function (event) {
-                    foreach(handlers, function (handler) {
-                      if (isFunction(handler)) {
-                        handler.call(context(), instance, event);
-                      }
-                    });
-                  });
+              if (instances instanceof Cluster) {
+                instances.bind(function (items) {
+                  if (items && items.length) {
+                    attachEvents(events, items, once);
+                  }
                 });
-              });
+                instances = (function () {
+                  var items = instances.markers();
+                  items.push(instances);
+                  return items;
+                })();
+              }
+              attachEvents(events, instances, once);
             }
           });
         }
