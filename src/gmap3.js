@@ -989,6 +989,16 @@
       return true;
     });
 
+    self.wait = function (duration) {
+      promise = promise.then(function (instance) {
+        var dfd = deferred();
+        setTimeout(function () {
+          dfd.resolve(instance);
+        }, duration);
+        return dfd;
+      });
+    };
+
     self.then = function (fn) {
       if (isFunction(fn)) {
         promise = promise.then(function (instance) {
