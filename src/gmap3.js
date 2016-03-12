@@ -215,13 +215,8 @@
    */
   function resolveLatLngBounds(options, fn) {
     options = dupOpts(options);
-    var bounds = options.bounds;
-    if (bounds) {
-      if (isArray(bounds)) {
-        options.bounds = gmElement('LatLngBounds', {lat: bounds[2], lng: bounds[3]}, {lat: bounds[0], lng: bounds[1]});
-      } else if (!bounds.getCenter){
-        options.bounds = gmElement('LatLngBounds', {lat: bounds.south, lng: bounds.west}, {lat: bounds.north, lng: bounds.east});
-      }
+    if (options.bounds) {
+      options.bounds = toLatLngBound(options.bounds);
     }
     return resolved(fn(options));
   }
@@ -270,12 +265,28 @@
   }
 
   /**
-   * Convert a LatLng array to google.maps.LatLng iff mixed is an array
+   * Convert a LatLng array to google.maps.LatLng
    * @param {Array|*} mixed
-   * @returns {*}
+   * @param {Boolean} [convertLiteral]
+   * @returns {LatLng}
    */
-  function toLatLng(mixed) {
-    return isArray(mixed) ? gmElement('LatLng', mixed[0], mixed[1]) : mixed;
+  function toLatLng(mixed, convertLiteral) {
+    return isArray(mixed) ? new gm.LatLng(mixed[0], mixed[1]) : (convertLiteral && mixed && !(mixed instanceof gm.LatLng) ? new gm.LatLng(mixed.lat, mixed.lng) : mixed);
+  }
+
+  /**
+   * Convert a LatLngBound array to google.maps.LatLngBound
+   * @param {Array|*} mixed
+   * @param {Boolean} [convertLiteral]
+   * @returns {LatLngBounds}
+   */
+  function toLatLngBound(mixed, convertLiteral) {
+    if (isArray(mixed)) {
+      return new gm.LatLngBounds({lat: mixed[2], lng: mixed[3]}, {lat: mixed[0], lng: mixed[1]});
+    } else if (convertLiteral && !mixed.getCenter){
+      return new gm.LatLngBounds({lat: mixed.south, lng: mixed.west}, {lat: mixed.north, lng: mixed.east});
+    }
+    return mixed;
   }
 
   /**
@@ -297,6 +308,12 @@
       .append(options.content);
 
     options = extend({x: 0, y: 0}, options);
+
+    if (options.position) {
+      options.position = toLatLng(options.position, true);
+    } else if (options.bounds) {
+      options.bounds = toLatLngBound(options.bounds);
+    }
 
     /**
      * Class OverlayView
@@ -443,6 +460,9 @@
       enabled = true,
       overlays = {},
       handlers = [];
+
+    options = options || {};
+    options.markers = options.markers || [];
 
     /**
      * Cluster evaluation function
