@@ -1,49 +1,48 @@
 describe('polyline', function () {
 
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
-    var options = {a: 123};
+    var options = {path: [[46, -74], {lat: 43, lng: -78}, [42, -75]], a: 123};
     this.handler
       .polyline(options)
       .then(function (polyline) {
         expect(polyline).to.be.an.instanceof(google.maps.Polyline);
-        expect(polyline.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(polyline.__data.a).to.be.equal(123);
-        expect(options).to.deep.equal( {a: 123});
+        expect(polyline.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(polyline.a).to.be.equal(123);
+        expect(options).to.deep.equal({path: [[46, -74], {lat: 43, lng: -78}, [42, -75]], a: 123});
         expect(this.get(1)).to.be.equal(polyline);
         done();
       });
   });
 
   it('would convert the position as array', function (done) {
-    var latLng = new google.maps.LatLng(5, 6);
+    var latLng = new google.maps.LatLng(42, -75);
     this.handler
       .polyline({
         path: [
-          [1,2],
-          {lat: 3, lng: 4},
-          latLng,
-          [7, 8]
+          [46, -74],
+          {lat: 43, lng: -78},
+          latLng
         ]
       })
       .then(function (polyline) {
         expect(polyline).to.be.an.instanceof(google.maps.Polyline);
-        expect(polyline.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(polyline.__data.path).to.be.an('array');
-        expect(polyline.__data.path.length).to.be.equal(4);
-        polyline.__data.path.forEach(function (item, index) {
-          if (item instanceof google.maps.LatLng) {
-            expect(item.lat()).to.be.equal(1 + 2 * index);
-            expect(item.lng()).to.be.equal(2 + 2 * index);
-          } else {
-            expect(item.lat).to.be.equal(1 + 2 * index);
-            expect(item.lng).to.be.equal(2 + 2 * index);
-          }
-        });
+        expect(polyline.getMap()).to.be.an.instanceof(google.maps.Map);
+        var path = polyline.getPath().getArray();
+        expect(path.length).to.be.equal(3);
+        expect(path[0].lat()).to.eql(46);
+        expect(path[0].lng()).to.eql(-74);
+        expect(path[1].lat()).to.eql(43);
+        expect(path[1].lng()).to.eql(-78);
+        expect(path[2].lat()).to.eql(42);
+        expect(path[2].lng()).to.eql(-75);
+        expect(path[2]).to.be.equal(latLng);
         done();
       });
   });
@@ -55,61 +54,15 @@ describe('polyline', function () {
       .then(function (polyline) {
         previous = polyline;
         expect(polyline).to.be.an.instanceof(google.maps.Polyline);
-        expect(polyline.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(polyline.getMap()).to.be.an.instanceof(google.maps.Map);
       })
       .polyline()
       .then(function (polyline) {
         expect(polyline).to.be.an.instanceof(google.maps.Polyline);
-        expect(polyline.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(polyline.getMap()).to.be.an.instanceof(google.maps.Map);
         expect(polyline).not.to.be.equal(previous);
         done();
-      })
-  });
-
-  it('would handle multiples items with multiple address resolutions', function (done) {
-    var polylines = [];
-    this.handler
-      .polyline([
-        {path: [{lat: 1, lng: 2}, [3, 4]]},
-        {path: [[5, 6], {lat: 7, lng: 8}, [9, 10]]}
-      ])
-      .then(function (items) {
-        expect(items).to.be.an('array');
-        Array.prototype.push.apply(polylines, items);
-      })
-      .polyline({path: [[11, 12], [13, 14]]})
-      .then(function (polyline) {
-        expect(polyline).to.be.an.instanceof(google.maps.Polyline);
-        expect(polyline.__data.map).to.be.an.instanceof(google.maps.Map);
-        polylines.push(polyline)
-      })
-      .then(function () {
-        expect(polylines.length).to.be.equal(3);
-
-        var counts = [2, 3, 2];
-
-        polylines.forEach(function (polyline, index) {
-          expect(polyline.__data.path.length).to.be.equal(counts[index]);
-          var offset = 0;
-          counts.slice(0, index).forEach(function (cnt) {
-            offset += cnt;
-          });
-          offset = 2 * offset;
-
-
-          polyline.__data.path.forEach(function (item, index) {
-            if (item instanceof google.maps.LatLng) {
-              expect(item.lat()).to.be.equal(offset + 1 + 2 * index);
-              expect(item.lng()).to.be.equal(offset + 2 + 2 * index);
-            } else {
-              expect(item.lat).to.be.equal(offset + 1 + 2 * index);
-              expect(item.lng).to.be.equal(offset + 2 + 2 * index);
-            }
-          });
-        });
-
-        done();
-      })
+      });
   });
 
 });

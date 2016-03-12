@@ -13,9 +13,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'node_modules/jquery/dist/jquery.min.js',
-      'tests/moke.google.maps.js',
+      'https://maps.googleapis.com/maps/api/js',
       'src/gmap3.js',
-      'tests/**/*.js'
+      'tests/tests/*.js'
     ],
 
 

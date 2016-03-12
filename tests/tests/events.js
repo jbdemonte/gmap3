@@ -1,23 +1,17 @@
 describe('events', function () {
 
-  beforeEach(function () {
+  beforeEach(function (done) {
     var self = this;
-    self.$element = jQuery('<div></div>');
-    self.handler = this.$element.gmap3({});
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
     self.events = {};
     self.build = function (name) {
       return function () {
         self.events[name] = (self.events[name] || 0) + 1;
       };
-    }
-  });
-
-  it('would not trig error when calling events before creating object', function (done) {
-    this.handler
-      .on('click', function () {})
-      .then(function () {
-        done();
-      });
+    };
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would attach many events on map using both syntax in many call and keep the chaining working', function (done) {
@@ -83,7 +77,7 @@ describe('events', function () {
         expect(m).to.be.an.instanceof(google.maps.Map);
         map = m;
       })
-      .marker()
+      .marker({position: [37.772323, -122.214897]})
       .on('click', clickMarker)
       .on({
         mouseover: mouseoverMarker
@@ -117,14 +111,14 @@ describe('events', function () {
     var call = [];
 
     function click(marker, event) {
-      call.push({marker:marker, event:event})
+      call.push({marker:marker, event:event});
     }
 
     this.handler
       .marker([
-        {m:1},
-        {m:2},
-        {m:3}
+        {position: [37.771, -122.211]},
+        {position: [37.772, -122.212]},
+        {position: [37.773, -122.213]}
       ])
       .on('click', click)
       .then(function (markers) {
@@ -148,23 +142,23 @@ describe('events', function () {
     var marker1, marker2;
 
     function click(marker, event) {
-      call.push({marker:marker, event:event})
+      call.push({marker:marker, event:event});
     }
 
     this.handler
-      .marker()
+      .marker({position: [37.771, -122.211]})
       .on('click', click)
       .then(function (m) {
         marker1 = m;
         expect(m).to.be.an.instanceof(google.maps.Marker);
       })
-      .marker()
+      .marker({position: [37.772, -122.212]})
       .on('click', click)
       .then(function (m) {
         marker2 = m;
         expect(m).to.be.an.instanceof(google.maps.Marker);
       })
-      .marker()
+      .marker({position: [37.773, -122.213]})
       .on('click', click)
       .then(function (marker3) {
         google.maps.event.trigger(marker3, 'click', {fakeX: 3});
@@ -183,23 +177,23 @@ describe('events', function () {
     var call = [];
 
     function click1(marker, event) {
-      call.push({marker:marker, event:event, fn: 1})
+      call.push({marker:marker, event:event, fn: 1});
     }
 
     function click2(marker, event) {
-      call.push({marker:marker, event:event, fn: 2})
+      call.push({marker:marker, event:event, fn: 2});
     }
 
     function click3(marker, event) {
-      call.push({marker:marker, event:event, fn: 3})
+      call.push({marker:marker, event:event, fn: 3});
     }
 
     function click4(marker, event) {
-      call.push({marker:marker, event:event, fn: 4})
+      call.push({marker:marker, event:event, fn: 4});
     }
 
     this.handler
-      .marker()
+      .marker({position: [37.771, -122.211]})
       .on('click', click1, click2)
       .on({
         click: [click3, click4]

@@ -1,19 +1,21 @@
 describe('rectangle', function () {
 
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [40.76, -73.9495], zoom: 13});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
-    var options = {a: 123};
+    var options = {bounds: [40.780, -73.932, 40.742, -73.967], a: 123};
     this.handler
       .rectangle(options)
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(rectangle.__data.a).to.be.equal(123);
-        expect(options).to.deep.equal( {a: 123});
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(rectangle.a).to.be.equal(123);
+        expect(options).to.eql({bounds: [40.780, -73.932, 40.742, -73.967], a: 123});
         expect(this.get(1)).to.be.equal(rectangle);
         done();
       });
@@ -21,47 +23,47 @@ describe('rectangle', function () {
 
   it('would convert the bound as array', function (done) {
     this.handler
-      .rectangle({bounds: [1,2,3,4]})
+      .rectangle({bounds: [40.780, -73.932, 40.742, -73.967]})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(rectangle.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
-        expect(rectangle.__data.bounds.ne().lat).to.be.equal(1);
-        expect(rectangle.__data.bounds.ne().lng).to.be.equal(2);
-        expect(rectangle.__data.bounds.sw().lat).to.be.equal(3);
-        expect(rectangle.__data.bounds.sw().lng).to.be.equal(4);
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
+        var bounds = rectangle.getBounds();
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.780, 0.01);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-73.932, 0.01);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.742, 0.01);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-73.967, 0.01);
         done();
       });
   });
 
   it('would modify bounds as literal object', function (done) {
-    var bounds = {north: 1, east: 2, south: 3, west: 4};
+    var bounds = {north:40.780, east:-73.932, south:40.742, west:-73.967};
     this.handler
       .rectangle({bounds: bounds})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(rectangle.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
-        expect(rectangle.__data.bounds.ne().lat).to.be.equal(1);
-        expect(rectangle.__data.bounds.ne().lng).to.be.equal(2);
-        expect(rectangle.__data.bounds.sw().lat).to.be.equal(3);
-        expect(rectangle.__data.bounds.sw().lng).to.be.equal(4);
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
+        var bounds = rectangle.getBounds();
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.780, 0.01);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-73.932, 0.01);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.742, 0.01);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-73.967, 0.01);
         done();
       });
   });
 
   it('would not modify the bounds as google.maps.LatLngBounds object', function (done) {
-    var bounds = new google.maps.LatLngBounds({south: 3, west: 4}, {north: 1, east: 2});
+    var bounds = new google.maps.LatLngBounds({lat: 40.742, lng: -73.967}, {lat: 40.780, lng: -73.932});
     this.handler
       .rectangle({bounds: bounds})
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(rectangle.__data.bounds).to.equal(bounds);
-        expect(rectangle.__data.bounds.ne().north).to.be.equal(1);
-        expect(rectangle.__data.bounds.ne().east).to.be.equal(2);
-        expect(rectangle.__data.bounds.sw().south).to.be.equal(3);
-        expect(rectangle.__data.bounds.sw().west).to.be.equal(4);
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(rectangle.getBounds()).to.equal(bounds);
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.780, 0.01);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-73.932, 0.01);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.742, 0.01);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-73.967, 0.01);
         done();
       });
   });
@@ -73,75 +75,15 @@ describe('rectangle', function () {
       .then(function (rectangle) {
         previous = rectangle;
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
       })
       .rectangle()
       .then(function (rectangle) {
         expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(rectangle.getMap()).to.be.an.instanceof(google.maps.Map);
         expect(rectangle).not.to.be.equal(previous);
         done();
-      })
-  });
-
-  it('would handle multiples items', function (done) {
-    var rectangles = [];
-    this.handler
-      .rectangle([
-        {bounds: {north: 1, east: 2, south: 3, west: 4}},
-        {bounds: [5, 6, 7, 8]},
-        {bounds: new google.maps.LatLngBounds({south: 11, west: 12}, {north: 9, east: 10})}
-      ])
-      .then(function (items) {
-        expect(items).to.be.an('array');
-        Array.prototype.push.apply(rectangles, items);
-      })
-      .rectangle({bounds: [13, 14, 15, 16]})
-      .then(function (rectangle) {
-        expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        rectangles.push(rectangle)
-      })
-      .rectangle([
-        {bounds: {north: 17, east: 18, south: 19, west: 20}},
-        {bounds: [21, 22, 23, 24]},
-        {bounds: new google.maps.LatLngBounds({south: 27, west: 28}, {north: 25, east: 26})}
-      ])
-      .then(function (items) {
-        expect(items).to.be.an('array');
-        Array.prototype.push.apply(rectangles, items);
-      })
-      .rectangle({bounds: [29, 30, 31, 32]})
-      .then(function (rectangle) {
-        expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-        expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-        rectangles.push(rectangle)
-      })
-      .then(function () {
-        expect(rectangles.length).to.be.equal(8);
-        rectangles.forEach(function (rectangle, index) {
-          var n = 4 * index + 1;
-          var e = 4 * index + 2;
-          var s = 4 * index + 3;
-          var w = 4 * index + 4;
-          var bounds = rectangle.__data.bounds;
-          expect(rectangle).to.be.an.instanceof(google.maps.Rectangle);
-          expect(rectangle.__data.map).to.be.an.instanceof(google.maps.Map);
-          // may be either a google.maps.LatLng or a simple {lat, lng} object
-          if (bounds.ne().north) {
-            expect(bounds.ne().north).to.be.equal(n);
-            expect(bounds.ne().east).to.be.equal(e);
-            expect(bounds.sw().south).to.be.equal(s);
-            expect(bounds.sw().west).to.be.equal(w);
-          } else {
-            expect(bounds.ne().lat).to.be.equal(n);
-            expect(bounds.ne().lng).to.be.equal(e);
-            expect(bounds.sw().lat).to.be.equal(s);
-            expect(bounds.sw().lng).to.be.equal(w);
-          }
-        });
-        done();
-      })
+      });
   });
 
 });

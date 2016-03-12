@@ -1,20 +1,23 @@
 describe('directionsrenderer', function () {
 
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.$target = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    this.$target = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element, this.$target);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
-    var options = {a: 123};
+    var options = {origin:[-33.8540399, 150.9893092], destination:[-33.9614565,151.2288193], travelMode: google.maps.DirectionsTravelMode.DRIVING, a: 123};
     this.handler
       .directionsrenderer(options)
       .then(function (directionsrenderer) {
         expect(directionsrenderer).to.be.an.instanceof(google.maps.DirectionsRenderer);
-        expect(directionsrenderer.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(directionsrenderer.__data.a).to.be.equal(123);
-        expect(options).to.deep.equal( {a: 123});
+        expect(directionsrenderer.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(directionsrenderer.a).to.be.equal(123);
+        expect(options).to.deep.equal({origin:[-33.8540399, 150.9893092], destination:[-33.9614565,151.2288193], travelMode: google.maps.DirectionsTravelMode.DRIVING, a: 123});
+        expect(this.get(0)).to.be.equal(directionsrenderer.getMap());
         expect(this.get(1)).to.be.equal(directionsrenderer);
         done();
       });
@@ -24,9 +27,9 @@ describe('directionsrenderer', function () {
     this.handler
       .directionsrenderer()
       .then(function (directionsrenderer) {
-        expect(directionsrenderer).to.be.an('undefined');
+        expect(directionsrenderer).to.be.undefined;
         expect(this.get().length).to.be.equal(2);
-        expect(this.get(1)).to.be.an('undefined');
+        expect(this.get(1)).to.be.undefined;
         done();
       });
   });
@@ -38,8 +41,8 @@ describe('directionsrenderer', function () {
       .directionsrenderer(options)
       .then(function (directionsrenderer) {
         expect(directionsrenderer).to.be.an.instanceof(google.maps.DirectionsRenderer);
-        expect(directionsrenderer.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(directionsrenderer.__data.panel).to.be.equal(self.$target.get(0));
+        expect(directionsrenderer.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(directionsrenderer.getPanel()).to.be.equal(self.$target.get(0));
         done();
       });
   });
@@ -51,8 +54,8 @@ describe('directionsrenderer', function () {
       .directionsrenderer(options)
       .then(function (directionsrenderer) {
         expect(directionsrenderer).to.be.an.instanceof(google.maps.DirectionsRenderer);
-        expect(directionsrenderer.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(directionsrenderer.__data.panel).to.be.equal(self.$target.get(0));
+        expect(directionsrenderer.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(directionsrenderer.getPanel()).to.be.equal(self.$target.get(0));
         done();
       });
   });
@@ -64,15 +67,15 @@ describe('directionsrenderer', function () {
       .then(function (directionsrenderer) {
         previous = directionsrenderer;
         expect(directionsrenderer).to.be.an.instanceof(google.maps.DirectionsRenderer);
-        expect(directionsrenderer.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(directionsrenderer.getMap()).to.be.an.instanceof(google.maps.Map);
       })
       .directionsrenderer({})
       .then(function (directionsrenderer) {
         expect(directionsrenderer).to.be.an.instanceof(google.maps.DirectionsRenderer);
-        expect(directionsrenderer.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(directionsrenderer.getMap()).to.be.an.instanceof(google.maps.Map);
         expect(directionsrenderer).not.to.be.equal(previous);
         done();
-      })
+      });
   });
 
 });

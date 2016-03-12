@@ -1,15 +1,19 @@
 describe('then', function () {
 
-  beforeEach(function () {
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
+
     var self = this;
-    self.$element = jQuery('<div></div>');
-    self.handler = this.$element.gmap3({});
+
     self.events = {};
     self.build = function (name) {
       return function () {
         self.events[name] = (self.events[name] || 0) + 1;
       };
-    }
+    };
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('should return the map', function (done) {

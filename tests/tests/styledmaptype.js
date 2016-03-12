@@ -1,24 +1,38 @@
 describe('styledmaptype', function () {
 
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
-    var options = {a: 123};
-    var styles = {b: 456};
+    var styles = [{
+      featureType: "road.highway",
+      elementType: "geometry",
+      stylers: [
+        { hue: "#ff0022" },
+        { saturation: 60 },
+        { lightness: -20 }
+      ]
+    }];
+    var options = {name: "Style 1"};
     this.handler
-      .styledmaptype('style1', styles, options)
+      .styledmaptype("style1", styles,options)
       .then(function (style) {
         expect(style).to.be.an.instanceof(google.maps.StyledMapType);
-        expect(style.__data.options.a).to.be.equal(123);
-        expect(style.__data.styles.b).to.be.equal(456);
-        expect(options).to.deep.equal( {a: 123});
-        expect(styles).to.deep.equal( {b: 456});
-        expect(this.get(1)).to.be.equal(style);
-        expect(this.get(0).__data.__mapTypes[0].id).to.be.equal('style1');
-        expect(this.get(0).__data.__mapTypes[0].styles).to.be.equal(style);
+        expect(style.name).to.be.equal("Style 1");
+        expect(styles).to.eql([{
+          featureType: "road.highway",
+          elementType: "geometry",
+          stylers: [
+            { hue: "#ff0022" },
+            { saturation: 60 },
+            { lightness: -20 }
+          ]
+        }]);
+        expect(options).to.eql({name: "Style 1"});
         done();
       });
   });

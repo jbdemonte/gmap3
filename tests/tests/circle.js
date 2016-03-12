@@ -1,19 +1,22 @@
 describe('circle', function () {
 
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [37.772323, -122.214897], zoom: 13});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
-    var options = {a: 123};
+    var options = {center: [37.772323, -122.214897], radius : 750, a: 123};
     this.handler
       .circle(options)
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(circle.__data.a).to.be.equal(123);
-        expect(options).to.deep.equal( {a: 123});
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(circle.a).to.be.equal(123);
+        expect(options).to.deep.equal({center: [37.772323, -122.214897], radius : 750, a: 123});
+        expect(this.get(0)).to.be.equal(circle.getMap());
         expect(this.get(1)).to.be.equal(circle);
         done();
       });
@@ -21,53 +24,60 @@ describe('circle', function () {
 
   it('would resolve the address', function (done) {
     this.handler
-      .circle({address: '100,200'})
+      .circle({address: 'rue Bellevue, Pourrieres, France'})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(circle.__data.center).to.be.an.instanceof(google.maps.LatLng);
-        expect(circle.__data.center.lat()).to.be.equal(100);
-        expect(circle.__data.center.lng()).to.be.equal(200);
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getCenter()).to.be.an.instanceof(google.maps.LatLng);
+        expect(circle.getCenter().lat()).to.be.closeTo(43.5038769, 0.01);
+        expect(circle.getCenter().lng()).to.be.closeTo(5.7313513, 0.01);
         done();
       });
   });
+  
 
   it('would convert the center as array', function (done) {
     this.handler
-      .circle({center: [100,200]})
+      .circle({center: [37.772323, -122.214897], radius : 750})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(circle.__data.center).to.be.an.instanceof(google.maps.LatLng);
-        expect(circle.__data.center.lat()).to.be.equal(100);
-        expect(circle.__data.center.lng()).to.be.equal(200);
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getCenter()).to.be.an.instanceof(google.maps.LatLng);
+        expect(circle.getCenter().lat()).to.be.closeTo(37.772323, 0.001);
+        expect(circle.getCenter().lng()).to.be.closeTo(-122.214897, 0.001);
+        expect(circle.getRadius()).to.be.equal(750);
         done();
       });
   });
 
   it('would not modify center as literal object', function (done) {
-    var center = {lat: 100, lng: 200};
+    var center = {lat: 37.772323, lng: -122.214897};
     this.handler
-      .circle({center: center})
+      .circle({center: center, radius : 750})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(circle.__data.center).not.to.equal(center); // should have clone the options object to not modify it
-        expect(circle.__data.center).to.deep.equal({lat: 100, lng: 200});
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getCenter()).to.be.an.instanceof(google.maps.LatLng);
+        expect(circle.getCenter().lat()).to.be.closeTo(37.772323, 0.001);
+        expect(circle.getCenter().lng()).to.be.closeTo(-122.214897, 0.001);
+        expect(circle.getRadius()).to.be.equal(750);
+        expect(center).to.deep.equal({lat: 37.772323, lng: -122.214897});
         done();
       });
   });
 
   it('would not modify the center as google.maps.LatLng object', function (done) {
-    var center = new google.maps.LatLng(100, 200);
+    var center = new google.maps.LatLng(37.772323, -122.214897);
     this.handler
-      .circle({center: center})
+      .circle({center: center, radius : 750})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(circle.__data.center).to.equal(center);
-        expect(circle.__data.center.lat()).to.be.equal(100);
-        expect(circle.__data.center.lng()).to.be.equal(200);
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getCenter()).to.be.an.instanceof(google.maps.LatLng);
+        expect(circle.getCenter().lat()).to.be.closeTo(37.772323, 0.001);
+        expect(circle.getCenter().lng()).to.be.closeTo(-122.214897, 0.001);
+        expect(circle.getRadius()).to.be.equal(750);
+        expect(circle.getCenter()).to.equal(center);
         done();
       });
   });
@@ -75,72 +85,19 @@ describe('circle', function () {
   it('would return distinct instances', function (done) {
     var previous;
     this.handler
-      .circle()
+      .circle({center: [37.772323, -122.214897], radius : 750})
       .then(function (circle) {
         previous = circle;
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
       })
-      .circle()
+      .circle({center: [37.772323, -122.214897], radius : 750})
       .then(function (circle) {
         expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(circle.getMap()).to.be.an.instanceof(google.maps.Map);
         expect(circle).not.to.be.equal(previous);
         done();
-      })
-  });
-
-  it('would handle multiples items with multiple address resolutions', function (done) {
-    var circles = [];
-    this.handler
-      .circle([
-        {center: {lat: 1, lng: 2}},
-        {center: [3, 4]},
-        {center: new google.maps.LatLng(5, 6)}
-      ])
-      .then(function (items) {
-        expect(items).to.be.an('array');
-        Array.prototype.push.apply(circles, items);
-      })
-      .circle({center: [7, 8]})
-      .then(function (circle) {
-        expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        circles.push(circle)
-      })
-      .circle([
-        {center: {lat: 9, lng: 10}},
-        {center: [11, 12]},
-        {center: new google.maps.LatLng(13, 14)}
-      ])
-      .then(function (items) {
-        expect(items).to.be.an('array');
-        Array.prototype.push.apply(circles, items);
-      })
-      .circle({center: new google.maps.LatLng(15, 16)})
-      .then(function (circle) {
-        expect(circle).to.be.an.instanceof(google.maps.Circle);
-        expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-        circles.push(circle)
-      })
-      .then(function () {
-        expect(circles.length).to.be.equal(8);
-        circles.forEach(function (circle, index) {
-          var lat = 2 * index + 1;
-          var lng = 2 * index + 2;
-          expect(circle).to.be.an.instanceof(google.maps.Circle);
-          expect(circle.__data.map).to.be.an.instanceof(google.maps.Map);
-          // may be either a google.maps.LatLng or a simple {lat, lng} object
-          if (circle.__data.center instanceof google.maps.LatLng) {
-            expect(circle.__data.center.lat()).to.be.equal(lat);
-            expect(circle.__data.center.lng()).to.be.equal(lng);
-          } else {
-            expect(circle.__data.center.lat).to.be.equal(lat);
-            expect(circle.__data.center.lng).to.be.equal(lng);
-          }
-        });
-        done();
-      })
+      });
   });
 
 });

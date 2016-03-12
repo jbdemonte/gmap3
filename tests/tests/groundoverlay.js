@@ -1,25 +1,27 @@
 describe('groundoverlay', function () {
-  beforeEach(function () {
-    this.$element = jQuery('<div></div>');
-    this.handler = this.$element.gmap3({});
+  beforeEach(function (done) {
+    this.$element = jQuery('<div style="width:300px; height: 300px"></div>');
+    jQuery('body').append(this.$element);
+    this.handler = this.$element.gmap3({center: [40.740, -74.18], zoom: 12});
+    this.handler.wait(500).then(function () {done();});
   });
 
   it('would not modify options and return an instance based on options', function (done) {
     var options = {a: 123};
     this.handler
-      .groundoverlay('url', [1,2,3,4], options)
+      .groundoverlay('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg', [40.773941,  -74.12544, 40.712216, -74.22655], options)
       .then(function (groundoverlay) {
         expect(groundoverlay).to.be.an.instanceof(google.maps.GroundOverlay);
-        expect(groundoverlay.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(groundoverlay.__data.a).to.be.equal(123);
+        expect(groundoverlay.getMap()).to.be.an.instanceof(google.maps.Map);
+        expect(groundoverlay.a).to.be.equal(123);
         expect(options).to.deep.equal( {a: 123});
 
-        expect(groundoverlay.__data.url).to.be.equal('url');
-        expect(groundoverlay.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
-        expect(groundoverlay.__data.bounds.ne().lat).to.be.equal(1);
-        expect(groundoverlay.__data.bounds.ne().lng).to.be.equal(2);
-        expect(groundoverlay.__data.bounds.sw().lat).to.be.equal(3);
-        expect(groundoverlay.__data.bounds.sw().lng).to.be.equal(4);
+        expect(groundoverlay.getUrl()).to.be.equal('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg');
+        var bounds = groundoverlay.getBounds();
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.773941, 0.001);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-74.12544, 0.001);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.712216, 0.001);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-74.22655, 0.001);
 
         expect(this.get(1)).to.be.equal(groundoverlay);
         done();
@@ -27,33 +29,40 @@ describe('groundoverlay', function () {
   });
 
   it('would modify bounds as literal object', function (done) {
-    var bounds = {north: 1, east: 2, south: 3, west: 4};
+    var bounds = {north: 40.773941, east: -74.12544, south: 40.712216, west: -74.22655};
     this.handler
-      .groundoverlay('url', bounds, {})
+      .groundoverlay('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg', bounds, {})
       .then(function (groundoverlay) {
         expect(groundoverlay).to.be.an.instanceof(google.maps.GroundOverlay);
-        expect(groundoverlay.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(groundoverlay.__data.bounds).to.be.an.instanceof(google.maps.LatLngBounds);
-        expect(groundoverlay.__data.bounds.ne().lat).to.be.equal(1);
-        expect(groundoverlay.__data.bounds.ne().lng).to.be.equal(2);
-        expect(groundoverlay.__data.bounds.sw().lat).to.be.equal(3);
-        expect(groundoverlay.__data.bounds.sw().lng).to.be.equal(4);
+        expect(groundoverlay.getMap()).to.be.an.instanceof(google.maps.Map);
+
+        expect(groundoverlay.getUrl()).to.be.equal('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg');
+        var bounds = groundoverlay.getBounds();
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.773941, 0.001);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-74.12544, 0.001);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.712216, 0.001);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-74.22655, 0.001);
+
+        expect(this.get(1)).to.be.equal(groundoverlay);
         done();
       });
   });
 
+
   it('would not modify the bounds as google.maps.LatLngBounds object', function (done) {
-    var bounds = new google.maps.LatLngBounds({south: 3, west: 4}, {north: 1, east: 2});
+    var bounds = new google.maps.LatLngBounds({lat: 40.712216, lng: -74.22655}, {lat: 40.773941, lng: -74.12544});
     this.handler
-      .groundoverlay('url', bounds, {})
+      .groundoverlay('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg', bounds, {})
       .then(function (groundoverlay) {
         expect(groundoverlay).to.be.an.instanceof(google.maps.GroundOverlay);
-        expect(groundoverlay.__data.map).to.be.an.instanceof(google.maps.Map);
-        expect(groundoverlay.__data.bounds).to.equal(bounds);
-        expect(groundoverlay.__data.bounds.ne().north).to.be.equal(1);
-        expect(groundoverlay.__data.bounds.ne().east).to.be.equal(2);
-        expect(groundoverlay.__data.bounds.sw().south).to.be.equal(3);
-        expect(groundoverlay.__data.bounds.sw().west).to.be.equal(4);
+        expect(groundoverlay.getMap()).to.be.an.instanceof(google.maps.Map);
+
+        expect(groundoverlay.getUrl()).to.be.equal('http://www.lib.utexas.edu/maps/historical/newark_nj_1922.jpg');
+        var bounds = groundoverlay.getBounds();
+        expect(bounds.getNorthEast().lat()).to.be.closeTo(40.773941, 0.001);
+        expect(bounds.getNorthEast().lng()).to.be.closeTo(-74.12544, 0.001);
+        expect(bounds.getSouthWest().lat()).to.be.closeTo(40.712216, 0.001);
+        expect(bounds.getSouthWest().lng()).to.be.closeTo(-74.22655, 0.001);
         done();
       });
   });
@@ -65,15 +74,14 @@ describe('groundoverlay', function () {
       .then(function (groundoverlay) {
         previous = groundoverlay;
         expect(groundoverlay).to.be.an.instanceof(google.maps.GroundOverlay);
-        expect(groundoverlay.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(groundoverlay.getMap()).to.be.an.instanceof(google.maps.Map);
       })
       .groundoverlay()
       .then(function (groundoverlay) {
         expect(groundoverlay).to.be.an.instanceof(google.maps.GroundOverlay);
-        expect(groundoverlay.__data.map).to.be.an.instanceof(google.maps.Map);
+        expect(groundoverlay.getMap()).to.be.an.instanceof(google.maps.Map);
         expect(groundoverlay).not.to.be.equal(previous);
         done();
-      })
+      });
   });
-
 });
