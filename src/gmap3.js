@@ -488,6 +488,14 @@
     };
 
     /**
+     * Get the current groups
+     * @returns {ClusterOverlay[]}
+     */
+    self.groups = function () {
+      return objectValues(overlays);
+    };
+
+    /**
      * Enable the clustering feature
      */
     self.enable = function () {
