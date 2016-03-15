@@ -30,6 +30,7 @@ Why using gmap3?
 
 Created on 2010, Gmap3 has evolved a lot thanks to hundreds of feedback.
 It is now used by thousands of website and included in many packages and themes for various CMS and framework.
+Gmap3 is compatible with all modern browsers (IE9+) and with jQuery 1.6+.
 
 Licence
 -------
