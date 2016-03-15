@@ -14,11 +14,20 @@ gulp.task("clean", function () {
 });
 
 /**
+ * Copy example assets
+ */
+gulp.task("assets", function () {
+  // process each example but the template
+  return gulp.src(["src/examples/**/*.png", "src/examples/**/*.css"])
+    .pipe(gulp.dest("dist/examples/"));
+});
+
+/**
  * Build example files using the template file
  */
-gulp.task("examples", function () {
+gulp.task("examples", ["assets"], function () {
   // process each example but the template
-  return gulp.src(["src/examples/*.html", "!src/examples/_template.html"])
+  return gulp.src(["src/examples/**/*.html", "!src/examples/_template.html"])
     .pipe(foreach(function(stream, file){
       return gulp.src("src/examples/_template.html")            // use template file
         .pipe(replace("[body]", file.contents.toString()))      // replace template tag by example content
@@ -50,4 +59,16 @@ gulp.task("main", function () {
  */
 gulp.task("default", function (done) {
   runSequence("clean", "main", "uglify", "examples", done);
+});
+
+
+/**
+ * Watch files modifications and rebuild
+ **/
+gulp.task("watch", function() {
+  gulp.start("default");
+
+  gulp.watch("src/**/*", function() {
+    gulp.start("default");
+  });
 });
