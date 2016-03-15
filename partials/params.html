@@ -1,0 +1,19 @@
+<table class="variables-matrix input-arguments">
+  <thead>
+  <tr>
+    <th>Param</th>
+    <th>Type</th>
+    <th>Details</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="item in items">
+    <td>{{item.name}}<div ng-if="item.optional"><em>(optional)</em></div><a ng-if="item.doc" href="{{item.doc}}" target="_blank"><i class="fa fa-book"></i></a></td>
+    <td>
+      <a href="" ng-repeat="type in item.types" class="label type-hint type-hint-{{type}}">{{type}}</a>
+    </td>
+    <td ng-bind-html="item.contents|safe"></td>
+  </tr>
+  </tbody>
+  <tfoot ng-transclude></tfoot>
+</table>

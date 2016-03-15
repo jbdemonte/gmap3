@@ -1,0 +1,136 @@
+html
+  font-size 100%
+
+ol
+  li + li
+    margin-top 30px
+
+strong.danger
+  color red
+  font-weight normal
+  border 1px solid red
+  border-radius 0.3rem
+  display block
+  padding 5px
+  margin 5px 0
+
+nav.navbar
+  min-height 0
+  #navbar-collapse
+    line-height 10px
+    text-align center
+    >ul.navbar-nav
+      display inline-block
+      float none
+      padding 0
+      >li
+        font-size 13px
+        >a
+          padding 10px 15px
+          i
+            margin-right 5px
+    .divider-vertical
+      width 1px
+      height 40px
+      margin 0
+      overflow hidden
+      background-color #222222
+      border-right 1px solid #333333
+@media (max-width: 767px)
+  nav.navbar
+      .divider-vertical
+        display none
+
+
+snippets
+  display block
+  margin 10px 0
+
+snippets-tabs
+  nav
+    margin-bottom 10px
+  .btn
+    font-size 14px
+    padding 6px 12px
+    margin-top 0!important
+    &:hover
+      color #000
+      background-color #fff
+      border: 1px solid #ddd
+    &.active
+      outline 0
+      background-image none
+      box-shadow inset 0 3px 5px rgba(0,0,0,.125)
+
+.tab-pane
+  iframe
+    width 100%
+    height 400px
+    background-color #F9F9F9
+    border 1px solid #ddd
+    border-radius 3px
+    box-sizing content-box
+
+pre.code
+  font-size 12px
+
+#api-summary
+  font-size 14px
+  padding 5px
+  border 1px solid #c0c0c0
+  border-radius 0.3rem
+  ul
+    padding 0
+  li
+    list-style none
+    max-width 100%
+    text-overflow ellipsis
+    white-space nowrap
+    overflow hidden
+    ul
+      padding-left 10px
+
+@media screen and (max-width: 600px)
+  #api-summary
+    font-size 12px
+
+params
+  margin 10px 0
+  display block
+  td
+    position relative
+    &:first-child
+      text-align center
+  .fa-book
+    position absolute
+    top 5px
+    right 5px
+  p
+    margin 0!important
+    &.default
+      em
+        color #FFAA6E
+        font-style normal
+    &.example
+      em
+        color #FF6E7E
+        font-style normal
+
+
+.page-header
+  position relative
+  .badges
+    position absolute
+    bottom 5px
+    right 5px
+@media screen and (max-width: 64em)
+  .page-header
+    .badges
+      position initial
+@media screen and (max-width: 42em)
+  .page-header
+    .badges
+      text-align right
+      a
+        display block
+

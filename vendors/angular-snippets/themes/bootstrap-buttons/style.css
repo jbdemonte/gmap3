@@ -1,0 +1,40 @@
+snippets-tabs .btn {
+  color: #428bca;
+  position: relative;
+  width: auto;
+  display: inline-block;
+  margin: 0 0 2px;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  height: auto;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(100%, #f2f2f2));
+  background-image: -webkit-linear-gradient(#ffffff, #f2f2f2);
+  background-image: -moz-linear-gradient(#ffffff, #f2f2f2);
+  background-image: -o-linear-gradient(#ffffff, #f2f2f2);
+  background-image: linear-gradient(#ffffff, #f2f2f2);
+}
+snippets-tabs .btn + .btn {
+  margin-left: 10px;
+}
+snippets-tabs .btn i{
+  margin-right: 5px;
+}
+snippets-tabs .btn.error{
+  color: red;
+  cursor: not-allowed;
+}
+snippets-tabs .btn.error:after {
+  font-size: 10px;
+  content: " (404)";
+}
+snippets-tabs .tab-pane:not(.active) {
+  display: none;
+}
+snippets-tabs pre {
+  max-height: 300px;
+}

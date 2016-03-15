@@ -1,0 +1,153 @@
+html {
+  font-size: 100%;
+}
+ol li + li {
+  margin-top: 30px;
+}
+strong.danger {
+  color: #f00;
+  font-weight: normal;
+  border: 1px solid #f00;
+  border-radius: 0.3rem;
+  display: block;
+  padding: 5px;
+  margin: 5px 0;
+}
+nav.navbar {
+  min-height: 0;
+}
+nav.navbar #navbar-collapse {
+  line-height: 10px;
+  text-align: center;
+}
+nav.navbar #navbar-collapse >ul.navbar-nav {
+  display: inline-block;
+  float: none;
+  padding: 0;
+}
+nav.navbar #navbar-collapse >ul.navbar-nav >li {
+  font-size: 13px;
+}
+nav.navbar #navbar-collapse >ul.navbar-nav >li >a {
+  padding: 10px 15px;
+}
+nav.navbar #navbar-collapse >ul.navbar-nav >li >a i {
+  margin-right: 5px;
+}
+nav.navbar #navbar-collapse .divider-vertical {
+  width: 1px;
+  height: 40px;
+  margin: 0;
+  overflow: hidden;
+  background-color: #222;
+  border-right: 1px solid #333;
+}
+@media (max-width: 767px) {
+  nav.navbar .divider-vertical {
+    display: none;
+  }
+}
+snippets {
+  display: block;
+  margin: 10px 0;
+}
+snippets-tabs nav {
+  margin-bottom: 10px;
+}
+snippets-tabs .btn {
+  font-size: 14px;
+  padding: 6px 12px;
+  margin-top: 0 !important;
+}
+snippets-tabs .btn:hover {
+  color: #000;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+snippets-tabs .btn.active {
+  outline: 0;
+  background-image: none;
+  box-shadow: inset 0 3px 5px rgba(0,0,0,0.125);
+}
+.tab-pane iframe {
+  width: 100%;
+  height: 400px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  box-sizing: content-box;
+}
+pre.code {
+  font-size: 12px;
+}
+#api-summary {
+  font-size: 14px;
+  padding: 5px;
+  border: 1px solid #c0c0c0;
+  border-radius: 0.3rem;
+}
+#api-summary ul {
+  padding: 0;
+}
+#api-summary li {
+  list-style: none;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+#api-summary li ul {
+  padding-left: 10px;
+}
+@media screen and (max-width: 600px) {
+  #api-summary {
+    font-size: 12px;
+  }
+}
+params {
+  margin: 10px 0;
+  display: block;
+}
+params td {
+  position: relative;
+}
+params td:first-child {
+  text-align: center;
+}
+params .fa-book {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+params p {
+  margin: 0 !important;
+}
+params p.default em {
+  color: #ffaa6e;
+  font-style: normal;
+}
+params p.example em {
+  color: #ff6e7e;
+  font-style: normal;
+}
+.page-header {
+  position: relative;
+}
+.page-header .badges {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
+@media screen and (max-width: 64em) {
+  .page-header .badges {
+    position: initial;
+  }
+}
+@media screen and (max-width: 42em) {
+  .page-header .badges {
+    text-align: right;
+  }
+  .page-header .badges a {
+    display: block;
+  }
+}

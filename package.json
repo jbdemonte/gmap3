@@ -1,0 +1,10 @@
+{
+  "name": "gmap3-v7-page",
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-stylus": "^2.0.4"
+  }
+}
