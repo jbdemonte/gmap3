@@ -70,7 +70,8 @@ function initDefaults() {
       geoloc: {
         getCurrentPosition: {
           maximumAge: 60000,
-          timeout: 5000
+          timeout: 5000,
+		      enableHighAccuracy: true
         }
       }
     }
@@ -437,10 +438,15 @@ function resolveAllLatLng(list, ctx, method, args) {
  * geolocalise the user and return a LatLng
  **/
 function geoloc(ctx, method, args) {
+  var location_timeout = setTimeout(function(){
+    args.latLng = false;
+	  method.apply(ctx, [args]);
+  }, 5000);
   var is_echo = false; // sometime, a kind of echo appear, this trick will notice once the first call is run to ignore the next one
   if (navigator && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function (pos) {
+        clearTimeout(location_timeout);
         if (!is_echo) {
           is_echo = true;
           args.latLng = new gm.LatLng(pos.coords.latitude, pos.coords.longitude);
@@ -448,6 +454,7 @@ function geoloc(ctx, method, args) {
         }
       },
       function () {
+        clearTimeout(location_timeout);
         if (!is_echo) {
           is_echo = true;
           args.latLng = false;
@@ -457,6 +464,7 @@ function geoloc(ctx, method, args) {
       args.opts.getCurrentPosition
     );
   } else {
+    clearTimeout(location_timeout);
     args.latLng = false;
     method.apply(ctx, [args]);
   }
