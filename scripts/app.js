@@ -33,9 +33,6 @@ angular.module('project', ['Snippets', 'SnippetsThemeBootstrapButtons'])
         var items = $scope.items = [];
         this.add = function(item) {
           items.push(item);
-          items.sort(function (a, b) {
-            return a.name < b.name ? -1 : 1;
-          });
         }
       }
     };
