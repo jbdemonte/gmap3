@@ -1,0 +1,30 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    var center = [37.772323, -122.214897];
+    $('.map')
+      .gmap3({
+        center:[41.850033, -87.650052],
+        zoom:12,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        mapTypeControlOptions: {
+          mapTypeIds: [google.maps.MapTypeId.ROADMAP, "style1"]
+        }
+      })
+      .styledmaptype(
+        "style1",
+        [{
+          featureType: "road.highway",
+          elementType: "geometry",
+          stylers: [
+            { hue: "#ff0022" },
+            { saturation: 60 },
+            { lightness: -20 }
+          ]
+        }],
+        {name: "Style 1"}
+      );
+  </script>
+{% endraw %}
