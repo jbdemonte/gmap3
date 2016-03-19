@@ -29,7 +29,7 @@
     "url": "http://jb.demonte.fr"
   },
   "contributors": [],
-  "license": "GPL",
+  "license": "GPL-3.0+",
   "dependencies": {},
   "devDependencies": {
     "chai": "^3.4.1",
