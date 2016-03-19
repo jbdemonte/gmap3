@@ -1,0 +1,33 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    var center = [44.797916, -93.278046];
+    $('.map')
+      .gmap3({
+        center: center,
+        zoom: 4,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker({
+        position: center
+      })
+      .overlay({
+        position: center,
+        content:  '<div style="color:#000000; border:1px solid #FF0000;background-color: #00FF00; width:200px; line-height:20px; height: 20px; text-align:center">' +
+          'Hello World !' +
+        '</div>',
+        x:12,
+        y:-32
+      })
+      .on({
+        mouseover: function (overlay) {
+          overlay.$.find(">*").css({backgroundColor: "#CCCCCC"})
+        },
+        mouseout: function (overlay) {
+          overlay.$.find(">*").css({backgroundColor: "#00FF00"})
+        }
+      });
+  </script>
+{% endraw %}

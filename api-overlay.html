@@ -1,0 +1,44 @@
+---
+layout: api
+title: "Gmap3 Overlay"
+---
+
+<h2 id="api-overlay">Overlay</h2>
+<p>
+  This function creates custom <doc>OverlayView</doc>.
+</p>
+
+<strong>Parameters</strong>
+<params>
+  <item name="options" type="object,array(object)">
+    <a href="#options">Options</a> to create one overlay. <br />
+    Array of <a href="#options">Options</a> to create multiple overlays.
+  </item>
+</params>
+
+<strong id="#options">Options</strong>
+<params>
+  <item name="bounds" type="object" optional>
+    <a href="api.html#api-latlngbounds">LatLngBounds</a> of the overlay.
+  </item>
+  <item name="position" type="object" optional>
+    <a href="api.html#api-latlng">LatLng</a> of the overlay.
+  </item>
+  <item name="content" type="string,jQuery,HTMLElement">
+    Content to display.
+  </item>
+  <item name="x" type="Number" optional>
+    X offset (in pixel)
+  </item>
+  <item name="y" type="Number" optional>
+    Y offset (in pixel)
+  </item>
+</params>
+
+<h3>Example (using position)</h3>
+
+<snippets path="snippets/api-overlay"></snippets>
+
+<h3>Example (using bounds)</h3>
+
+<snippets path="snippets/api-overlay-bounds"></snippets>
