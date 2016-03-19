@@ -312,7 +312,7 @@
     if (options.position) {
       options.position = toLatLng(options.position, true);
     } else if (options.bounds) {
-      options.bounds = toLatLngBound(options.bounds);
+      options.bounds = toLatLngBound(options.bounds, true);
     }
 
     /**
