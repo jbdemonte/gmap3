@@ -1,0 +1,28 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <div id="box" style="width:100%; height: 400px; margin-top:50px"></div>
+  <script>
+    var center = [37.772323, -122.214897];
+    $('.map')
+      .gmap3({
+        center: [-33.8540399, 150.9893092],
+        zoom: 6,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .route({
+        origin:"48 Pirrama Road, Pyrmont NSW",
+        destination:"Bondi Beach, NSW",
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+      })
+      .directionsrenderer(function (results) {
+        if (results) {
+          return {
+            panel: "#box",
+            directions: results
+          }
+        }
+      });
+  </script>
+{% endraw %}
