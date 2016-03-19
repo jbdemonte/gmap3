@@ -1,0 +1,92 @@
+---
+layout: api
+title: "Gmap3 Chaining"
+---
+
+<h2 id="api-chaining">Chaining</h2>
+<p>
+  Using gmap3 creates a chaining which allows to use the whole API.
+  To get back in jQuery chaining, simply use the <em>$</em> key.
+</p>
+<pre class="code"><code class="language-javascript">$('#map')
+  .gmap3({
+    address: "Haltern am See, Weseler Str. 151",
+    zoom: 6,
+    mapTypeId : google.maps.MapTypeId.ROADMAP
+  })
+  .marker(function (map) {
+    return {
+      position: map.getCenter(),
+      icon: 'http://maps.google.com/mapfiles/marker_green.png'
+    };
+  })
+  .then(function (marker) {
+    console.log(marker);
+  })
+  .on('click', function (marker, event) {
+    marker.setIcon('http://maps.google.com/mapfiles/marker_orange.png');
+    setTimeout(function () {
+      marker.setIcon('http://maps.google.com/mapfiles/marker_green.png');
+    }, 200);
+  })
+  .$ // back to jQuery chaining
+  .css(...)</code></pre>
+
+<h2 id="api-chaining-function">Chaining function</h2>
+<p>
+  Each time, the api accepts either an object or a function which return the object.
+</p>
+
+<pre class="code"><code class="language-javascript">var center = [37.772323, -122.214897];
+$('#map')
+  // Object passed
+  .gmap3({
+    center: center,
+    zoom: 13,
+    mapTypeId : google.maps.MapTypeId.ROADMAP
+  })
+  // Function passed
+  .circle(function (map) {
+    return {
+      center: map.getCenter(),
+      radius : 750,
+      fillColor : "#FFAF9F",
+      strokeColor : "#FF512F"
+    };
+  })
+  // Object passed
+  .circle({
+    center: center,
+    radius : 750,
+    fillColor : "#FFAF9F",
+    strokeColor : "#FF512F"
+  });</code></pre>
+
+<h3 id="api-chaining-context">Chaining context</h3>
+<p>When a function is passed in the chaining, it takes one parameters which is the previous result and its context provides two things, the <a href="api-$.html">$</a> and the <a href="api-get.html">get</a> handlers.</p>
+<pre class="code"><code class="language-javascript">var center = [37.772323, -122.214897];
+$('#map')
+  .gmap3({
+    center: center,
+    zoom: 13,
+    mapTypeId : google.maps.MapTypeId.ROADMAP
+  })
+  .circle({
+    center: center,
+    radius : 750,
+    fillColor : "#FFAF9F",
+    strokeColor : "#FF512F"
+  })
+  .circle({
+    center: center,
+    radius : 100,
+    fillColor : "#99EE9F",
+    strokeColor : "#FF512F"
+  })
+  .then(function (result) {
+    console.log(result);      // returns the last circle
+    console.log(this.$);      // returns $('#map')
+    console.log(this.get(0)); // returns the map (google map object)
+    console.log(this.get(1)); // returns the first circle
+    console.log(this.get(2)); // returns the second circle
+  });</code></pre>

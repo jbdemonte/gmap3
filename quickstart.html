@@ -1,0 +1,50 @@
+---
+layout: default
+title: "Getting Started"
+active: quickstart
+---
+
+<h1>Quick start</h1>
+
+<p>
+  Obviously, because gmap3 is a jQuery plugin, you need first to load <a href="http://jquery.com/">jQuery</a>.
+</p>
+
+<ol>
+  <li>
+    Download the <a href="https://raw.githubusercontent.com/jbdemonte/gmap3/master/dist/gmap3.min.js">latest version on github</a> or install it using <a href="http://bower.io/">bower</a> or <a href="https://www.npmjs.com/">npm</a>:
+    <pre class="code"><code class="language-bash">bower install gmap3
+# or
+npm install gmap3</code></pre>
+  </li>
+
+  <li>
+    Load it into your HTML pages:
+    <pre class="code"><code class="language-markup">&lt;script src="path/to/gmap3.min.js"&gt;&lt;/script&gt;</code></pre>
+  </li>
+
+  <li>
+    The Google Maps API is asynchronously loaded as described on <a href="https://developers.google.com/maps/documentation/javascript/tutorial#asynch">the official page</a>.<br />
+    If needed, you can load it explicitly to configure it (see <a href="https://developers.google.com/maps/documentation/javascript/basics">documentation</a>):
+    <pre class="code"><code class="language-markup">&lt;script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&amp;region=GB"&gt;&lt;/script&gt;</code></pre>
+  </li>
+
+  <li>
+    Google Maps require a width / height to display maps, prepare your CSS as well, e.g.
+    <pre class="code"><code class="language-css">
+gm-map {
+    display: block;
+    width: 100%;
+    height: 300px;
+}</code></pre>
+  </li>
+
+  <li>
+    Start to use gmap3, e.g.
+    <pre class="code"><code class="language-javascript">$('#map').gmap3({
+  address: "Haltern am See, Weseler Str. 151",
+  zoom: 6,
+  mapTypeId : google.maps.MapTypeId.ROADMAP
+});</code></pre>
+  </li>
+</ol>

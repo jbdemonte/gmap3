@@ -1,0 +1,25 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <div id="panorama" style="width:100%; height: 400px; margin-top:50px"></div>
+  <script>
+    var fenway = [42.345573,-71.098326];
+    $('.map')
+      .gmap3({
+        center:fenway,
+        zoom: 13
+      })
+      .streetviewpanorama(
+        '#panorama',
+        {
+          position: fenway,
+          pov: {
+            heading: 34,
+            pitch: 10,
+            zoom: 1
+          }
+        }
+      );
+  </script>
+{% endraw %}

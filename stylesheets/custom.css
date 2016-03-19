@@ -77,6 +77,10 @@ snippets-tabs .btn.active {
   border-radius: 3px;
   box-sizing: content-box;
 }
+.double .tab-pane iframe {
+  width: 100%;
+  height: 850px;
+}
 pre.code {
   font-size: 12px;
 }
