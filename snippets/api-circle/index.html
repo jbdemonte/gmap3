@@ -1,0 +1,20 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    var center = [37.772323, -122.214897];
+    $('.map')
+      .gmap3({
+        center: center,
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        center: center,
+        radius : 750,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      });
+  </script>
+{% endraw %}
