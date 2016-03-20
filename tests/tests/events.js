@@ -111,6 +111,7 @@ describe('events', function () {
     var call = [];
 
     function click(marker, event) {
+      expect(arguments.length).to.eql(2);
       call.push({marker:marker, event:event});
     }
 
@@ -142,6 +143,7 @@ describe('events', function () {
     var marker1, marker2;
 
     function click(marker, event) {
+      expect(arguments.length).to.eql(2);
       call.push({marker:marker, event:event});
     }
 
@@ -207,6 +209,99 @@ describe('events', function () {
           {marker: marker, event: {fakeX: 123}, fn: 4}
         ]);
         done();
+      });
+  });
+
+  it('should handle click on cluster overlay', function (done) {
+
+    var called = {};
+
+    this.handler
+      .then(function (map) {
+        map.setCenter(new google.maps.LatLng(46.578498, 2.457275));
+        map.setZoom(3);
+      })
+      .cluster({
+        size: 200,
+        markers: [
+          {position: [48.8620722, 2.352047]},
+          {position: [44.28952958093682, 6.152559438984804]},
+          {position: [49.28952958093682, -1.1501188139848408]},
+          {position: [44.28952958093682, -1.1501188139848408]}
+        ],
+        cb: function (markers) {
+          called[markers.length] = (called[markers.length] || 0) + 1;
+          if (markers.length > 1) {
+            return {
+              content: '<div>' + markers.length + '</div>'
+            };
+          }
+        }
+      })
+      .on({
+        click: function (marker, clusterOverlay, cluster, event) {
+          expect(arguments.length).to.eql(4);
+          expect(marker).to.be.an.undefined;
+          expect(clusterOverlay).not.to.be.an.undefined;
+          expect(cluster).not.to.be.an.undefined;
+          expect(event).not.to.be.an.undefined;
+          expect(clusterOverlay).to.have.all.keys('cluster', 'markers', '$', 'overlay');
+          expect(cluster.groups()[0] === clusterOverlay).to.be.true;
+          done();
+        }
+      })
+      .wait(1000)
+      .then(function (cluster) {
+        expect(cluster.groups().length).to.eql(1);
+        var group = cluster.groups().pop();
+        group.$.click();
+      });
+  });
+
+  it('should handle click on marker in clustering feature', function (done) {
+
+    var called = {};
+
+    this.handler
+      .then(function (map) {
+        map.setCenter(new google.maps.LatLng(44.28952958093682, 6.152559438984804));
+        map.setZoom(6);
+      })
+      .cluster({
+        size: 200,
+        markers: [
+          {position: [48.8620722, 2.352047]},
+          {position: [44.28952958093682, 6.152559438984804]},
+          {position: [49.28952958093682, -1.1501188139848408]},
+          {position: [44.28952958093682, -1.1501188139848408]}
+        ],
+        cb: function (markers) {
+          called[markers.length] = (called[markers.length] || 0) + 1;
+          if (markers.length > 1) {
+            return {
+              content: '<div>' + markers.length + '</div>'
+            };
+          }
+        }
+      })
+      .on({
+        click: function (marker, clusterOverlay, cluster, event) {
+          expect(arguments.length).to.eql(4);
+          expect(marker).not.to.be.an.undefined;
+          expect(clusterOverlay).to.be.an.undefined;
+          expect(cluster).not.to.be.an.undefined;
+          expect(event).to.eql({event:'fake'});
+          expect(marker.getPosition().lat()).to.be.closeTo(44.28952958093682, 0.001);
+          expect(marker.getPosition().lng()).to.be.closeTo(6.152559438984804, 0.001);
+          expect(cluster.markers()[1] === marker).to.be.true;
+          done();
+        }
+      })
+      .wait(1000)
+      .then(function (cluster) {
+        expect(cluster.groups().length).to.eql(0);
+        var marker = cluster.markers()[1];
+        google.maps.event.trigger(marker, 'click', {event:'fake'});
       });
   });
 

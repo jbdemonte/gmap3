@@ -474,7 +474,7 @@
      * Bind a function to each current or future overlays
      * @param {bindCallback} fn
      */
-    self.bind = function (fn) {
+    self._b = function (fn) {
       fn(objectValues(overlays));
       handlers.push(fn);
     };
@@ -795,18 +795,32 @@
      * Attach events to instances
      * @param {Object } events
      * @param {Array|Object} instances
+     * @param {array} [args] arguments to add
      * @param {Boolean} once
      */
-    function attachEvents(events, instances, once) {
+    function attachEvents(events, instances, args, once) {
+      var hasArgs = arguments.length > 3;
+      if (!hasArgs) {
+        once = args;
+      }
       $.each(events, function (eventName, handlers) {
         foreach(instances, function (instance) {
-          var isDom = (instance instanceof gm.OverlayView) || (instance instanceof ClusterOverlay);
+          var isClusterOverlay = instance instanceof ClusterOverlay;
+          var isDom = isClusterOverlay || (instance instanceof gm.OverlayView);
           var eventListener = isDom ? instance.$.get(0) : instance;
-          gm.event[(isDom ? 'addDomListener' : 'addListener') + (once ? 'Once' : '')](eventListener, eventName, function (event) {
-            var target = instance;
+          gm.event['add' + (isDom ? 'Dom' : '') + 'Listener' + (once ? 'Once' : '')](eventListener, eventName, function (event) {
             foreach(handlers, function (handler) {
               if (isFunction(handler)) {
-                handler.call(context(), target, event);
+                if (isClusterOverlay) {
+                  handler.call(context(), undefined /* marker */, instance, instance.cluster, event);
+                } else if (hasArgs) {
+                  var buffer = slice(args);
+                  buffer.unshift(instance);
+                  buffer.push(event);
+                  handler.apply(context(), buffer);
+                } else {
+                  handler.call(context(), instance, event);
+                }
               }
             });
           });
@@ -1048,16 +1062,12 @@
           promise.then(function (instances) {
             if (instances) {
               if (instances instanceof Cluster) {
-                instances.bind(function (items) {
+                instances._b(function (items) {
                   if (items && items.length) {
                     attachEvents(events, items, once);
                   }
                 });
-                instances = (function () {
-                  var items = instances.markers();
-                  items.push(instances);
-                  return items;
-                })();
+                return attachEvents(events, instances.markers(), [undefined, instances], once);
               }
               attachEvents(events, instances, once);
             }

@@ -15,6 +15,7 @@ module.exports = function(config) {
       'node_modules/jquery/dist/jquery.min.js',
       'https://maps.googleapis.com/maps/api/js',
       'src/gmap3.js',
+      'tests/patch.js',
       'tests/tests/*.js'
     ],
 

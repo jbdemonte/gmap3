@@ -65,19 +65,19 @@
           }
         })
         .on({ // events trigged by clusters
-          mouseover: function(target, event){
-            if (target.overlay) {
-              target.overlay.$.find(">*").css('border', '1px solid #FF0000');
+          mouseover: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.$.find(">*").css('border', '1px solid #FF0000');
             }
           },
-          mouseout: function(target, event){
-            if (target.overlay) {
-              target.overlay.$.find(">*").css('border', '0px');
+          mouseout: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.$.find(">*").css('border', '0px');
             }
           },
-          click: function(target, event){
-            if (target.overlay) {
-              target.overlay.getMap().fitBounds(target.overlay.getBounds());
+          click: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.getMap().fitBounds(target.overlay.getBounds());
             }
           }
         })
