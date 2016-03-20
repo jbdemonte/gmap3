@@ -92,3 +92,22 @@
 .type-hint-domelement {
   background: rgb(95, 158, 160);
 }
+
+.variables-matrix.methods,
+.variables-matrix.methods th{
+  background: #00acc1;
+}
+.variables-matrix.methods th{
+  color: #ffffff;
+  font-weight: normal;
+}
+.variables-matrix.methods td{
+  color: #000000;
+}
+.variables-matrix.methods td:first-child{
+  background: rgba(255,255,255,.87);
+  font-weight: 500;
+}
+.variables-matrix.methods td:last-child{
+  background: rgba(255,255,255,.95);
+}

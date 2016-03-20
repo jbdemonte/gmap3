@@ -1,0 +1,32 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    $('.map')
+      .gmap3({
+        center: [46.578498,2.457275],
+        zoom: 4
+      })
+      .cluster({
+        size: 200,
+        markers: [
+          {position: [48.8620722, 2.352047]},
+          {position: [44.28952958093682, 6.152559438984804]},
+          {position: [49.28952958093682, -1.1501188139848408]},
+          {position: [44.28952958093682, -1.1501188139848408]}
+        ],
+        cb: function (markers) {
+          if (markers.length > 1) { // 1 marker stay unchanged (because cb returns nothing)
+            if (markers.length < 20) {
+              return {
+                content: "<div class='cluster cluster-1'>" + markers.length + "</div>",
+                x: -26,
+                y: -26
+              };
+            }
+          }
+        }
+      });
+  </script>
+{% endraw %}

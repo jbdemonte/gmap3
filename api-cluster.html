@@ -1,0 +1,85 @@
+---
+layout: api
+title: "Gmap3 Clustering"
+---
+
+<h2 id="api-cluster">Cluster</h2>
+<p>
+  This function allows to create <doc>Marker</doc>s which are grouped depending on their distances on the current view. <br />
+  This feature is provided by gmap3 and is not a native one.
+</p>
+
+<strong>Parameters</strong>
+<params>
+  <item name="options" type="object">
+    Cluster options
+  </item>
+</params>
+
+<strong id="options">Options</strong>
+<params>
+  <item name="markers" type="array">
+    Array of <doc>MarkerOptions</doc>
+  </item>
+  <item name="cb" type="function">
+    Callback function to evaluate if an array of <doc>Marker</doc>(s) have to be grouped or not. <br />
+    If so, the function have to return an <a href="api-overlay.html#options">overlay options</a>.
+  </item>
+</params>
+
+<h3 id="cluster">Cluster Class</h3>
+<p>
+  The Cluster object returned by this function allows to manipulate the clustering feature.
+</p>
+<methods>
+  <item name="markers()" return="array">
+    Return the <doc>Marker</doc> list.
+  </item>
+  <item name="groups()" return="array">
+    Return the current <a href="#clusteroverlay">ClusterOverlay</a>.
+  </item>
+  <item name="enable()" return="none">
+    Enable the clustering feature.
+  </item>
+  <item name="disable()" return="none">
+    Disable the clustering feature.
+  </item>
+  <item name="add(marker)" return="none">
+    Add a <doc>Marker</doc>.
+  </item>
+  <item name="remove(marker)" return="none">
+    Remove a <doc>Marker</doc>.
+  </item>
+  <item name="filter(?fn(marker))" return="none">
+    Set a filtering function or remove if fn is null. <br />
+    This function is called for each <doc>Marker</doc>. <br />
+    If it returns <strong>true</strong>, the <doc>Marker</doc> is shown else, it is hidden.
+  </item>
+</methods>
+
+<strong id="clusteroverlay">ClusterOverlay</strong>
+<p>
+  A ClusterOverlay contains one or more <doc>Marker</doc>s.
+</p>
+<params>
+  <item name="cluster" type="object">
+    <a href="#cluster">Cluster</a> instance.
+  </item>
+  <item name="markers" type="array">
+    Array of <doc>Marker</doc>
+  </item>
+  <item name="$" type="jQuery">
+    Node container of the google map.
+  </item>
+  <item name="overlay" type="object">
+    <doc>OverlayView</doc> of the group.
+  </item>
+  <item name="getBounds" type="function">
+    Returns the <doc>LatLngBounds</doc> of the overlay.
+  </item>
+</params>
+
+
+<h3>Example</h3>
+
+<snippets path="snippets/api-cluster"></snippets>

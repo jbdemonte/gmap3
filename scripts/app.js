@@ -38,17 +38,36 @@ angular.module('project', ['Snippets', 'SnippetsThemeBootstrapButtons'])
     };
   })
 
+  .directive('methods', function () {
+    return {
+      restrict: 'E',
+      transclude: true,
+      scope: {},
+      templateUrl: 'partials/methods.html',
+      controller: function($scope) {
+        var items = $scope.items = [];
+        this.add = function(item) {
+          items.push(item);
+        }
+      }
+    };
+  })
+
   .directive('item', function () {
     return {
       restrict: 'E',
-      require: '^params',
-      link: function (scope, element, attrs, ctrl) {
+      require: ['^?params', '^?methods'],
+      link: function (scope, element, attrs, ctrls) {
+        var ctrl = ctrls[0] || ctrls[1];
         var item = {
           name: attrs.name,
           types: (attrs.type || '').split(','),
           optional: 'optional' in attrs,
           doc: attrs.doc,
-          contents: '<p>' + element.html() + '</p>' +
+          contents: '<p>' +
+                      ('return' in attrs ? '<strong> Return Value: ' + attrs.return + '</strong></br />' : '') +
+                      element.html() +
+                    '</p>' +
                     ('default' in attrs ? '<p class="default"> default = <em>' + attrs.default + '</em></p>' : '') +
                     ('example' in attrs ? '<p class="example"> e.g. <em>' + attrs.example + '</em></p>' : '')
         };

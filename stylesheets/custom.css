@@ -126,9 +126,13 @@ params .fa-book {
 params p {
   margin: 0 !important;
 }
-params p.default em {
+params p.return {
   color: #ffaa6e;
   font-style: normal;
+}
+params p.default em {
+  color: #000;
+  font-weight: bold;
 }
 params p.example em {
   color: #ff6e7e;
