@@ -1,0 +1,24 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    var center = [37.772323, -122.214897];
+    $('.map')
+      .gmap3({
+        center: center,
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .latlng([
+        {address: 'Paris, France'},
+        {address: 'Perpignan, France'}
+      ])
+      .then(function (results) {
+        alert(
+          'Paris: ' + results[0].lat() + ', ' + results[0].lng() + '\n' +
+          'Perpignan: ' + results[1].lat() + ', ' + results[1].lng()
+        )
+      });
+  </script>
+{% endraw %}

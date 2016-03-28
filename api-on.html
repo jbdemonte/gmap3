@@ -1,0 +1,63 @@
+---
+layout: api
+title: "Gmap3 On events"
+---
+
+<h2 id="api-on">On</h2>
+<p>
+  <em>on</em> allows to attach <a href="https://developers.google.com/maps/documentation/javascript/events">events</a> on the Google Maps objects. <br />
+  It silently uses <strong>addListener</strong> or <strong>addDomListener</strong> depending on the object type (see <doc>event</doc> documentation).
+</p>
+
+
+<strong>Parameters</strong>
+<p>
+  This function can be used on two ways:
+</p>
+  <li>on(hashmap)
+    <p><em>Keys are the event names to bind. Values are either a handler or an array of handlers</em></p>
+  </li>
+  <li>on(name, ...handlers)</li>
+</ul>
+<params>
+  <item name="name" type="string">
+    Event name
+  </item>
+  <item name="...handlers" type="object">
+    One or more <a href="#handler">function</a>s to attach.
+  </item>
+</params>
+<br />
+<br />
+<strong id="handler">Handler</strong>
+<p>
+  In most case, the attached function takes two parameters:
+</p>
+<params>
+  <item name="target" type="object">
+    The object which trig the event
+  </item>
+  <item name="event" type="object">
+    The event.
+  </item>
+</params>
+<p>
+  In clustering case, the attached function takes four parameters:
+</p>
+<params>
+  <item name="marker" type="object,undefined">
+    The <doc>Marker</doc> which trig the event.
+  </item>
+  <item name="clusterOverlay" type="object,undefined">
+    The <a href="api-cluster.html#clusteroverlay">cluster overlay</a> object which trig the event.
+  </item>
+  <item name="cluster" type="object">
+    The <a href="api-cluster.html#cluster">cluster</a> container.
+  </item>
+  <item name="event" type="object">
+    The event.
+  </item>
+</params>
+
+<h3>Example</h3>
+<snippets path="snippets/api-on"></snippets>

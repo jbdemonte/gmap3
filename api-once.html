@@ -1,0 +1,13 @@
+---
+layout: api
+title: "Gmap3 Once events"
+---
+
+<h2 id="api-on">Once</h2>
+<p>
+  <em>once</em> is like <a href="api-on.html">on</a>, but the handler removes itself after handling the first event. <br />
+  It silently uses <strong>addListenerOnce</strong> or <strong>addDomListenerOnce</strong> depending on the object type (see <doc>event</doc> documentation).
+</p>
+
+<h3>Example</h3>
+<snippets path="snippets/api-once"></snippets>

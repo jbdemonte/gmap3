@@ -1,0 +1,34 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    $('.map')
+      .gmap3({
+        address: 'Clermont-Ferrand, France',
+        zoom: 5,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .wait(1000)
+      .circle({
+        address: 'Perpignan, France',
+        radius : 50000,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .wait(1000)
+      .circle({
+        address: 'Poitiers, France',
+        radius : 50000,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .wait(1000)
+      .circle({
+        address: 'Paris, France',
+        radius : 50000,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      });
+  </script>
+{% endraw %}

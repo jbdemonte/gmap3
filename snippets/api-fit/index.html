@@ -1,0 +1,27 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    $('.map')
+      .gmap3({
+        address: 'Paris, France',
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        address: 'Perpignan, France',
+        radius : 50000,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .circle({
+        address: 'Poitiers, France',
+        radius : 50000,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .wait(2000) // to let you appreciate the current zoom & center
+      .fit()
+  </script>
+{% endraw %}

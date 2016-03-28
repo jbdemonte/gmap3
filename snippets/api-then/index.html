@@ -1,0 +1,61 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    $('.map')
+      .gmap3({
+        address: 'Clermont-Ferrand, France',
+        zoom: 5,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .then(function (map) {
+        map.setZoom(6);
+      })
+      // because previous doesn't return anything, "then" still get the previous result which is the map
+      .then(function (map) {
+        return map.getZoom();
+      })
+      // get previous results because is defined
+      .then(function (zoom) {
+        alert(zoom);
+      })
+      .marker({
+        position: [45.8380017,2.8653253]
+      })
+      // previous created one marker
+      .then(function (marker) {
+        marker.setIcon('http://maps.google.com/mapfiles/marker_green.png');
+      })
+      .marker([
+        {position:[48.8620722, 2.352047]},
+        {address:"86000 Poitiers, France"},
+        {address:"66000 Perpignan, France", icon: "http://maps.google.com/mapfiles/marker_grey.png"}
+      ])
+      // previous created multiple markers
+      .then(function (markers) {
+        markers.forEach(function (marker) {
+          marker.setIcon('http://maps.google.com/mapfiles/marker_grey.png');
+        })
+      })
+      // return a promise, so, chaining will wait until it has been resolved
+      .then(function () {
+        var deferred = $.Deferred();
+        setTimeout(function () {
+          deferred.resolve([47.3227876,5.0375833,17])
+        }, 2000);
+        return deferred;
+      })
+      .then(function (deferred_result) {
+        alert(deferred_result);
+      })
+      // marker will use deferred result as position
+      .marker(function (deferred_result) {
+        return {
+          position: deferred_result,
+          icon: 'http://maps.google.com/mapfiles/marker_brown.png'
+        }
+      })
+      .fit();
+  </script>
+{% endraw %}

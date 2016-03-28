@@ -1,0 +1,60 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    var ts;
+    var center = [37.772323, -122.214897];
+    $('.map')
+      .gmap3({
+        center: center,
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        center: center,
+        radius : 750,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      // hashmap example
+      .on({
+        // examples of use with a handler
+        click: function (circle, event) {
+          circle.setOptions({fillColor: "#AAFF55"});
+          setTimeout(function () {
+            circle.setOptions({fillColor: "#FFAF9F"});
+          }, 200);
+        },
+        mouseover: function (circle, event) {
+          circle.setOptions({strokeColor: "#0000FF"});
+        },
+        // example of use with an array of handler
+        mouseout: [
+          function (circle, event) {
+            circle.setOptions({strokeColor: "#FF512F"});
+          },
+          function (circle, event) {
+            console.log('mouseout', circle, event);
+          }
+        ]
+      })
+      // named example
+      .on(
+        'mousemove',
+        function (circle, event) {
+          if (!ts) {
+            circle.setOptions({fillColor: "#cccccc"});
+          }
+          clearTimeout(ts);
+          ts = setTimeout(function () {
+            circle.setOptions({fillColor: "#FFAF9F"});
+            ts = null;
+          }, 200);
+        },
+        function (circle, event) {
+          console.log('mousemove')
+        }
+      );
+  </script>
+{% endraw %}
