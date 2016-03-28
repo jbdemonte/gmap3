@@ -863,10 +863,10 @@
     function chainToPromise(fn) {
       return function () {
         var args = slice(arguments);
-        promise = promise.then(function () {
+        promise = promise.then(function (instance) {
           if (isFunction(args[0])) {
             // handle return as a deferred / promise to support both sync & async result
-            return when(args[0].apply(context(), previousResults.slice(-1))).then(function (value) {
+            return when(args[0].call(context(), instance)).then(function (value) {
               args[0] = value;
               return fn.apply(self, args);
             });
