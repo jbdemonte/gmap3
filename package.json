@@ -1,12 +1,14 @@
 {
   "name": "gmap3",
   "version": "7.0.0",
-  "date": "2016-01-01",
+  "date": "2016-03-28",
   "description": "jQuery plugin to generate Google Maps",
   "homepage": "http://gmap3.net",
-  "main": "gmap3.js",
-  "directories": {
-    "example": "dist/examples"
+  "main": "dist/gmap3.min.js",
+  "author": {
+    "name": "Jean-Baptiste DEMONTE",
+    "email": "jbdemonte@gmail.com",
+    "url": "http://jb.demonte.fr"
   },
   "scripts": {
     "test": "./node_modules/karma/bin/karma start tests/karma.conf.js --single-run --browsers PhantomJS"
@@ -15,18 +17,13 @@
     "type": "git",
     "url": "git://github.com/jbdemonte/gmap3.git"
   },
-  "bugs": {
-    "url": "https://github.com/jbdemonte/gmap3/issues"
-  },
   "keywords": [
     "google",
     "maps",
     "jquery"
   ],
-  "author": {
-    "name": "Jean-Baptiste DEMONTE",
-    "email": "jbdemonte@gmail.com",
-    "url": "http://jb.demonte.fr"
+  "directories": {
+    "example": "dist"
   },
   "contributors": [],
   "license": "GPL-3.0+",

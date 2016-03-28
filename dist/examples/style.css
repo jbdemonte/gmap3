@@ -1,0 +1,35 @@
+body {
+  text-align: center;
+}
+.gmap3{
+  margin: 20px auto;
+  border: 1px dashed #C0C0C0;
+  width: 1000px;
+  height: 500px;
+}
+.cluster{
+  color: #FFFFFF;
+  text-align:center;
+  font-family: 'Arial, Helvetica';
+  font-size:11px;
+  font-weight:bold;
+  cursor: pointer;
+}
+.cluster-1{
+  background-image:url(images/m1.png);
+  line-height:53px;
+  width: 53px;
+  height: 52px;
+}
+.cluster-2{
+  background-image:url(images/m2.png);
+  line-height:53px;
+  width: 56px;
+  height: 55px;
+}
+.cluster-3{
+  background-image:url(images/m3.png);
+  line-height:66px;
+  width: 66px;
+  height: 65px;
+}

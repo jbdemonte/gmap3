@@ -1,0 +1,34 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<div id="panorama" class="gmap3"></div>
+<script>
+  $(function () {
+    var fenway = [42.345573,-71.098326];
+
+    $('#test')
+      .gmap3({
+        center:fenway,
+        zoom: 13
+      })
+      .streetviewpanorama(
+        '#panorama',
+        {
+          position: fenway,
+          pov: {
+            heading: 34,
+            pitch: 10,
+            zoom: 1
+          }
+        }
+      )
+    ;
+  });
+</script>
+  </body>
+</html>

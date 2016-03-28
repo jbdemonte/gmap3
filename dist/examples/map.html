@@ -1,0 +1,50 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center: [22.49156846196823, 89.75802349999992],
+        zoom: 2,
+        mapTypeId: google.maps.MapTypeId.SATELLITE,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+          style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
+        },
+        navigationControl: true,
+        scrollwheel: true,
+        streetViewControl: true
+      })
+        // attach events using a hashmap {eventName => handler(s)}
+        .on({
+          mouseover: function () {
+            console.log('mouseover');
+            // access to the jQuery chain from the gmap3 chain
+            this.$.css('border', '1px solid #FF0000');
+          },
+          mouseout: function () {
+            console.log('mouseout');
+            // access to the jQuery chain from the gmap3 chain
+            this.$.css('border', '1px solid #000000');
+          }
+        })
+        // attach event using a declarative call (eventName, handler, handler...)
+        .on('click', function () {
+          console.log('map click')
+        })
+        // so do the "once" event
+        .once('click', function () {
+          console.log('map click once')
+        })
+    .$ // back to jQuery
+    .css('border', '1px solid #000000');
+  });
+</script>
+  </body>
+</html>

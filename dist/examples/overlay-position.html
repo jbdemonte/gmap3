@@ -1,0 +1,41 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    var pos = [44.797916, -93.278046];
+    $('#test')
+      .gmap3({
+        center: pos,
+        zoom: 4,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker({
+        position: pos
+      })
+      .overlay({
+        position: pos,
+        content:  '<div style="color:#000000; border:1px solid #FF0000;background-color: #00FF00; width:200px; line-height:20px; height: 20px; text-align:center">' +
+                    'Hello World !' +
+                  '</div>',
+        x:12,
+        y:-32
+      })
+      .on({
+        mouseover: function (overlay) {
+          overlay.$.find(">*").css({backgroundColor: "#CCCCCC"})
+        },
+        mouseout: function (overlay) {
+          overlay.$.find(">*").css({backgroundColor: "#00FF00"})
+        }
+      })
+    ;
+  });
+</script>
+  </body>
+</html>

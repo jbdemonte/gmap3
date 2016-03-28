@@ -1,0 +1,39 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<h2>Based on the <a href="https://developers.google.com/maps/documentation/javascript/examples/overlay-simple">Google example</a></h2>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        zoom: 11,
+        center: {lat: 62.323907, lng: -150.109291},
+        mapTypeId: google.maps.MapTypeId.SATELLITE
+      })
+      .overlay({
+        bounds: {
+          south: 62.281819,
+          west: -150.287132,
+          north: 62.400471,
+          east: -150.005608
+        },
+        content: '<img style="position: absolute; width:100%; height: 100%" src="https://developers.google.com/maps/documentation/javascript/examples/full/images/talkeetna.png">'
+      })
+      .on({
+        click: function () {
+          console.log('click');
+        },
+        rightclick: function () {
+          console.log('rightclick');
+        }
+      })
+    ;
+  });
+</script>
+  </body>
+</html>

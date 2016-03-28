@@ -1,0 +1,21 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center:[34.04924594193164, -118.24104309082031],
+        zoom: 13
+      })
+      .trafficlayer()
+    ;
+  });
+</script>
+  </body>
+</html>

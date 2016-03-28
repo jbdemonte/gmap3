@@ -1,0 +1,59 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div class=desc">Zom, then click a marker to remove it from the cluster</div>
+<div id="test" class="gmap3"></div>
+
+
+<script>
+  $(function () {
+    var cluster, marker;
+
+    $('#test')
+      .gmap3({
+        center: [46.578498,2.457275],
+        zoom: 4
+      })
+      .cluster({
+          size: 200,
+          markers: [
+            {position: [49.28952958093682, 6.152559438984804]},
+            {position: [44.28952958093682, 6.152559438984804]},
+            {position: [49.28952958093682, -1.1501188139848408]},
+            {position: [44.28952958093682, -1.1501188139848408]}
+          ],
+          cb: function (markers) {
+            if (markers.length > 1) { // 1 marker stay unchanged (because cb returns nothing)
+              return {
+                content: "<div class='cluster cluster-1'>" + markers.length + "</div>",
+                x: -26,
+                y: -26
+              };
+            }
+          }
+      })
+      .then(function (_cluster) {
+        cluster = _cluster;
+      })
+      .on({
+        click: function (marker, clusterOverlay, cluster, event) {
+          if (marker) {
+            cluster.remove(marker);
+            marker.setMap(null);
+          }
+        }
+      })
+    ;
+
+    $('button').click(function () {
+      cluster.add(marker);
+    });
+  });
+</script>
+
+  </body>
+</html>

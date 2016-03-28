@@ -1,0 +1,97 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center: [46.578498,2.457275],
+        zoom: 4
+      })
+      .then(function (map) {
+          waitForBounds(map);
+      });
+
+    function waitForBounds(map){
+      var ne, sw, bounds = map.getBounds();
+      if (!bounds) {
+        google.maps.event.addListenerOnce(map, 'idle', function () {
+            waitForBounds(map)
+          }
+        );
+        return;
+      }
+      ne = bounds.getNorthEast();
+      sw = bounds.getSouthWest();
+      randomMarkers(ne.lat(), sw.lng(), sw.lat(), ne.lng());
+    }
+
+    function randomMarkers(lat1, lng1, lat2, lng2) {
+      var i, lat, lng,
+          list = [],
+          rlat = lat2 - lat1,
+          rlng = lng2 - lng1;
+      for (i = 0; i < 1000; i++) {
+        lat = lat1 + rlat * Math.random();
+        lng = lng1 + rlng * Math.random();
+        list.push({position: [lat, lng]});
+      }
+
+      $('#test')
+        .gmap3()
+        .cluster({
+          size: 150,
+          markers: list,
+          cb: function (markers) {
+            if (markers.length > 1) { // 1 marker stay unchanged (because cb returns nothing)
+              if (markers.length < 20) {
+                return {
+                  content: "<div class='cluster cluster-1'>" + markers.length + "</div>",
+                  x: -26,
+                  y: -26
+                };
+              }
+              if (markers.length < 50) {
+                return {
+                  content: "<div class='cluster cluster-2'>" + markers.length + "</div>",
+                  x: -26,
+                  y: -26
+                };
+              }
+              return {
+                content: "<div class='cluster cluster-3'>" + markers.length + "</div>",
+                x: -33,
+                y: -33
+              };
+            }
+          }
+        })
+        .on({ // events trigged by clusters
+          mouseover: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.$.find(">*").css('border', '1px solid #FF0000');
+            }
+          },
+          mouseout: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.$.find(">*").css('border', '0px');
+            }
+          },
+          click: function(marker, clusterOverlay, cluster, event){
+            if (clusterOverlay) {
+              clusterOverlay.overlay.getMap().fitBounds(target.overlay.getBounds());
+            }
+          }
+        })
+      ;
+    }
+  });
+</script>
+
+  </body>
+</html>

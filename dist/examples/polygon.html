@@ -1,0 +1,41 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+
+    $('#test')
+      .gmap3({
+        zoom: 3,
+        center: [24.886436490787712,-70.2685546875]
+      })
+      .polygon({
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.35,
+        paths:[
+          [25.774252, -80.190262],
+          [18.466465, -66.118292],
+          [32.321384, -64.75737],
+          [25.774252, -80.190262]
+        ]
+      })
+        .on('click', function (polygon, event) {
+          polygon.setOptions({fillColor: "#000000"});
+          setTimeout(function () {
+            polygon.setOptions({fillColor: "#FF0000"});
+          }, 200);
+        })
+
+    ;
+  });
+</script>
+  </body>
+</html>

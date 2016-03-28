@@ -1,0 +1,32 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    // for some reason, you may not want the map set at first, you can by not defining any options in gmap3 call at first
+    // and, later start a new map
+    $('#test')
+      .gmap3() // no options = no start map for now...
+        .latlng({
+          address: "Poitiers, France"
+        })
+        .then(function (latlng) {
+          console.log(latlng);
+        })
+        .map(function (latlng) {
+          return {
+            center: latlng,
+            zoom: 6,
+            mapTypeId : google.maps.MapTypeId.ROADMAP
+          }
+        })
+    ;
+  });
+</script>
+  </body>
+</html>

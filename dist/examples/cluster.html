@@ -1,0 +1,53 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    $('#test')
+      .gmap3({
+        center: [46.578498,2.457275],
+        zoom: 3
+      })
+      .cluster({
+          size: 200,
+          markers: [
+            {position: [48.8620722, 2.352047]},
+            {position: [44.28952958093682, 6.152559438984804], icon: "http://maps.google.com/mapfiles/marker_green.png"},
+            {position: [49.28952958093682, -1.1501188139848408]},
+            {position: [44.28952958093682, -1.1501188139848408]}
+          ],
+          cb: function (markers) {
+            if (markers.length > 1) { // 1 marker stay unchanged (because cb returns nothing)
+              if (markers.length < 20) {
+                return {
+                  content: "<div class='cluster cluster-1'>" + markers.length + "</div>",
+                  x: -26,
+                  y: -26
+                };
+              }
+              if (markers.length < 50) {
+                return {
+                  content: "<div class='cluster cluster-2'>" + markers.length + "</div>",
+                  x: -26,
+                  y: -26
+                };
+              }
+              return {
+                content: "<div class='cluster cluster-3'>" + markers.length + "</div>",
+                x: -33,
+                y: -33
+              };
+            }
+          }
+      })
+    ;
+  });
+</script>
+
+  </body>
+</html>

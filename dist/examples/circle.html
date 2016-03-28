@@ -1,0 +1,34 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $(function () {
+    var center = [37.772323, -122.214897];
+    $('#test')
+      .gmap3({
+        center: center,
+        zoom: 13,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .circle({
+        center: center,
+        radius : 750,
+        fillColor : "#FFAF9F",
+        strokeColor : "#FF512F"
+      })
+      .on('click', function (circle, event) {
+        circle.setOptions({fillColor: "#AAFF55"});
+        setTimeout(function () {
+          circle.setOptions({fillColor: "#FFAF9F"});
+        }, 200);
+      })
+    ;
+  });
+</script>
+  </body>
+</html>
