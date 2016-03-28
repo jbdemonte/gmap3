@@ -1,0 +1,13 @@
+coverage/
+dist/examples/
+node_modules/
+src/
+tests/
+.gitignore
+.jshintrc
+.npmignore
+.travis.yml
+.DS_Store
+.idea/
+bower.json
+gulpfile.js
