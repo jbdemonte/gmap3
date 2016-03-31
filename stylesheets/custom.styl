@@ -5,6 +5,53 @@ ol
   li + li
     margin-top 30px
 
+.main-content
+  position relative
+
+#donate-paypal
+  position absolute
+  top 72px
+  right 85px
+
+blockquote.donator
+  display block
+  background #fff
+  padding 15px 20px 15px 30px
+  margin 0 0 20px
+  position relative
+  font-family Georgia, serif
+  font-size 16px
+  line-height 1.2
+  color #666
+  text-align justify
+  border-left 7px solid #15945C
+  -moz-box-shadow 2px 2px 15px #ccc
+  -webkit-box-shadow 2px 2px 15px #ccc
+  box-shadow 2px 2px 15px #ccc
+  a
+    position absolute
+    top 10px
+    right 10px
+    i
+      font-size 18px
+      color #15945C
+  img
+    margin-right 20px
+  em:not(:empty)
+    font-style italic
+    display block
+    text-align center
+    padding 10px
+
+  .author
+    display block
+    font-weight bold
+    text-align right
+
+  &:before
+  &:after
+    content ""
+
 strong.danger
   color red
   font-weight normal

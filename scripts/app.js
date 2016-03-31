@@ -87,4 +87,19 @@ angular.module('project', ['Snippets', 'SnippetsThemeBootstrapButtons'])
     };
   })
 
+  .directive('donator', function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      transclude: true,
+      scope: true,
+      templateUrl: 'partials/donator.html',
+      link: function (scope, element, attrs) {
+        scope.img = attrs.img;
+        scope.url = attrs.url;
+        scope.author = attrs.author;
+      }
+    };
+  })
+
 ;

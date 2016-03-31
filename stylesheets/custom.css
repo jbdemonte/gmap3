@@ -4,6 +4,57 @@ html {
 ol li + li {
   margin-top: 30px;
 }
+.main-content {
+  position: relative;
+}
+#donate-paypal {
+  position: absolute;
+  top: 72px;
+  right: 85px;
+}
+blockquote.donator {
+  display: block;
+  background: #fff;
+  padding: 15px 20px 15px 30px;
+  margin: 0 0 20px;
+  position: relative;
+  font-family: Georgia, serif;
+  font-size: 16px;
+  line-height: 1.2;
+  color: #666;
+  text-align: justify;
+  border-left: 7px solid #15945c;
+  -moz-box-shadow: 2px 2px 15px #ccc;
+  -webkit-box-shadow: 2px 2px 15px #ccc;
+  box-shadow: 2px 2px 15px #ccc;
+}
+blockquote.donator a {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+blockquote.donator a i {
+  font-size: 18px;
+  color: #15945c;
+}
+blockquote.donator img {
+  margin-right: 20px;
+}
+blockquote.donator em:not(:empty) {
+  font-style: italic;
+  display: block;
+  text-align: center;
+  padding: 10px;
+}
+blockquote.donator .author {
+  display: block;
+  font-weight: bold;
+  text-align: right;
+}
+blockquote.donator:before,
+blockquote.donator:after {
+  content: "";
+}
 strong.danger {
   color: #f00;
   font-weight: normal;

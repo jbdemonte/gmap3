@@ -174,15 +174,6 @@ a {
 /**/
 .main-content ul, .main-content ol {
   margin-top: 0; }
-.main-content blockquote {
-  padding: 0 1rem;
-  margin-left: 0;
-  color: #819198;
-  border-left: 0.3rem solid #dce6f0; }
-  .main-content blockquote > :first-child {
-    margin-top: 0; }
-  .main-content blockquote > :last-child {
-    margin-bottom: 0; }
 .main-content table {
   display: block;
   width: 100%;

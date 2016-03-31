@@ -1,0 +1,7 @@
+<blockquote class="donator">
+  <img ng-src="assets/donators/{{img}}" ng-if="img">
+  <img src="assets/donators/unknown.png" ng-if="!img">
+  <a href="{{url}}" ng-if="url" target="_blank"><i class="fa fa-home"></i></a>
+  <em ng-transclude></em>
+  <span class="author">{{author}}</span>
+</blockquote>
