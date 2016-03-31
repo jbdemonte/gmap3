@@ -15,8 +15,6 @@
         <li class="divider-vertical"></li>
         <li {% if page.active == 'quickstart' %}class='active'{% endif %}><a href="quickstart.html"><i class="fa fa-bolt"></i> Quickstart</a></li>
         <li class="divider-vertical"></li>
-        <li {% if page.active == 'donations' %}class='active'{% endif %}><a href="Donations.html"><i class="fa fa-beer"></i> Donations</a></li>
-        <li class="divider-vertical"></li>
         <li {% if page.active == 'api' %}class='active'{% endif %}><a href="api.html"><i class="fa fa-book"></i> API documentation</a></li>
         <li class="divider-vertical"></li>
         <li class="dropdown">
@@ -28,6 +26,8 @@
             <li><a href="http://v6.gmap3.net"><i class="fa fa-trash"></i> Previous version (6.1)</a></li>
           </ul>
         </li>
+        <li class="divider-vertical"></li>
+        <li {% if page.active == 'donations' %}class='active'{% endif %}><a href="Donations.html"><i class="fa fa-beer"></i> Donations</a></li>
       </ul>
     </div>
   </div>
