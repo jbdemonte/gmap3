@@ -7,12 +7,12 @@
  *  Web site : http://gmap3.net
  *  Licence  : GPL-3.0+
  */
-(function ($, window) {
+(function ($, window, document) {
   "use strict";
 
-  var gm, services = {},
+  var gm, services = {}, loadOptions,
 
-    // Proxify functions to get shorter minimized code
+  // Proxify functions to get shorter minimized code
     when = $.when,
     extend = $.extend,
     isArray = $.isArray,
@@ -88,6 +88,20 @@
     return 1000 * 6371 * m.acos(m.min(cos(e) * cos(g) * cos(f) * cos(h) + cos(e) * sin(f) * cos(g) * sin(h) + sin(e) * sin(g), 1));
   }
 
+  function ready(fn) {
+    if (document.readyState != 'loading'){
+      fn();
+    } else {
+      document.addEventListener('DOMContentLoaded', fn);
+    }
+  }
+
+  function serialize(obj) {
+    return objectKeys(obj).map(function (key) {
+      return encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]);
+    }).join("&");
+  }
+
   // Auto-load google maps library if needed
   (function () {
     var dfd = deferred(),
@@ -96,19 +110,22 @@
 
     $.holdReady(true);
 
-    if (window.google && window.google.maps) {
-      dfd.resolve();
-    } else {
-      // callback function - resolving promise after maps successfully loaded
-      window[cbName] = function () {
-        delete window[cbName];
+    ready(function () {
+      if (window.google && window.google.maps || loadOptions === false) {
         dfd.resolve();
-      };
-      script = window.document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = 'https://maps.googleapis.com/maps/api/js?callback=' + cbName;
-      $("head").append(script);
-    }
+      } else {
+        // callback function - resolving promise after maps successfully loaded
+        window[cbName] = function () {
+          delete window[cbName];
+          dfd.resolve();
+        };
+        script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://maps.googleapis.com/maps/api/js?callback=' + cbName + (loadOptions ? '&' + (typeof loadOptions === 'string' ? loadOptions : serialize(loadOptions)) : '');
+        $("head").append(script);
+      }
+    });
+
     return dfd.promise();
   })().then(function () {
     $.holdReady(false);
@@ -738,6 +755,14 @@
   }
 
   /**
+   * Configure google maps loading library
+   * @param {string|object} options
+   */
+  $.gmap3 = function (options) {
+    loadOptions = options;
+  };
+
+  /**
    * jQuery Plugin
    */
   $.fn.gmap3 = function (options) {
@@ -1100,4 +1125,4 @@
     }
   }
 
-})(jQuery, window);
+})(jQuery, window, document);

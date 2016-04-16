@@ -1,0 +1,28 @@
+<div id="test" class="gmap3"></div>
+<script>
+  $.gmap3({
+    key: 'AIzaSyAdY8R5lQPdDO_ffF9WADgbYVsYmpfv3Vw'
+  });
+
+  $(function () {
+    $('#test')
+      .gmap3({
+        address: "Haltern am See, Weseler Str. 151",
+        zoom: 6,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker(function (map) {
+        return {
+          position: map.getCenter(),
+          icon: 'http://maps.google.com/mapfiles/marker_green.png'
+        };
+      })
+        .on('click', function (marker, event) {
+          marker.setIcon('http://maps.google.com/mapfiles/marker_orange.png');
+          setTimeout(function () {
+            marker.setIcon('http://maps.google.com/mapfiles/marker_green.png');
+          }, 200);
+        })
+    ;
+  });
+</script>
