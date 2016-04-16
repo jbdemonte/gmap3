@@ -1116,6 +1116,9 @@
           return isArray(instance) ? instance.slice() : instance;
         });
       } else {
+        if (index < 0) {
+          index = previousResults.length + index;
+        }
         return isArray(previousResults[index]) ? previousResults[index].slice() : previousResults[index];
       }
     };
