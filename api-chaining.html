@@ -63,7 +63,24 @@ $('#map')
   });</code></pre>
 
 <h3 id="api-chaining-context">Chaining context</h3>
-<p>When a function is passed in the chaining, it takes one parameters which is the previous result and its context provides two things, the <a href="api-$.html">$</a> and the <a href="api-get.html">get</a> handlers.</p>
+<p>When a function is passed in the chaining, it takes one parameters which is the previous result and its context provides two things, the <a href="#$">$</a> and the <a href="#get">get</a> handlers.</p>
+<h4 id="$">$</h4>
+<p>
+  <em>this.$</em> is the current jQuery handler.
+</p>
+<h4 id="get">get</h4>
+<p>
+  <em>this.get</em> allows in each function to retrieve any result from a previous chain.<br />
+</p>
+<params>
+  <item name="index" type="number" optional>
+    If not provided, returns all previous results as an array.<br />
+    If >= 0, returns the <em>index</em> result from the beginning which may be a single element or an array when the chained function creates many elements. <br />
+    If < 0, same as positive one, but from the end.
+  </item>
+</params>
+
+<h4>Example</h4>
 <pre class="code"><code class="language-javascript">var center = [37.772323, -122.214897];
 $('#map')
   .gmap3({
@@ -86,7 +103,17 @@ $('#map')
   .then(function (result) {
     console.log(result);      // returns the last circle
     console.log(this.$);      // returns $('#map')
+
+    // No index: all object into an array
+    console.log(this.get());
+
+    // Positive index: from the beginning
     console.log(this.get(0)); // returns the map (google map object)
     console.log(this.get(1)); // returns the first circle
     console.log(this.get(2)); // returns the second circle
+
+    // Negative index: from the end
+    console.log(this.get(-1)); // returns the second circle
+    console.log(this.get(-2)); // returns the first circle
+    console.log(this.get(-3)); // returns the map (google map object)
   });</code></pre>
