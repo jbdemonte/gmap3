@@ -1,0 +1,41 @@
+<html>    
+  <head> 
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="../gmap3.js"></script>
+  <body>
+<div id="test" class="gmap3"></div>
+<script>
+  $.gmap3(false);
+  
+  function initMap() {
+    $('#test')
+      .gmap3({
+        address: "Haltern am See, Weseler Str. 151",
+        zoom: 6,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker(function (map) {
+        return {
+          position: map.getCenter(),
+          icon: 'http://maps.google.com/mapfiles/marker_green.png'
+        };
+      })
+        .on('click', function (marker, event) {
+          marker.setIcon('http://maps.google.com/mapfiles/marker_orange.png');
+          setTimeout(function () {
+            marker.setIcon('http://maps.google.com/mapfiles/marker_green.png');
+          }, 200);
+        })
+    ;
+  }
+
+</script>
+
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdY8R5lQPdDO_ffF9WADgbYVsYmpfv3Vw&callback=initMap">
+</script>
+  </body>
+</html>
