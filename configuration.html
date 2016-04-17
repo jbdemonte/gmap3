@@ -1,0 +1,31 @@
+---
+layout: api
+title: "Configuration"
+---
+
+<h2>Google Maps Library Configuration</h2>
+<p>
+  If the Google Maps library is not loaded, gmap3 will load it asynchronously as described on <a href="https://developers.google.com/maps/documentation/javascript/tutorial#asynch">the official page</a>.<br />
+  <br />
+  Nevertheless, you can disable it or provide your own configuration (API key...)
+</p>
+<p>
+  There are three way to configure the google maps library.
+</p>
+
+<h3>Load google maps library into the &lt;head&gt;</h3>
+<p>If so, gmap3 will detects it and not try to load it again.</p>
+<pre class="code"><code class="language-markup">&lt;script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&amp;region=GB"&gt;&lt;/script&gt;</code></pre>
+
+<h3>Let gmap3 load the library</h3>
+<p>Optionally, you can provide a configuration set to the loader.  (<a href="https://github.com/jbdemonte/gmap3/blob/master/dist/examples/config.html">full example</a>)</p>
+<pre class="code"><code class="language-javascript">$.gmap3({
+  key: 'AIzaSyAdY8R5lQPdDO_ffF9WADgbYVsYmpfv3Vw'
+});</code></pre>
+
+<h3>Disable the loader to handle your own async load</h3>
+<p>
+  Sometime, you may want to disable the loader to handle your own. (<a href="https://github.com/jbdemonte/gmap3/blob/master/dist/examples/no-load.html">full example</a>)
+</p>
+<pre class="code"><code class="language-javascript">$.gmap3(false); // disable gmap3 loader</code></pre>
+<pre class="code"><code class="language-markup">&lt;script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdY8R5lQPdDO_ffF9WADgbYVsYmpfv3Vw&callback=initMap"&gt;&lt;/script&gt;</code></pre>
