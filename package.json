@@ -1,7 +1,7 @@
 {
   "name": "gmap3",
-  "version": "7.0.0",
-  "date": "2016-03-28",
+  "version": "7.1.0",
+  "date": "2016-04-17",
   "description": "jQuery plugin to generate Google Maps",
   "homepage": "http://gmap3.net",
   "main": "dist/gmap3.min.js",
