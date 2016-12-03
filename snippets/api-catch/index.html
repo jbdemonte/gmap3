@@ -1,0 +1,26 @@
+---
+layout: api-snippets
+---
+{% raw %}
+  <script>
+    $('.map')
+      .gmap3({
+        address: 'Clermont-Ferrand, France',
+        zoom: 5,
+        mapTypeId : google.maps.MapTypeId.ROADMAP
+      })
+      .marker({
+        address: '---------'
+      })
+      .then(function (marker) {
+        alert('this code is never run, because the marker address resolution failed');
+      })
+      .catch(function (reason) {
+        alert('catched: ' + reason);
+      })
+      .marker({
+        position:[48.8620722, 2.352047]
+      })
+      .fit();
+  </script>
+{% endraw %}
