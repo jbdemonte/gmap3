@@ -21,6 +21,8 @@
     "dist/examples",
     "src",
     "tests",
+    "coverage",
+    "node_modules",
     ".gitignore",
     ".jshintrc",
     ".npmignore",
