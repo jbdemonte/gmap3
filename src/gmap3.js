@@ -89,7 +89,7 @@
   }
 
   function ready(fn) {
-    if (document.readyState != 'loading'){
+    if (document.readyState != 'loading') {
       fn();
     } else {
       document.addEventListener('DOMContentLoaded', fn);
@@ -103,7 +103,7 @@
   }
 
   // Auto-load google maps library if needed
-  (function () {
+  when(function () {
     var dfd = deferred(),
       cbName = '__gmap3',
       script;
@@ -126,8 +126,8 @@
       }
     });
 
-    return dfd.promise();
-  })().then(function () {
+    return dfd;
+  }()).then(function () {
     $.holdReady(false);
   });
 
@@ -172,7 +172,7 @@
         address: request
       };
     }
-    service('Geocoder').geocode(request, function(results, status) {
+    service('Geocoder').geocode(request, function (results, status) {
       if (status === gm.GeocoderStatus.OK) {
         dfd.resolve(results[0].geometry.location);
       } else {
@@ -194,7 +194,7 @@
    * @param {StringCallback} fn - Callback function
    */
   function foreachStr(str, fn) {
-    str.split(' ').forEach(fn);
+    foreach(str.split(' '), fn);
   }
 
   /**
@@ -287,9 +287,7 @@
    */
   function resolveArrayOfLatLng(options, key, fn) {
     options = dupOpts(options);
-    options[key] = (options[key] || []).map(function (item) {
-      return toLatLng(item);
-    });
+    options[key] = (options[key] || []).map(toLatLng);
     return resolved(fn(options));
   }
 
@@ -391,7 +389,7 @@
           self.draw();
         };
 
-        self.draw = function() {
+        self.draw = function () {
           var sw = fromLatLngToDivPixel(options.bounds.getSouthWest());
           var ne = fromLatLngToDivPixel(options.bounds.getNorthEast());
 
