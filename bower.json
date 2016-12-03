@@ -1,7 +1,7 @@
 {
   "name": "gmap3",
-  "version": "7.1.0",
-  "date": "2016-04-17",
+  "version": "7.2.0",
+  "date": "2016-12-03",
   "description": "jQuery plugin to generate Google Maps",
   "author": {
     "name": "Jean-Baptiste DEMONTE",
