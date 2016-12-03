@@ -1,4 +1,15 @@
 describe('chaining', function () {
+  
+  function rejected(reason) {
+    var dfd = jQuery.Deferred();
+    dfd.reject(reason);
+    return dfd;
+  }
+  function resolved(reason) {
+    var dfd = jQuery.Deferred();
+    dfd.resolve(reason);
+    return dfd;
+  }
 
   beforeEach(function (done) {
     var self = this;
@@ -96,6 +107,45 @@ describe('chaining', function () {
         expect(marker.getPosition().lat()).to.be.closeTo(map.getCenter().lat(), 0.001);
         expect(marker.getPosition().lng()).to.be.closeTo(map.getCenter().lng(), 0.001);
         expect(marker.getIcon()).to.eql('http://maps.google.com/mapfiles/marker_brown.png');
+        done();
+      });
+  });
+
+  it('should chain catch', function (done) {
+    var results = [];
+    this.handler
+      .marker(function (map) {
+        expect(map).to.be.an.instanceof(google.maps.Map);
+        return rejected(1);
+      })
+      .then(function () {
+        done(new Error('catch expected'));
+      })
+      .catch(function (value) {
+        results.push(value);
+        return resolved(2);
+      })
+      .then(function (value) {
+        results.push(value);
+        return rejected(3);
+      })
+      .then(function () {
+        done(new Error('catch expected'));
+      })
+      .catch(function (value) {
+        results.push(value);
+        return rejected(4);
+      })
+      .then(function () {
+        done(new Error('catch expected'));
+      })
+      .catch(function (value) {
+        results.push(value);
+        return 5;
+      })
+      .then(function (value) {
+        results.push(value);
+        expect(results).to.eql([1,2,3,4,5]);
         done();
       });
   });

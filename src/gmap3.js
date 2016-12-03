@@ -176,7 +176,7 @@
       if (status === gm.GeocoderStatus.OK) {
         dfd.resolve(results[0].geometry.location);
       } else {
-        dfd.reject();
+        dfd.reject(status);
       }
     });
     return dfd;
@@ -263,13 +263,16 @@
         if (address) {
           delete options.address;
           return geocode(address).then(function (latLng) {
-            options[key] = latLng;
-          });
+              options[key] = latLng;
+            });
         }
         options[key] = toLatLng(options[key]);
       })
       .then(function () {
         dfd.resolve(fn(options));
+      })
+      .fail(function (reason) {
+        dfd.reject(reason);
       });
     return dfd;
   }
@@ -892,7 +895,7 @@
     /**
      * Decorator to chain promise result onto the main promise chain
      * @param {Function} fn
-     * @returns {Deferred}
+     * @returns {Function}
      */
     function chainToPromise(fn) {
       return function () {
@@ -1082,6 +1085,15 @@
             return isUndefined(newInstance) ? instance : newInstance;
           });
         });
+      }
+    };
+
+    self.catch = function (fn) {
+      if (isFunction(fn)) {
+        promise = promise
+          .then(null, function (reason) {
+            return when(fn.call(context(), reason));
+          });
       }
     };
 

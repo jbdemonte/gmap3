@@ -17,6 +17,18 @@ describe('latlng', function () {
       });
   });
 
+  it('would handle latlng fail', function (done) {
+    this.handler
+      .latlng({address: '>>>>>'})
+      .then(function () {
+        done(new Error('error expected'));
+      })
+      .catch(function (err) {
+        expect(err).to.be.equal('ZERO_RESULTS');
+        done();
+      });
+  });
+
   it('would convert the position as array', function (done) {
     this.handler
       .latlng({latlng: [10,20]})
@@ -39,5 +51,4 @@ describe('latlng', function () {
         done();
       });
   });
-
 });
