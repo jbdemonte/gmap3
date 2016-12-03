@@ -1,7 +1,7 @@
 /*!
  *  GMAP3 Plugin for jQuery
- *  Version  : 7.1
- *  Date     : 2016/04/17
+ *  Version  : 7.2
+ *  Date     : 2016/12/03
  *  Author   : DEMONTE Jean-Baptiste
  *  Contact  : jbdemonte@gmail.com
  *  Web site : http://gmap3.net

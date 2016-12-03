@@ -1,7 +1,7 @@
 /*!
  *  GMAP3 Plugin for jQuery
- *  Version  : 7.1
- *  Date     : 2016/04/17
+ *  Version  : 7.2
+ *  Date     : 2016/12/03
  *  Author   : DEMONTE Jean-Baptiste
  *  Contact  : jbdemonte@gmail.com
  *  Web site : http://gmap3.net
@@ -89,7 +89,7 @@
   }
 
   function ready(fn) {
-    if (document.readyState != 'loading'){
+    if (document.readyState != 'loading') {
       fn();
     } else {
       document.addEventListener('DOMContentLoaded', fn);
@@ -103,7 +103,7 @@
   }
 
   // Auto-load google maps library if needed
-  (function () {
+  when(function () {
     var dfd = deferred(),
       cbName = '__gmap3',
       script;
@@ -126,8 +126,8 @@
       }
     });
 
-    return dfd.promise();
-  })().then(function () {
+    return dfd;
+  }()).then(function () {
     $.holdReady(false);
   });
 
@@ -172,11 +172,11 @@
         address: request
       };
     }
-    service('Geocoder').geocode(request, function(results, status) {
+    service('Geocoder').geocode(request, function (results, status) {
       if (status === gm.GeocoderStatus.OK) {
         dfd.resolve(results[0].geometry.location);
       } else {
-        dfd.reject();
+        dfd.reject(status);
       }
     });
     return dfd;
@@ -194,7 +194,7 @@
    * @param {StringCallback} fn - Callback function
    */
   function foreachStr(str, fn) {
-    str.split(' ').forEach(fn);
+    foreach(str.split(' '), fn);
   }
 
   /**
@@ -263,13 +263,16 @@
         if (address) {
           delete options.address;
           return geocode(address).then(function (latLng) {
-            options[key] = latLng;
-          });
+              options[key] = latLng;
+            });
         }
         options[key] = toLatLng(options[key]);
       })
       .then(function () {
         dfd.resolve(fn(options));
+      })
+      .fail(function (reason) {
+        dfd.reject(reason);
       });
     return dfd;
   }
@@ -284,9 +287,7 @@
    */
   function resolveArrayOfLatLng(options, key, fn) {
     options = dupOpts(options);
-    options[key] = (options[key] || []).map(function (item) {
-      return toLatLng(item);
-    });
+    options[key] = (options[key] || []).map(toLatLng);
     return resolved(fn(options));
   }
 
@@ -388,7 +389,7 @@
           self.draw();
         };
 
-        self.draw = function() {
+        self.draw = function () {
           var sw = fromLatLngToDivPixel(options.bounds.getSouthWest());
           var ne = fromLatLngToDivPixel(options.bounds.getNorthEast());
 
@@ -892,7 +893,7 @@
     /**
      * Decorator to chain promise result onto the main promise chain
      * @param {Function} fn
-     * @returns {Deferred}
+     * @returns {Function}
      */
     function chainToPromise(fn) {
       return function () {
@@ -1082,6 +1083,15 @@
             return isUndefined(newInstance) ? instance : newInstance;
           });
         });
+      }
+    };
+
+    self.catch = function (fn) {
+      if (isFunction(fn)) {
+        promise = promise
+          .then(null, function (reason) {
+            return when(fn.call(context(), reason));
+          });
       }
     };
 
