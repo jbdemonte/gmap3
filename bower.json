@@ -9,7 +9,7 @@
     "url": "http://jb.demonte.fr"
   },
   "license": "GPL-3.0+",
-  "main": "./dist/gmap3.min.js",
+  "main": "./dist/gmap3.js",
   "keywords": [
     "google",
     "maps",
